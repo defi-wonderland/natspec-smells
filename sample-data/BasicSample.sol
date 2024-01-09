@@ -11,7 +11,7 @@ contract BasicSample {
   /**
    * @notice External function that returns a bool
    * @dev A dev comment
-   * @param _magicNumber A parameter description
+   * @param  _magicNumber A parameter description
    * @param _name Another parameter description
    * @return _isMagic Some return data
    */
