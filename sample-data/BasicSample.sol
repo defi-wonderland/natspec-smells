@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.19;
 
-contract Sample {
+contract BasicSample {
   /**
   * @notice Empty string for revert checks
   * @dev result of doing keccak256(bytes(''))

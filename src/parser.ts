@@ -1,4 +1,4 @@
-import { Natspec, NatspecParam, NatspecReturn, NatspecTag } from "./types/natspec.t";
+import { Natspec, NatspecDefinition } from "./types/natspec.t";
 import { SolcContractNode } from "./types/solc-typed-ast.t";
 
 export function parseNodeNatspec(node: SolcContractNode): Natspec {
@@ -8,7 +8,7 @@ export function parseNodeNatspec(node: SolcContractNode): Natspec {
     
     const docLines = node.documentation.text.split('\n');
 
-    let currentTag: null | NatspecTag | NatspecParam | NatspecReturn = null;
+    let currentTag: NatspecDefinition | null = null;
     const result: Natspec = {
         tags: [],
         params: [],
@@ -20,25 +20,27 @@ export function parseNodeNatspec(node: SolcContractNode): Natspec {
         if (tagTypeMatch) {
             const tagName = tagTypeMatch[1];
             
-            if (tagName === 'param' || tagName === 'return') {
+            if (tagName === 'inheritdoc') {
+                const tagMatch = line.match(/^\s*@(\w+) (.*)$/);
+                if (tagMatch) {
+                    currentTag = null;
+                    result.inheritdoc = { content: tagMatch[2] };
+                }
+            } else if (tagName === 'param' || tagName === 'return') {
                 const tagMatch = line.match(/^\s*@(\w+) (\w+) (.*)$/);
                 if (tagMatch) {
-                    currentTag = { name: tagMatch[2], description: tagMatch[3].trim() };
-                    if (tagName === 'param') {
-                        result.params.push(currentTag as NatspecParam);
-                    } else {
-                        result.returns.push(currentTag as NatspecReturn);
-                    }
+                    currentTag = { name: tagMatch[2], content: tagMatch[3].trim() };
+                    result[tagName === 'param' ? 'params' : 'returns'].push(currentTag);
                 }
             } else {
                 const tagMatch = line.match(/^\s*@(\w+) (.*)$/);
                 if (tagMatch) {
-                    currentTag = { name: tagName, description: tagMatch[2] };
-                    result.tags.push(currentTag as NatspecTag);
+                    currentTag = { name: tagName, content: tagMatch[2] };
+                    result.tags.push(currentTag);
                 }
             }
         } else if (currentTag) {
-            currentTag.description += '\n' + line;
+            currentTag.content += '\n' + line;
         }
     });
 

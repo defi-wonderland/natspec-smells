@@ -4,11 +4,11 @@ import { parseSolidityFile } from './test-utils';
 
 describe('parseNodeNatspec', () => {
 
-    describe('sample.sol', () => {
+    describe('BasicSample.sol', () => {
         let nodes: SolcContractNode[];
 
         beforeAll(async () => {
-            const file = 'sample-data/sample.sol';
+            const file = 'sample-data/BasicSample.sol';
             const compileResult = await parseSolidityFile(file);
             nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
         });
@@ -20,10 +20,10 @@ describe('parseNodeNatspec', () => {
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
-                    description: 'Empty string for revert checks',
+                    content: 'Empty string for revert checks',
                 }, {
                     name: 'dev',
-                    description: `result of doing keccak256(bytes(''))`,
+                    content: `result of doing keccak256(bytes(''))`,
                 }],
                 params: [],
                 returns: [],
@@ -39,21 +39,21 @@ describe('parseNodeNatspec', () => {
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
-                    description: 'External function that returns a bool',
+                    content: 'External function that returns a bool',
                 }, {
                     name: 'dev',
-                    description: 'A dev comment',
+                    content: 'A dev comment',
                 }],
                 params: [{
                     name: '_magicNumber',
-                    description: 'A parameter description',
+                    content: 'A parameter description',
                 }, {
                     name: '_name',
-                    description: 'Another parameter description',
+                    content: 'Another parameter description',
                 }],
                 returns: [{
                     name: '_isMagic',
-                    description: 'Some return data',
+                    content: 'Some return data',
                 }],
             });
         });
@@ -65,11 +65,11 @@ describe('parseNodeNatspec', () => {
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
-                    description: 'Private test function',
+                    content: 'Private test function',
                 }],
                 params: [{
                     name: '_magicNumber',
-                    description: 'A parameter description',
+                    content: 'A parameter description',
                 }],
                 returns: [],
             });
@@ -83,7 +83,7 @@ describe('parseNodeNatspec', () => {
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
-                    description: 'Private test function\n         with multiple\n lines',
+                    content: 'Private test function\n         with multiple\n lines',
                 }],
                 params: [],
                 returns: [],
@@ -97,10 +97,37 @@ describe('parseNodeNatspec', () => {
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
-                    description: 'Private test function',
+                    content: 'Private test function',
                 }, {
                     name: 'notice',
-                    description: 'Another notice',
+                    content: 'Another notice',
+                }],
+                params: [],
+                returns: [],
+            });
+        });
+    });
+
+    describe('InterfacedSample.sol', () => {
+        let nodes: SolcContractNode[];
+
+        beforeAll(async () => {
+            const file = 'sample-data/InterfacedSample.sol';
+            const compileResult = await parseSolidityFile(file);
+            nodes = compileResult.data.sources[file].ast.nodes[2].nodes as SolcContractNode[];
+        });
+
+        it('should parse the inheritdoc tag', async () => {
+            const functionNode = nodes[0];
+            const result = parseNodeNatspec(functionNode);
+
+            expect(result).toEqual({
+                inheritdoc: {
+                    content: 'IInterfacedSample',
+                },
+                tags: [{
+                    name: 'dev',
+                    content: 'some dev thingy',
                 }],
                 params: [],
                 returns: [],

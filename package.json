@@ -1,5 +1,5 @@
 {
-  "name": "@defi-wonderland/natspec-warnings",
+  "name": "@defi-wonderland/natspec-smells",
   "version": "1.0.0",
   "license": "MIT",
   "main": "lib/main.js",

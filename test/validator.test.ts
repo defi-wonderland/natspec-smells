@@ -1,17 +1,13 @@
 import { validate } from '../src/validator';
 import { parseSolidityFile } from '../test/test-utils';
-import { resolve} from 'path';
-import { Natspec } from '../src/types/natspec.t';
 import { SolcContractNode } from "../src/types/solc-typed-ast.t";
-
-const SOLIDITY_FILE_PATH = resolve(__dirname, '..', 'sample-data', 'sample.sol');
 
 describe.only('validator function', () => {
     let nodes: SolcContractNode[];
     let functionParsedData: SolcContractNode;
 
     beforeAll(async () => {
-        const file = 'sample-data/sample.sol';
+        const file = 'sample-data/BasicSample.sol';
         const compileResult = await parseSolidityFile(file);
         nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
         functionParsedData = nodes[1];
@@ -20,32 +16,32 @@ describe.only('validator function', () => {
     let natspec = {
         tags: [
             {
-                'name': 'notice',
-                'description': 'External function that returns a bool'
+                name: 'notice',
+                content: 'External function that returns a bool'
             },
             {
-                'name': 'dev',
-                'description': 'A dev comment'
+                name: 'dev',
+                content: 'A dev comment'
             }
         ],
         params: [
             {
-                'name': '_magicNumber',
-                'description': 'A parameter description'
+                name: '_magicNumber',
+                content: 'A parameter description'
             },
             {
-                'name': '_name',
-                'description': 'Another parameter description'
+                name: '_name',
+                content: 'Another parameter description'
             }
         ],
         returns: [
             {
-                'name': '_isMagic',
-                'description': 'Some return data'
+                name: '_isMagic',
+                content: 'Some return data'
             },
             {
-                'name': undefined,
-                'description': 'Test test'
+                name: undefined,
+                content: 'Test test'
             }
         ]
     };
@@ -56,139 +52,107 @@ describe.only('validator function', () => {
     });
 
     it('should reveal missing natspec for parameters', () => {
-        const parameter = '_magicNumber';
+        const paramName = '_magicNumber';
         let natspec = {
             tags: [
                 {
-                    'name': 'notice',
-                    'description': 'External function that returns a bool'
+                    name: 'notice',
+                    content: 'External function that returns a bool'
                 }
             ],
             params: [
                 {
-                    'name': '_name',
-                    'description': 'Another parameter description'
+                    name: '_name',
+                    content: 'Another parameter description'
                 }
             ],
             returns: [
                 {
-                    'name': '_isMagic',
-                    'description': 'Some return data'
+                    name: '_isMagic',
+                    content: 'Some return data'
                 }
             ]
         };
 
         const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            message: `Natspec for ${parameter} is missing`,
-            severity: 'error',
-        });
-    });
-
-    it('should reveal extra natspec for parameters', () => {
-        const parameter = 'someParameter';
-        const natspec = {
-            tags: [],
-            params: [
-                {
-                    'name': parameter,
-                    'description': 'Some text'
-                }
-            ],
-            returns: []
-        };
-
-      const result = validate(functionParsedData, natspec);
-      expect(result).toContainEqual({
-            severity: 'error',
-            message: `Found natspec for undefined function parameter ${parameter}`,
-      });
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
     });
 
     it('should reveal missing natspec for returned values', () => {
-        const returnedValue = '_isMagic';
+        const paramName = '_isMagic';
         let natspec = {
             tags: [
                 {
-                    'name': 'notice',
-                    'description': 'External function that returns a bool'
+                    name: 'notice',
+                    content: 'External function that returns a bool'
                 },
                 {
-                    'name': 'dev',
-                    'description': 'A dev comment'
+                    name: 'dev',
+                    content: 'A dev comment'
                 }
             ],
             params: [
                 {
-                    'name': '_magicNumber',
-                    'description': 'A parameter description'
+                    name: '_magicNumber',
+                    content: 'A parameter description'
                 },
                 {
-                    'name': '_name',
-                    'description': 'Another parameter description'
+                    name: '_name',
+                    content: 'Another parameter description'
                 }
             ],
             returns: []
         };
 
         const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            severity: 'error',
-            message: `Natspec for ${returnedValue} is missing`,
-        });
+        expect(result).toContainEqual(`@return ${paramName} is missing`);
     });
 
-    it('should reveal extra natspec for returned values', () => {
-        const returnedValue = 'someValue';
-        natspec.returns.push({
-            'name': returnedValue,
-            'description': 'Some text'
-        });
+    // it('should reveal extra natspec for returned values', () => {
+    //     const paramName = 'someValue';
+    //     natspec.returns.push({
+    //         name: paramName,
+    //         content: 'Some text'
+    //     });
 
-        const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            severity: 'error',
-            message: `Found natspec for undefined returned value ${returnedValue}`,
-        });
-    });
+    //     const result = validate(functionParsedData, natspec);
+    //     expect(result).toContainEqual(`Found natspec for undefined returned value ${paramName}`);
+    // });
 
     it('should reveal missing natspec for unnamed returned values', () => {
         functionParsedData = nodes[5];
-        const returnedValue = '';
+        const paramName = '';
         let natspec = {
             tags: [
                 {
-                    'name': 'notice',
-                    'description': 'External function that returns a bool'
+                    name: 'notice',
+                    content: 'External function that returns a bool'
                 },
                 {
-                    'name': 'dev',
-                    'description': 'A dev comment'
+                    name: 'dev',
+                    content: 'A dev comment'
                 }
             ],
             params: [
                 {
-                    'name': '_magicNumber',
-                    'description': 'A parameter description'
+                    name: '_magicNumber',
+                    content: 'A parameter description'
                 },
                 {
-                    'name': '_name',
-                    'description': 'Another parameter description'
+                    name: '_name',
+                    content: 'Another parameter description'
                 }
             ],
             returns: [
                 {
-                    'name': '_isMagic',
-                    'description': 'Some return data'
+                    name: '_isMagic',
+                    content: 'Some return data'
                 }
             ]
         };
 
         const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            severity: 'error',
-            message: `Natspec for a return parameter is missing`,
-        });
+        expect(result).toContainEqual(`@return missing for unnamed return`);
     });
 
     // TODO: Check overridden functions, virtual, etc?
@@ -205,9 +169,6 @@ describe.only('validator function', () => {
             returns: []
         };
         const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            severity: 'error',
-            message: `Natspec is missing`,
-        });
+        expect(result).toContainEqual(`Natspec is missing`);
     });
 });

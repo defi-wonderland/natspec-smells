@@ -23,21 +23,26 @@ import { getRemappings, getSolidityFiles } from './utils';
     });
 
     for (const [fileName, source] of Object.entries(compiledFiles.data.sources)) {
-        const nodes = (source as any).ast.nodes.slice(-1)[0].nodes as SolcContractNode[];
         if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
 
-        nodes.forEach(node => {
-            const nodeNatspec = parseNodeNatspec(node);
-            const alerts = validate(node, nodeNatspec);
-
-            // print alerts
-            if (alerts.length) {
-                console.warn(`Natspec alerts in ${fileName}:${node.name}`);
-                alerts.forEach(alert => {
-                    console.warn('  ' + alert.message);
-                });
-            }
+        const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
+        fileContracts.forEach((contract: any) => {
+            const nodes = contract.nodes as SolcContractNode[];
+    
+            nodes.forEach(node => {
+                const nodeNatspec = parseNodeNatspec(node);
+                const warnings = validate(node, nodeNatspec);
+    
+                // print warnings
+                if (warnings.length) {
+                    console.warn(`Natspec warnings in ${fileName}:${contract.name}:${node.name}`);
+                    warnings.forEach(warning => {
+                        console.warn('  ' + warning);
+                    });
+                }
+            });
         });
+
     }
 })().catch(console.error);
 
