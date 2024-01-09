@@ -36,18 +36,19 @@ interface IAlert {
 export function validate(contractNode: SolcContractNode, natspec: Natspec): IAlert[] {
     let alerts: IAlert[] = [];
 
-    // if(natspec.tags.length === 0) {
-    //     alerts.push({
-    //         severity: 'error',
-    //         message: `Natspec is missing`,
-    //     });
-    // };
+    if(natspec.tags.length === 0) {
+        alerts.push({
+            severity: 'error',
+            message: `Natspec is missing`,
+        });
+    };
 
     // Make sure all defined function parameters have natspec
     let functionParameters = contractNode.parameters?.parameters.map(p => p.name) ?? [];
     let natspecParameters = natspec.params.map(p => p.name);
 
     for(let param of functionParameters) {
+        // console.log('let param of functionParameters', param);
         if(!natspecParameters.includes(param)) {
             alerts.push({
                 severity: 'error',
@@ -58,6 +59,7 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
 
     // Make sure there is no natspec defined for non-existing parameters
     for(let param of natspecParameters) {
+        // console.log('let param of natspecParameters', param);
         if(!functionParameters.includes(param)) {
             alerts.push({
                 severity: 'error',
@@ -65,6 +67,30 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
             });
         }
     }
+
+    let functionReturns = contractNode.returnParameters?.parameters.map(p => p.name) ?? [];
+    let natspecReturns = natspec.returns.map(p => p.name);
+
+    for(let param of functionReturns) {
+        if(!natspecReturns.includes(param)) {
+            alerts.push({
+                severity: 'error',
+                message: `Natspec for ${param} is missing`,
+            });
+        }
+    }
+
+    // Make sure there is no natspec defined for non-existing returns
+    for(let param of natspecReturns) {
+        // TODO: return parameters with missing names
+        if(param && !functionReturns.includes(param)) {
+            alerts.push({
+                severity: 'error',
+                message: `Found natspec for undefined returned value ${param}`,
+            });
+        }
+    }
+
 
     // for (const param of parsedParams) {
     //     if (!natspecParams.has(param)) {
