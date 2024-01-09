@@ -27,13 +27,13 @@ export function parseNodeNatspec(node: SolcContractNode): Natspec {
                     result.inheritdoc = { content: tagMatch[2] };
                 }
             } else if (tagName === 'param' || tagName === 'return') {
-                const tagMatch = line.match(/^\s*@(\w+) (\w+) (.*)$/);
+                const tagMatch = line.match(/^\s*@(\w+) *(\w+) (.*)$/);
                 if (tagMatch) {
                     currentTag = { name: tagMatch[2], content: tagMatch[3].trim() };
                     result[tagName === 'param' ? 'params' : 'returns'].push(currentTag);
                 }
             } else {
-                const tagMatch = line.match(/^\s*@(\w+) (.*)$/);
+                const tagMatch = line.match(/^\s*@(\w+) *(.*)$/);
                 if (tagMatch) {
                     currentTag = { name: tagName, content: tagMatch[2] };
                     result.tags.push(currentTag);
