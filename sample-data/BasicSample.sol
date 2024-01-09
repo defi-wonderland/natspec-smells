@@ -3,6 +3,14 @@ pragma solidity =0.8.19;
 
 contract BasicSample {
   /**
+  * @notice Some notice of the struct
+  */
+  struct TestStruct {
+    address someAddress;
+    uint256 someNumber;
+  }
+
+  /**
   * @notice Empty string for revert checks
   * @dev result of doing keccak256(bytes(''))
   */

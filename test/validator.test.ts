@@ -2,7 +2,7 @@ import { validate } from '../src/validator';
 import { parseSolidityFile } from '../test/test-utils';
 import { SolcContractNode } from "../src/types/solc-typed-ast.t";
 
-describe.only('validator function', () => {
+describe('validator function', () => {
     let nodes: SolcContractNode[];
     let functionParsedData: SolcContractNode;
 

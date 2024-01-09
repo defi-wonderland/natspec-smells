@@ -13,8 +13,22 @@ describe('parseNodeNatspec', () => {
             nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
         });
 
-        it('should parse constant', async () => {
+        it('should parse struct', async () => {
             const emptyStringNode = nodes[0];
+            const result = parseNodeNatspec(emptyStringNode);
+
+            expect(result).toEqual({
+                tags: [{
+                    name: 'notice',
+                    content: 'Some notice of the struct',
+                }],
+                params: [],
+                returns: [],
+            });
+        });
+
+        it('should parse constant', async () => {
+            const emptyStringNode = nodes[1];
             const result = parseNodeNatspec(emptyStringNode);
 
             expect(result).toEqual({
@@ -31,7 +45,7 @@ describe('parseNodeNatspec', () => {
         });
     
         it('should parse a fully natspeced external function', async () => {
-            const functionNode = nodes[1];
+            const functionNode = nodes[2];
             const result = parseNodeNatspec(functionNode);
 
             console.log(result);
@@ -59,7 +73,7 @@ describe('parseNodeNatspec', () => {
         });
     
         it('should parse a fully natspeced internal function', async () => {
-            const functionNode = nodes[2];
+            const functionNode = nodes[3];
             const result = parseNodeNatspec(functionNode);
 
             expect(result).toEqual({
@@ -76,7 +90,7 @@ describe('parseNodeNatspec', () => {
         });
 
         it('should parse multiline descriptions', async () => {
-            const functionNode = nodes[3];
+            const functionNode = nodes[4];
             const result = parseNodeNatspec(functionNode);
             console.log(result);
 
@@ -91,7 +105,7 @@ describe('parseNodeNatspec', () => {
         });
 
         it('should parse multiple of the same tag', async () => {
-            const functionNode = nodes[4];
+            const functionNode = nodes[5];
             const result = parseNodeNatspec(functionNode);
 
             expect(result).toEqual({
