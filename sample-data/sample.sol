@@ -37,4 +37,16 @@ contract Sample {
    * @notice Another notice
    */
   function multitag() external pure {}
+
+  /**
+   * @notice External function that returns a bool
+   * @dev A dev comment
+   * @param _magicNumber A parameter description
+   * @param _name Another parameter description
+   * @return _isMagic Some return data
+   * @return Test test
+   */
+  function externalSimpleMultipleReturn(uint256 _magicNumber, string memory _name) external pure returns(bool _isMagic, uint256) {
+    return (true, 111);
+  }
 }

@@ -36,12 +36,12 @@ interface IAlert {
 export function validate(contractNode: SolcContractNode, natspec: Natspec): IAlert[] {
     let alerts: IAlert[] = [];
 
-    // if(natspec.tags.length === 0) {
-    //     alerts.push({
-    //         severity: 'error',
-    //         message: `Natspec is missing`,
-    //     });
-    // };
+    if(natspec.tags.length === 0) {
+        alerts.push({
+            severity: 'error',
+            message: `Natspec is missing`,
+        });
+    };
 
     // Make sure all defined function parameters have natspec
     let functionParameters = contractNode.parameters?.parameters.map(p => p.name) ?? [];
@@ -62,6 +62,30 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
             alerts.push({
                 severity: 'error',
                 message: `Found natspec for undefined function parameter ${param}`,
+            });
+        }
+    }
+
+    let functionReturns = contractNode.returnParameters?.parameters.map(p => p.name) ?? [];
+    let natspecReturns = natspec.returns.map(p => p.name);
+
+    for(let param of functionReturns) {
+        if(!natspecReturns.includes(param)) {
+            let message = param === '' ? 'Natspec for a return parameter is missing' : `Natspec for ${param} is missing`;
+            alerts.push({
+                severity: 'error',
+                message: message,
+            });
+        }
+    }
+
+    // Make sure there is no natspec defined for non-existing returns
+    for(let param of natspecReturns) {
+        // TODO: return parameters with missing names
+        if(param && !functionReturns.includes(param)) {
+            alerts.push({
+                severity: 'error',
+                message: `Found natspec for undefined returned value ${param}`,
             });
         }
     }
