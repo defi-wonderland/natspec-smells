@@ -2,7 +2,7 @@ import { parseNodeNatspec } from '../src/parser';
 import { SolcContractNode } from '../src/types/solc-typed-ast.t';
 import { parseSolidityFile } from './test-utils';
 
-describe.only('parseNodeNatspec', () => {
+describe('parseNodeNatspec', () => {
 
     describe('sample.sol', () => {
         let nodes: SolcContractNode[];
@@ -16,6 +16,7 @@ describe.only('parseNodeNatspec', () => {
         it('should parse constant', async () => {
             const emptyStringNode = nodes[0];
             const result = parseNodeNatspec(emptyStringNode);
+
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
@@ -32,6 +33,8 @@ describe.only('parseNodeNatspec', () => {
         it('should parse a fully natspeced external function', async () => {
             const functionNode = nodes[1];
             const result = parseNodeNatspec(functionNode);
+
+            console.log(result);
 
             expect(result).toEqual({
                 tags: [{
@@ -68,6 +71,38 @@ describe.only('parseNodeNatspec', () => {
                     name: '_magicNumber',
                     description: 'A parameter description',
                 }],
+                returns: [],
+            });
+        });
+
+        it('should parse multiline descriptions', async () => {
+            const functionNode = nodes[3];
+            const result = parseNodeNatspec(functionNode);
+            console.log(result);
+
+            expect(result).toEqual({
+                tags: [{
+                    name: 'notice',
+                    description: 'Private test function\n         with multiple\n lines',
+                }],
+                params: [],
+                returns: [],
+            });
+        });
+
+        it('should parse multiple of the same tag', async () => {
+            const functionNode = nodes[4];
+            const result = parseNodeNatspec(functionNode);
+
+            expect(result).toEqual({
+                tags: [{
+                    name: 'notice',
+                    description: 'Private test function',
+                }, {
+                    name: 'notice',
+                    description: 'Another notice',
+                }],
+                params: [],
                 returns: [],
             });
         });
