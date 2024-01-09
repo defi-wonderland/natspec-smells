@@ -73,9 +73,10 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
 
     for(let param of functionReturns) {
         if(!natspecReturns.includes(param)) {
+            let message = param === '' ? 'Natspec for a return parameter is missing' : `Natspec for ${param} is missing`;
             alerts.push({
                 severity: 'error',
-                message: `Natspec for ${param} is missing`,
+                message: message,
             });
         }
     }
@@ -90,7 +91,6 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
             });
         }
     }
-
 
     // for (const param of parsedParams) {
     //     if (!natspecParams.has(param)) {
