@@ -48,7 +48,6 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
     let natspecParameters = natspec.params.map(p => p.name);
 
     for(let param of functionParameters) {
-        // console.log('let param of functionParameters', param);
         if(!natspecParameters.includes(param)) {
             alerts.push({
                 severity: 'error',
@@ -59,7 +58,6 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
 
     // Make sure there is no natspec defined for non-existing parameters
     for(let param of natspecParameters) {
-        // console.log('let param of natspecParameters', param);
         if(!functionParameters.includes(param)) {
             alerts.push({
                 severity: 'error',
