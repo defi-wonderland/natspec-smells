@@ -6,33 +6,6 @@ interface IAlert {
     message: string;
 }
 
-// export interface SolcContractNode {
-//     body?: Block;
-//     constant?: boolean;
-//     documentation: Documentation;
-//     functionSelector?: string;
-//     id: number;
-//     implemented?: boolean;
-//     kind?: string;
-//     modifiers?: any[];
-//     name: string;
-//     nameLocation: string;
-//     nodeType: string;
-//     parameters?: ParameterList;
-//     returnParameters?: ParameterList;
-//     scope: number;
-//     src: string;
-//     stateMutability?: string;
-//     virtual?: boolean;
-//     visibility: string;
-//     mutability?: string;
-//     stateVariable?: boolean;
-//     storageLocation?: string;
-//     typeDescriptions?: TypeDescriptions;
-//     typeName?: TypeName;
-//     value?: Literal;
-// }
-
 export function validate(contractNode: SolcContractNode, natspec: Natspec): IAlert[] {
     let alerts: IAlert[] = [];
 
@@ -81,7 +54,6 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
 
     // Make sure there is no natspec defined for non-existing returns
     for(let param of natspecReturns) {
-        // TODO: return parameters with missing names
         if(param && !functionReturns.includes(param)) {
             alerts.push({
                 severity: 'error',
@@ -89,37 +61,6 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): IAle
             });
         }
     }
-
-    // for (const param of parsedParams) {
-    //     if (!natspecParams.has(param)) {
-    //         alerts.push({
-    //             severity: 'error',
-    //             message: `Natspec for ${param} is missing`,
-    //         });
-    //     }
-    // }
-
-    // // Validate return values
-    // const parsedReturns = new Set(contractNode.returns.map(r => r.name));
-    // const natspecReturns = new Set(natspec.returns.map(r => r.name));
-
-    // for (const ret of natspecReturns) {
-    //     if (!parsedReturns.has(ret)) {
-    //         alerts.push({
-    //             severity: 'error',
-    //             message: `Found natspec for undefined returned value ${ret}`,
-    //         });
-    //     }
-    // }
-
-    // for (const ret of parsedReturns) {
-    //     if (!natspecReturns.has(ret)) {
-    //         alerts.push({
-    //             severity: 'error',
-    //             message: `Natspec for ${ret} is missing`,
-    //         });
-    //     }
-    // }
 
     return alerts;
 };

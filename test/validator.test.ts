@@ -152,58 +152,44 @@ describe.only('validator function', () => {
         });
     });
 
-    // TODO: In these 2 tests, we're checking just the number of elements in `params` or `returns` that have no name
-    // it('should reveal missing natspec for unnamed parameters values', () => {
-    //     const natspec = {
-    //         tags: [],
-    //         params: [],
-    //         returns: []
-    //     };
+    it('should reveal missing natspec for unnamed returned values', () => {
+        functionParsedData = nodes[5];
+        const returnedValue = '';
+        let natspec = {
+            tags: [
+                {
+                    'name': 'notice',
+                    'description': 'External function that returns a bool'
+                },
+                {
+                    'name': 'dev',
+                    'description': 'A dev comment'
+                }
+            ],
+            params: [
+                {
+                    'name': '_magicNumber',
+                    'description': 'A parameter description'
+                },
+                {
+                    'name': '_name',
+                    'description': 'Another parameter description'
+                }
+            ],
+            returns: [
+                {
+                    'name': '_isMagic',
+                    'description': 'Some return data'
+                }
+            ]
+        };
 
-    //     const result = validate(functionParsedData, natspec);
-    //     expect(result).toContainEqual({
-    //         severity: 'error',
-    //         message: `Natspec for a parameter is missing`,
-    //     });
-    // });
-
-    // it('should reveal missing natspec for unnamed returned values', () => {
-    //     const returnedValue = '';
-    //     let natspec = {
-    //         tags: [
-    //             {
-    //                 'name': 'notice',
-    //                 'description': 'External function that returns a bool'
-    //             },
-    //             {
-    //                 'name': 'dev',
-    //                 'description': 'A dev comment'
-    //             }
-    //         ],
-    //         params: [
-    //             {
-    //                 'name': '_magicNumber',
-    //                 'description': 'A parameter description'
-    //             },
-    //             {
-    //                 'name': '_name',
-    //                 'description': 'Another parameter description'
-    //             }
-    //         ],
-    //         returns: [
-    //             {
-    //                 'name': '_isMagic',
-    //                 'description': 'Some return data'
-    //             }
-    //         ]
-    //     };
-
-    //     const result = validate(functionParsedData, natspec);
-    //     expect(result).toContainEqual({
-    //         severity: 'error',
-    //         message: `Natspec for a return parameter is missing`,
-    //     });
-    // });
+        const result = validate(functionParsedData, natspec);
+        expect(result).toContainEqual({
+            severity: 'error',
+            message: `Natspec for a return parameter is missing`,
+        });
+    });
 
     // TODO: Check overridden functions, virtual, etc?
     // it('should reveal missing natspec for an external function');
@@ -211,7 +197,17 @@ describe.only('validator function', () => {
     // it('should reveal missing natspec for a private function');
     // it('should reveal missing natspec for an internal function');
     
-    // it('should reveal missing natspec for a variable');
-    // it('should reveal missing natspec for a constant');
-    // it('should reveal missing natspec for a an immutable variable');
+    it('should reveal missing natspec for a variable', () => {
+        functionParsedData = nodes[0];
+        natspec = {
+            tags: [],
+            params: [],
+            returns: []
+        };
+        const result = validate(functionParsedData, natspec);
+        expect(result).toContainEqual({
+            severity: 'error',
+            message: `Natspec is missing`,
+        });
+    });
 });
