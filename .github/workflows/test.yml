@@ -1,8 +1,11 @@
-name: Node.js CI
+name: Tests
 
 on: push
 
-permissions: write-all
+permissions: read-all
+
+env:
+  SOL_AST_COMPILER_CACHE: ${{ github.workspace }}/.compiler_cache
 
 jobs:
   build:
@@ -20,9 +23,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - run: yarn install
+    - name: Install Solc AST binary
+      run: yarn global add solc-typed-ast
 
-    - run: yarn test
-      env: 
-        SOL_AST_COMPILER_CACHE: /home/runner/work/_temp/.compiler_cache
+    - name: Install dependencies
+      run: yarn install
 
+    - name: Pre-download compilers from historical builds archive
+      run: |
+        sol-ast-compile --download-compilers native wasm
+        find $SOL_AST_COMPILER_CACHE -name 'list.json' -delete
+        find $SOL_AST_COMPILER_CACHE -name '*v0.5.17*' -delete
+
+    - name: Run tests
+      run: yarn test
