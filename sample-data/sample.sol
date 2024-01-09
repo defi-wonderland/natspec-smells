@@ -31,4 +31,10 @@ contract Sample {
    * lines
    */
   function multiline() external pure {}
+
+  /**
+   * @notice Private test function
+   * @notice Another notice
+   */
+  function multitag() external pure {}
 }
