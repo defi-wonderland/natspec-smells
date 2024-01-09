@@ -7,6 +7,9 @@ import { parseNodeNatspec } from './parser';
 import { validate } from './validator';
 import { getRemappings, getSolidityFiles } from './utils';
 
+// TODO: better check all the options here
+const ignoredNodeTypes = ['UsingForDirective'];
+
 (async () => {
     const { base, contracts } = getArguments();
 
@@ -21,21 +24,24 @@ import { getRemappings, getSolidityFiles } from './utils';
         remapping: remappings,
         includePath: [base],
     });
-
+    
     for (const [fileName, source] of Object.entries(compiledFiles.data.sources)) {
         if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
-
+        
         const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
         fileContracts.forEach((contract: any) => {
             const nodes = contract.nodes as SolcContractNode[];
     
-            nodes.forEach(node => {
+            nodes
+            .filter(node => !ignoredNodeTypes.includes(node.nodeType))
+            .forEach(node => {
                 const nodeNatspec = parseNodeNatspec(node);
                 const warnings = validate(node, nodeNatspec);
+                const nodeName = node.name || node.kind;
     
                 // print warnings
                 if (warnings.length) {
-                    console.warn(`Natspec warnings in ${fileName}:${contract.name}:${node.name}`);
+                    console.warn(`Natspec warnings in ${fileName}:${contract.name}:${nodeName}`);
                     warnings.forEach(warning => {
                         console.warn('  ' + warning);
                     });
