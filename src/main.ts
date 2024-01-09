@@ -2,13 +2,8 @@
 import { compileSol } from 'solc-typed-ast';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { SolcContractNode } from './types/solc-typed-ast.t';
-import { parseNodeNatspec } from './parser';
-import { validate } from './validator';
 import { getRemappings, getSolidityFiles } from './utils';
-
-// TODO: better check all the options here
-const ignoredNodeTypes = ['UsingForDirective'];
+import { processSources } from './processor';
 
 (async () => {
     const { base, contracts } = getArguments();
@@ -25,31 +20,14 @@ const ignoredNodeTypes = ['UsingForDirective'];
         includePath: [base],
     });
     
-    for (const [fileName, source] of Object.entries(compiledFiles.data.sources)) {
-        if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
-        
-        const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
-        fileContracts.forEach((contract: any) => {
-            const nodes = contract.nodes as SolcContractNode[];
-    
-            nodes
-            .filter(node => !ignoredNodeTypes.includes(node.nodeType))
-            .forEach(node => {
-                const nodeNatspec = parseNodeNatspec(node);
-                const warnings = validate(node, nodeNatspec);
-                const nodeName = node.name || node.kind;
-    
-                // print warnings
-                if (warnings.length) {
-                    console.warn(`Natspec warnings in ${fileName}:${contract.name}:${nodeName}`);
-                    warnings.forEach(warning => {
-                        console.warn('  ' + warning);
-                    });
-                }
-            });
-        });
+    const warnings = await processSources(compiledFiles.data.sources);
 
-    }
+    warnings.forEach(({ location, messages }) => {
+        console.warn(location);
+        messages.forEach(message => {
+            console.warn('  ' + message);
+        });
+    });
 })().catch(console.error);
 
 function getArguments() {
