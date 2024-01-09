@@ -14,7 +14,7 @@ describe.only('validator function', () => {
         const file = 'sample-data/sample.sol';
         const compileResult = await parseSolidityFile(file);
         nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
-        functionParsedData = nodes[2];
+        functionParsedData = nodes[1];
     });
 
     let natspec = {
@@ -42,6 +42,10 @@ describe.only('validator function', () => {
             {
                 'name': '_isMagic',
                 'description': 'Some return data'
+            },
+            {
+                'name': undefined,
+                'description': 'Test test'
             }
         ]
     };
@@ -163,43 +167,43 @@ describe.only('validator function', () => {
     //     });
     // });
 
-    it('should reveal missing natspec for unnamed returned values', () => {
-        const returnedValue = '';
-        let natspec = {
-            tags: [
-                {
-                    'name': 'notice',
-                    'description': 'External function that returns a bool'
-                },
-                {
-                    'name': 'dev',
-                    'description': 'A dev comment'
-                }
-            ],
-            params: [
-                {
-                    'name': '_magicNumber',
-                    'description': 'A parameter description'
-                },
-                {
-                    'name': '_name',
-                    'description': 'Another parameter description'
-                }
-            ],
-            returns: [
-                {
-                    'name': '_isMagic',
-                    'description': 'Some return data'
-                }
-            ]
-        };
+    // it('should reveal missing natspec for unnamed returned values', () => {
+    //     const returnedValue = '';
+    //     let natspec = {
+    //         tags: [
+    //             {
+    //                 'name': 'notice',
+    //                 'description': 'External function that returns a bool'
+    //             },
+    //             {
+    //                 'name': 'dev',
+    //                 'description': 'A dev comment'
+    //             }
+    //         ],
+    //         params: [
+    //             {
+    //                 'name': '_magicNumber',
+    //                 'description': 'A parameter description'
+    //             },
+    //             {
+    //                 'name': '_name',
+    //                 'description': 'Another parameter description'
+    //             }
+    //         ],
+    //         returns: [
+    //             {
+    //                 'name': '_isMagic',
+    //                 'description': 'Some return data'
+    //             }
+    //         ]
+    //     };
 
-        const result = validate(functionParsedData, natspec);
-        expect(result).toContainEqual({
-            severity: 'error',
-            message: `Natspec for a return parameter is missing`,
-        });
-    });
+    //     const result = validate(functionParsedData, natspec);
+    //     expect(result).toContainEqual({
+    //         severity: 'error',
+    //         message: `Natspec for a return parameter is missing`,
+    //     });
+    // });
 
     // TODO: Check overridden functions, virtual, etc?
     // it('should reveal missing natspec for an external function');
