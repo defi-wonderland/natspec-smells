@@ -27,26 +27,26 @@ function getArguments(): Config {
         .options({
             base: {
                 type: 'string',
-                description: 'Directory of your root',
+                description: 'The target root directory',
                 default: './',
             },
             contracts: {
                 type: 'string',
-                description: 'Directory of your solidity contracts',
+                description: 'The directory containing your Solidity contracts',
                 required: true,
             },
             enforceInheritdoc: {
                 type: 'boolean',
-                description: 'True if natspec is written in interfaces',
+                description: 'When set to true, all interface methods must have natspec',
                 default: true,
             },
             constructorNatspec: {
                 type: 'boolean',
-                description: 'True if constructor natspec should be checked',
+                description: 'True if constructor natspec is mandatory',
                 default: true,
             },
             ignore: {
-                describe: 'Ignore directories',
+                describe: 'List of directories to exclude from processing',
                 default: [],
                 type: 'array',
                 string: true,
