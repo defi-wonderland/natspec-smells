@@ -16,8 +16,9 @@ import { processSources } from './processor';
     warnings.forEach(({ location, messages }) => {
         console.warn(location);
         messages.forEach(message => {
-            console.warn('  ' + message);
+            console.warn(`  ${message}`);
         });
+        console.warn();
     });
 })().catch(console.error);
 

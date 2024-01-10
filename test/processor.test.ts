@@ -8,7 +8,7 @@ describe('processSources', () => {
             const warnings = await processSources([source]);
             expect(warnings).toEqual([
                 {
-                    location: 'sample-data/LibrarySample.sol:StringUtils:nothing',
+                    location: "sample-data/LibrarySample.sol:5\nStringUtils:nothing",
                     messages: ['Natspec is missing']
                 },
             ]);

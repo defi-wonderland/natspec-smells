@@ -1,6 +1,7 @@
 import { FunctionDefinition, SourceUnit } from "solc-typed-ast";
 import { parseNodeNatspec } from "./parser";
 import { validate } from "./validator";
+import fs from 'fs';
 
 interface IWarning {
     location: string;
@@ -13,7 +14,6 @@ export async function processSources(sourceUnits: SourceUnit[]): Promise<IWarnin
     sourceUnits.forEach(sourceUnit => {
         sourceUnit.vContracts.forEach(contract => {
             [
-                contract.vConstructor,
                 ...contract.vEnums,
                 ...contract.vErrors,
                 ...contract.vEvents,
@@ -32,10 +32,12 @@ export async function processSources(sourceUnits: SourceUnit[]): Promise<IWarnin
 
                 // the constructor function definition does not have a name, but it has kind: 'constructor'
                 const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
+                const sourceCode = fs.readFileSync(sourceUnit.absolutePath, "utf8");
+                const line = lineNumber(nodeName as string, sourceCode);
     
                 if (validationMessages.length) {
                     warnings.push({
-                        location: `${sourceUnit.absolutePath}:${contract.name}:${nodeName}`,
+                        location: `${sourceUnit.absolutePath}:${line}\n${contract.name}:${nodeName}`,
                         messages: validationMessages,
                     });
                 }
@@ -44,4 +46,20 @@ export async function processSources(sourceUnits: SourceUnit[]): Promise<IWarnin
     });
 
     return warnings;
+}
+
+function lineNumberByIndex(index: number, string: string): Number {
+    let line = 0
+    let match;
+    let re = /(^)[\S\s]/gm;
+
+    while (match = re.exec(string)) {
+        if(match.index > index) break;
+        line++;
+    }
+    return line;
+}
+
+function lineNumber(needle: string, haystack: string): Number {
+    return lineNumberByIndex(haystack.indexOf(needle), haystack);
 }
