@@ -42,7 +42,7 @@ export async function getRemappings(rootPath: string): Promise<string[]> {
     }
 }
 
-export async function getProjectCompiledSources(rootPath: string, contractsPath: string): Promise<SourceUnit[]> {
+export async function getProjectCompiledSources(rootPath: string, contractsPath: string, ignoredPaths: string[]): Promise<SourceUnit[]> {
     // Fetch Solidity files from the specified directory
     const solidityFiles: string[] = await getSolidityFiles(contractsPath);
     const remappings: string[] = await getRemappings(rootPath);
@@ -52,11 +52,13 @@ export async function getProjectCompiledSources(rootPath: string, contractsPath:
         remapping: remappings,
         includePath: [rootPath],
     });
-    
+
     return new ASTReader()
         .read(compiledFiles.data, ASTKind.Any, compiledFiles.files)
         // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
-        .filter(sourceUnit => isFileInDirectory(contractsPath, sourceUnit.absolutePath));
+        .filter(sourceUnit => isFileInDirectory(contractsPath, sourceUnit.absolutePath))
+        // avoid processing files from ignored directories
+        .filter(sourceUnit => !ignoredPaths.some(ignoredPath => isFileInDirectory(ignoredPath, sourceUnit.absolutePath)));
 }
 
 export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {

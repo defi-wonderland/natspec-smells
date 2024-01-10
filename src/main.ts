@@ -7,7 +7,7 @@ import { processSources } from './processor';
 (async () => {
     const config: Config = getArguments();
     
-    const sourceUnits = await getProjectCompiledSources(config.base, config.contracts);
+    const sourceUnits = await getProjectCompiledSources(config.base, config.contracts, config.ignore);
     if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
     const warnings = await processSources(sourceUnits, config);
