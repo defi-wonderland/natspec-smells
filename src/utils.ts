@@ -56,12 +56,20 @@ export async function getProjectCompiledSources(rootPath: string, contractsPath:
     return new ASTReader()
         .read(compiledFiles.data, ASTKind.Any, compiledFiles.files)
         // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
-        .filter(sourceUnit => sourceUnit.absolutePath.startsWith(contractsPath));
+        .filter(sourceUnit => isFileInDirectory(contractsPath, sourceUnit.absolutePath));
 }
-
 
 export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {
     const compiledFile = await compileSol(filePath, 'auto');
     return new ASTReader()
         .read(compiledFile.data, ASTKind.Any, compiledFile.files)[0]
 };
+
+export function isFileInDirectory(directory: string, filePath: string): boolean {
+    // Convert both paths to absolute and normalize them
+    const absoluteDirectoryPath = path.resolve(directory) + path.sep;
+    const absoluteFilePath = path.resolve(filePath);
+
+    // Check if the file path starts with the directory path
+    return absoluteFilePath.startsWith(absoluteDirectoryPath);
+}
