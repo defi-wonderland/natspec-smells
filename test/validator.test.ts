@@ -111,7 +111,6 @@ describe('validator function', () => {
 
     it('should reveal missing natspec for unnamed returned values', () => {
         node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
-        const paramName = '';
         let natspec = {
             tags: [
                 {
@@ -159,7 +158,74 @@ describe('validator function', () => {
             returns: []
         };
         const result = validate(node, natspec);
-        console.log('variable result', result);
         expect(result).toContainEqual(`Natspec is missing`);
+    });
+
+    it('should reveal missing natspec for an error', () => {
+        node = contract.vErrors.find(({ name }) => name === 'BasicSample_SomeError')!;
+        const paramName = '_param1';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Some error missing parameter natspec'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for an event', () => {
+        node = contract.vEvents.find(({ name }) => name === 'BasicSample_BasicEvent')!;
+        const paramName = '_param1';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'An event missing parameter natspec'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for an modifier', () => {
+        node = contract.vModifiers.find(({ name }) => name === 'transferFee')!;
+        const paramName = '_receiver';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Modifier notice'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for a struct', () => {
+        node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+        const paramName = '_receiver';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Modifier notice'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
     });
 });

@@ -14,20 +14,18 @@ export function validate(node: NodeToProcess, natspec: Natspec): string[] {
         return alerts;
     };
 
-    if(node instanceof FunctionDefinition) {
-        let functionParameters = node.vParameters.vParameters.map(p => p.name);
-        let natspecParameters = natspec.params.map(p => p.name);
-    
-        // Make sure all defined function parameters have natspec
-        for(let paramName of functionParameters) {
-            if(!natspecParameters.includes(paramName)) {
-                alerts.push(`@param ${paramName} is missing`);
-            }
-        }
-    
+    if(node instanceof EnumDefinition) {
+        // TODO: Process enums
+    } else if(node instanceof ErrorDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+    } else if(node instanceof EventDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+    } else if(node instanceof FunctionDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+
         let functionReturns = node.vReturnParameters.vParameters.map(p => p.name);
         let natspecReturns = natspec.returns.map(p => p.name);
-    
+
         // Make sure all defined returns have natspec
         for(let paramName of functionReturns) {
             if(!natspecReturns.includes(paramName)) {
@@ -42,20 +40,28 @@ export function validate(node: NodeToProcess, natspec: Natspec): string[] {
                 alerts.push(`Missing named return for: @return ${paramName}`);
             }
         }
-    } else if(node instanceof EnumDefinition) {
-        // TODO: Process EnumDefinition
-    } else if(node instanceof ErrorDefinition) {
-        // TODO: Process ErrorDefinition
-    } else if(node instanceof EventDefinition) {
-        // TODO: Process EventDefinition
-    } else if(node instanceof FunctionDefinition) {
-        // TODO: Process FunctionDefinition
     } else if(node instanceof ModifierDefinition) {
-        // TODO: Process ModifierDefinition
+        alerts = [...alerts, ...validateParameters(node, natspec)];
     } else if(node instanceof StructDefinition) {
-        // TODO: Process StructDefinition
+        // TODO: Process structs
     } else if(node instanceof VariableDeclaration) {
-        // TODO: Process VariableDeclaration
+        // Only the presence of a notice is validated
+    }
+
+    return alerts;
+}
+
+function validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspec: Natspec): string[] {
+    // Make sure all defined parameters have natspec
+    let alerts: string[] = [];
+
+    let definedParameters = node.vParameters.vParameters.map(p => p.name);
+    let natspecParameters = natspec.params.map(p => p.name);
+
+    for(let paramName of definedParameters) {
+        if(!natspecParameters.includes(paramName)) {
+            alerts.push(`@param ${paramName} is missing`);
+        }
     }
 
     return alerts;
