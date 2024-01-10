@@ -4,18 +4,22 @@ import { NodeToProcess } from './types/solc-typed-ast.t';
 import { EnumDefinition, ErrorDefinition, EventDefinition, FunctionDefinition, ModifierDefinition, StructDefinition, VariableDeclaration } from "solc-typed-ast";
 
 export function validate(node: NodeToProcess, natspec: Natspec, config: Config): string[] {
+    // There is inheritdoc, no other validation is needed
+    if(natspec.inheritdoc) return [];
+
+    // Inheritdoc is enforced but not present, returning an error
+    if(config.enforceInheritdoc && requiresInheritdoc(node)) return [`@inheritdoc is missing`];
+
+    // Validate natspec for the constructor only if configured
+    if(node instanceof FunctionDefinition && node.kind === 'constructor') {
+        return config.constructorNatspec ? validateParameters(node, natspec) : [];
+    }
+
+    // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
+    if(!natspec.tags.length && !natspec.inheritdoc) return [`Natspec is missing`];
+
+    // Validate the completeness of the documentation
     let alerts: string[] = [];
-
-    // if (config.enforceInheritdoc && canHaveInheritdoc(node) && !natspec.inheritdoc) {
-    //     alerts.push(`@inheritdoc is missing`);
-    //     return alerts;
-    // }
-
-    if(!natspec.tags.length) {
-        alerts.push(`Natspec is missing`);
-        return alerts;
-    };
-
     if(node instanceof EnumDefinition) {
         // TODO: Process enums
     } else if(node instanceof ErrorDefinition) {
@@ -84,21 +88,21 @@ function validateMembers(node: StructDefinition, natspec: Natspec): string[] {
             alerts.push(`@param ${memberName} is missing`);
         }
     }
-    
+
     return alerts;
 }
 
-// function canHaveInheritdoc(node: FunctionDefinition | ModifierDefinition | VariableDeclaration): boolean {
-//     let _canHaveInheritdoc: boolean = false;
-    
-//     // External or public function
-//     _canHaveInheritdoc = node.kind == 'function' && (node.visibility === 'external' || node.visibility === 'public');
+function requiresInheritdoc(node: NodeToProcess): boolean {
+    let _requiresInheritdoc: boolean = false;
 
-//     // Internal virtual function
-//     _canHaveInheritdoc ||= node.kind == 'function' && (node.visibility === 'internal' || !!node.virtual);
+    // External or public function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
 
-//     // Public variable
-//     _canHaveInheritdoc ||= node.kind == 'variable' && node.visibility === 'public';
+    // Internal virtual function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
 
-//     return _canHaveInheritdoc;
-// }
+    // Public variable
+    _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
+
+    return _requiresInheritdoc;
+}
