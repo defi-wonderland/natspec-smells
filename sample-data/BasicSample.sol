@@ -3,6 +3,24 @@ pragma solidity =0.8.19;
 
 contract BasicSample {
   /**
+  * @notice Some notice of the struct
+  */
+  struct TestStruct {
+    address someAddress;
+    uint256 someNumber;
+  }
+
+  /**
+   * @notice Some error missing parameter natspec
+   */
+  error BasicSample_SomeError(uint256 _param1);
+
+  /**
+   * @notice An event missing parameter natspec
+   */
+  event BasicSample_BasicEvent(uint256 _param1);
+
+  /**
   * @notice Empty string for revert checks
   * @dev result of doing keccak256(bytes(''))
   */
@@ -48,5 +66,12 @@ contract BasicSample {
    */
   function externalSimpleMultipleReturn(uint256 _magicNumber, string memory _name) external pure returns(bool _isMagic, uint256) {
     return (true, 111);
+  }
+
+  /**
+   * @notice Modifier notice
+   */
+  modifier transferFee(uint256 _receiver) {
+    _;
   }
 }
