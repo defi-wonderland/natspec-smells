@@ -1,13 +1,13 @@
 import { Natspec, NatspecDefinition } from "./types/natspec.t";
-import { SolcContractNode } from "./types/solc-typed-ast.t";
+import { NodeToProcess } from "./types/solc-typed-ast.t";
 
-export function parseNodeNatspec(node: SolcContractNode): Natspec {
-    if (!node.documentation || !node.documentation.text) {
+export function parseNodeNatspec(node: NodeToProcess): Natspec {
+    if (!node.documentation) {
         return { tags: [], params: [], returns: [] };
     }
-    
-    const docLines = node.documentation.text.split('\n');
 
+    const docText: string = typeof node.documentation === "string" ? node.documentation : node.documentation.text;
+    
     let currentTag: NatspecDefinition | null = null;
     const result: Natspec = {
         tags: [],
@@ -15,7 +15,7 @@ export function parseNodeNatspec(node: SolcContractNode): Natspec {
         returns: []
     };
 
-    docLines.forEach(line => {
+    docText.split('\n').forEach(line => {
         const tagTypeMatch = line.match(/^\s*@(\w+)/);
         if (tagTypeMatch) {
             const tagName = tagTypeMatch[1];

@@ -1,20 +1,33 @@
+import { ContractDefinition } from 'solc-typed-ast';
 import { parseNodeNatspec } from '../src/parser';
-import { SolcContractNode } from '../src/types/solc-typed-ast.t';
-import { parseSolidityFile } from './test-utils';
+import { getFileCompiledSource } from '../src/utils';
 
 describe('parseNodeNatspec', () => {
 
     describe('BasicSample.sol', () => {
-        let nodes: SolcContractNode[];
+        let contract: ContractDefinition;
 
         beforeAll(async () => {
-            const file = 'sample-data/BasicSample.sol';
-            const compileResult = await parseSolidityFile(file);
-            nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
+            const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
+            contract = compileResult.vContracts[0];
+        });
+
+        it('should parse struct', async () => {
+            const structNode = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+            const result = parseNodeNatspec(structNode);
+
+            expect(result).toEqual({
+                tags: [{
+                    name: 'notice',
+                    content: 'Some notice of the struct',
+                }],
+                params: [],
+                returns: [],
+            });
         });
 
         it('should parse constant', async () => {
-            const emptyStringNode = nodes[0];
+            const emptyStringNode = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;
             const result = parseNodeNatspec(emptyStringNode);
 
             expect(result).toEqual({
@@ -31,7 +44,7 @@ describe('parseNodeNatspec', () => {
         });
     
         it('should parse a fully natspeced external function', async () => {
-            const functionNode = nodes[1];
+            const functionNode = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
             const result = parseNodeNatspec(functionNode);
 
             console.log(result);
@@ -58,8 +71,8 @@ describe('parseNodeNatspec', () => {
             });
         });
     
-        it('should parse a fully natspeced internal function', async () => {
-            const functionNode = nodes[2];
+        it('should parse a fully natspeced private function', async () => {
+            const functionNode = contract.vFunctions.find(({ name }) => name === 'privateSimple')!;
             const result = parseNodeNatspec(functionNode);
 
             expect(result).toEqual({
@@ -76,7 +89,7 @@ describe('parseNodeNatspec', () => {
         });
 
         it('should parse multiline descriptions', async () => {
-            const functionNode = nodes[3];
+            const functionNode = contract.vFunctions.find(({ name }) => name === 'multiline')!;
             const result = parseNodeNatspec(functionNode);
             console.log(result);
 
@@ -91,7 +104,7 @@ describe('parseNodeNatspec', () => {
         });
 
         it('should parse multiple of the same tag', async () => {
-            const functionNode = nodes[4];
+            const functionNode = contract.vFunctions.find(({ name }) => name === 'multitag')!;
             const result = parseNodeNatspec(functionNode);
 
             expect(result).toEqual({
@@ -109,16 +122,16 @@ describe('parseNodeNatspec', () => {
     });
 
     describe('InterfacedSample.sol', () => {
-        let nodes: SolcContractNode[];
+        let contract: ContractDefinition;
 
         beforeAll(async () => {
-            const file = 'sample-data/InterfacedSample.sol';
-            const compileResult = await parseSolidityFile(file);
-            nodes = compileResult.data.sources[file].ast.nodes[2].nodes as SolcContractNode[];
+            const compileResult = await getFileCompiledSource('sample-data/InterfacedSample.sol');
+            contract = compileResult.vContracts[1];
         });
 
+
         it('should parse the inheritdoc tag', async () => {
-            const functionNode = nodes[0];
+            const functionNode = contract.vFunctions.find(({ name }) => name === 'greet')!;
             const result = parseNodeNatspec(functionNode);
 
             expect(result).toEqual({
