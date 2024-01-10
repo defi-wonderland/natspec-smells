@@ -1,7 +1,7 @@
 import { Natspec } from '../src/types/natspec.t';
-import { SolcContractNode } from "./types/solc-typed-ast.t";
+import { NodeToProcess } from './types/solc-typed-ast.t';
 
-export function validate(contractNode: SolcContractNode, natspec: Natspec): string[] {
+export function validate(contractNode: NodeToProcess, natspec: Natspec): string[] {
     let alerts: string[] = [];
 
     if (natspec.inheritdoc) {

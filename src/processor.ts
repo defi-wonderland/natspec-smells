@@ -1,5 +1,5 @@
+import { FunctionDefinition, SourceUnit } from "solc-typed-ast";
 import { parseNodeNatspec } from "./parser";
-import { SolcContractNode } from "./types/solc-typed-ast.t";
 import { validate } from "./validator";
 
 interface IWarning {
@@ -7,35 +7,41 @@ interface IWarning {
     messages: string[];
 }
 
-// TODO: better check all the options here
-const ignoredNodeTypes = ['UsingForDirective'];
-
-export async function processSources(sources: any): Promise<IWarning[]> {
+export async function processSources(sourceUnits: SourceUnit[]): Promise<IWarning[]> {
     let warnings: IWarning[] = [];
 
-    for (const [fileName, source] of Object.entries(sources)) {
-        if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
-        
-        const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
-        fileContracts.forEach((contract: any) => {
-            const nodes = contract.nodes as SolcContractNode[];
-    
-            nodes
-            .filter(node => !ignoredNodeTypes.includes(node.nodeType))
+    sourceUnits.forEach(sourceUnit => {
+        sourceUnit.vContracts.forEach(contract => {
+            [
+                contract.vConstructor,
+                ...contract.vEnums,
+                ...contract.vErrors,
+                ...contract.vEvents,
+                ...contract.vFunctions,
+                ...contract.vModifiers,
+                ...contract.vStateVariables,
+                ...contract.vStructs,
+                ...contract.vUsedErrors, // TODO: check if this should be processed
+                ...contract.vUsedEvents, // TODO: check if this should be processed
+            ]
             .forEach(node => {
+                if (!node) return;
+
                 const nodeNatspec = parseNodeNatspec(node);
                 const validationMessages = validate(node, nodeNatspec);
-                const nodeName = node.name || node.kind;
+
+                // the constructor function definition does not have a name, but it has kind: 'constructor'
+                const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
     
                 if (validationMessages.length) {
                     warnings.push({
-                        location: `${fileName}:${contract.name}:${nodeName}`,
+                        location: `${sourceUnit.absolutePath}:${contract.name}:${nodeName}`,
                         messages: validationMessages,
                     });
                 }
             });
         });
-    }
+    });
 
     return warnings;
 }

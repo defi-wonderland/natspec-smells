@@ -1,26 +1,17 @@
 #!/usr/bin/env node
-import { compileSol } from 'solc-typed-ast';
+import { ASTKind, ASTReader, compileSol } from 'solc-typed-ast';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { getRemappings, getSolidityFiles } from './utils';
+import { getProjectCompiledSources, getRemappings, getSolidityFiles } from './utils';
 import { processSources } from './processor';
 
 (async () => {
     const { base, contracts } = getArguments();
-
-    // Fetch Solidity files from the specified directory
-    const solidityFiles: string[] = await getSolidityFiles(contracts);
-    if (!solidityFiles.length) return console.error('No solidity files found in the specified directory');
-
-    const remappings: string[] = await getRemappings(base);
-
-    const compiledFiles = await compileSol(solidityFiles, 'auto', {
-        basePath: base,
-        remapping: remappings,
-        includePath: [base],
-    });
     
-    const warnings = await processSources(compiledFiles.data.sources);
+    const sourceUnits = await getProjectCompiledSources(base, contracts);
+    if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
+
+    const warnings = await processSources(sourceUnits);
 
     warnings.forEach(({ location, messages }) => {
         console.warn(location);
