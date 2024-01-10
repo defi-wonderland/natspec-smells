@@ -1,0 +1,25 @@
+# Dependency directories
+actions/node_modules/
+node_modules/
+actions/package-lock.json
+
+# Ignore tsc output
+lib
+
+# Config files
+.env
+.vscode
+
+# yarn
+yarn-error.log
+
+# Other
+.DS_STORE
+.env.example
+.env
+.prettierignore
+.gitignore
+.github/CODEOWNERS
+.husky/_/husky.sh
+yarn.lock
+LICENSE
