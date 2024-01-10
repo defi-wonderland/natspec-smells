@@ -44,6 +44,11 @@ function getArguments(): Config {
                 description: 'Directory of your solidity contracts',
                 required: true,
             },
+            enforceInheritdoc: {
+                type: 'boolean',
+                description: 'True if natspec is written in interfaces',
+                default: true,
+            },
             constructorNatspec: {
                 type: 'boolean',
                 description: 'True if constructor natspec should be checked',

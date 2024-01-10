@@ -29,7 +29,7 @@ export async function processSources(sources: any, config: Config): Promise<IWar
                 if(node.kind == 'constructor' && !config.constructorNatspec) return;
 
                 const nodeNatspec = parseNodeNatspec(node);
-                const validationMessages = validate(node, nodeNatspec);
+                const validationMessages = validate(node, nodeNatspec, config);
                 const nodeName = node.name || node.kind;
                 const absolutePath = (source as any).ast.absolutePath;
                 const sourceCode = fs.readFileSync(absolutePath, 'utf8');

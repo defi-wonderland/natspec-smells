@@ -1,10 +1,14 @@
 import { Natspec } from '../src/types/natspec.t';
 import { SolcContractNode } from "./types/solc-typed-ast.t";
+import { Config } from './utils';
 
-export function validate(contractNode: SolcContractNode, natspec: Natspec): string[] {
+export function validate(contractNode: SolcContractNode, natspec: Natspec, config: Config): string[] {
     let alerts: string[] = [];
 
-    if (natspec.inheritdoc) {
+    console.log(contractNode);
+
+    if (config.enforceInheritdoc && canHaveInheritdoc(contractNode) && !natspec.inheritdoc) {
+        alerts.push(`@inheritdoc is missing`);
         return alerts;
     }
 
@@ -43,3 +47,18 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec): stri
 
     return alerts;
 };
+
+function canHaveInheritdoc(contractNode: SolcContractNode): boolean {
+    let _canHaveInheritdoc: boolean = false;
+    
+    // External or public function
+    _canHaveInheritdoc = contractNode.kind == 'function' && (contractNode.visibility === 'external' || contractNode.visibility === 'public');
+
+    // Internal virtual function
+    _canHaveInheritdoc ||= contractNode.kind == 'function' && (contractNode.visibility === 'internal' || !!contractNode.virtual);
+
+    // Public variable
+    _canHaveInheritdoc ||= contractNode.kind == 'variable' && contractNode.visibility === 'public';
+
+    return _canHaveInheritdoc;
+}
