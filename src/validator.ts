@@ -1,33 +1,59 @@
 import { Natspec } from '../src/types/natspec.t';
-import { SolcContractNode } from "./types/solc-typed-ast.t";
 import { Config } from './utils';
+import { NodeToProcess } from './types/solc-typed-ast.t';
+import { EnumDefinition, ErrorDefinition, EventDefinition, FunctionDefinition, ModifierDefinition, StructDefinition, VariableDeclaration } from "solc-typed-ast";
 
-export function validate(contractNode: SolcContractNode, natspec: Natspec, config: Config): string[] {
+export function validate(node: NodeToProcess, natspec: Natspec, config: Config): string[] {
     let alerts: string[] = [];
 
-    console.log(contractNode);
-
-    if (config.enforceInheritdoc && canHaveInheritdoc(contractNode) && !natspec.inheritdoc) {
-        alerts.push(`@inheritdoc is missing`);
-        return alerts;
-    }
+    // if (config.enforceInheritdoc && canHaveInheritdoc(node) && !natspec.inheritdoc) {
+    //     alerts.push(`@inheritdoc is missing`);
+    //     return alerts;
+    // }
 
     if(!natspec.tags.length) {
         alerts.push(`Natspec is missing`);
         return alerts;
     };
 
-    let functionParameters = contractNode.parameters?.parameters.map(p => p.name) ?? [];
+    if(node instanceof EnumDefinition) {
+        // TODO: Process enums
+    } else if(node instanceof ErrorDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+    } else if(node instanceof EventDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+    } else if(node instanceof FunctionDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec), ...validateReturnParameters(node, natspec)];
+    } else if(node instanceof ModifierDefinition) {
+        alerts = [...alerts, ...validateParameters(node, natspec)];
+    } else if(node instanceof StructDefinition) {
+        alerts = [...alerts, ...validateMembers(node, natspec)];
+    } else if(node instanceof VariableDeclaration) {
+        // Only the presence of a notice is validated
+    }
+
+    return alerts;
+}
+
+function validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspec: Natspec): string[] {
+    // Make sure all defined parameters have natspec
+    let alerts: string[] = [];
+
+    let definedParameters = node.vParameters.vParameters.map(p => p.name);
     let natspecParameters = natspec.params.map(p => p.name);
-    
-    // Make sure all defined function parameters have natspec
-    for(let paramName of functionParameters) {
+
+    for(let paramName of definedParameters) {
         if(!natspecParameters.includes(paramName)) {
             alerts.push(`@param ${paramName} is missing`);
         }
     }
 
-    let functionReturns = contractNode.returnParameters?.parameters.map(p => p.name) ?? [];
+    return alerts;
+}
+
+function validateReturnParameters(node: FunctionDefinition, natspec: Natspec): string[] {
+    let alerts: string[] = [];
+    let functionReturns = node.vReturnParameters.vParameters.map(p => p.name);
     let natspecReturns = natspec.returns.map(p => p.name);
 
     // Make sure all defined returns have natspec
@@ -46,19 +72,33 @@ export function validate(contractNode: SolcContractNode, natspec: Natspec, confi
     }
 
     return alerts;
-};
-
-function canHaveInheritdoc(contractNode: SolcContractNode): boolean {
-    let _canHaveInheritdoc: boolean = false;
-    
-    // External or public function
-    _canHaveInheritdoc = contractNode.kind == 'function' && (contractNode.visibility === 'external' || contractNode.visibility === 'public');
-
-    // Internal virtual function
-    _canHaveInheritdoc ||= contractNode.kind == 'function' && (contractNode.visibility === 'internal' || !!contractNode.virtual);
-
-    // Public variable
-    _canHaveInheritdoc ||= contractNode.kind == 'variable' && contractNode.visibility === 'public';
-
-    return _canHaveInheritdoc;
 }
+
+function validateMembers(node: StructDefinition, natspec: Natspec): string[] {
+    let alerts: string[] = [];
+    let members = node.vMembers.map(p => p.name);
+    let natspecMembers = natspec.params.map(p => p.name);
+    
+    for(let memberName of members) {
+        if(!natspecMembers.includes(memberName)) {
+            alerts.push(`@param ${memberName} is missing`);
+        }
+    }
+    
+    return alerts;
+}
+
+// function canHaveInheritdoc(node: FunctionDefinition | ModifierDefinition | VariableDeclaration): boolean {
+//     let _canHaveInheritdoc: boolean = false;
+    
+//     // External or public function
+//     _canHaveInheritdoc = node.kind == 'function' && (node.visibility === 'external' || node.visibility === 'public');
+
+//     // Internal virtual function
+//     _canHaveInheritdoc ||= node.kind == 'function' && (node.visibility === 'internal' || !!node.virtual);
+
+//     // Public variable
+//     _canHaveInheritdoc ||= node.kind == 'variable' && node.visibility === 'public';
+
+//     return _canHaveInheritdoc;
+// }

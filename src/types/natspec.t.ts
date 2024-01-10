@@ -9,4 +9,3 @@ export interface Natspec {
     params: NatspecDefinition[];
     returns: NatspecDefinition[];
 }
-

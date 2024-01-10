@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { ASTKind, ASTReader, SourceUnit, compileSol } from 'solc-typed-ast';
 
 export interface Config {
     base: string;
@@ -40,3 +41,27 @@ export async function getRemappings(rootPath: string): Promise<string[]> {
         return [];
     }
 }
+
+export async function getProjectCompiledSources(rootPath: string, contractsPath: string): Promise<SourceUnit[]> {
+    // Fetch Solidity files from the specified directory
+    const solidityFiles: string[] = await getSolidityFiles(contractsPath);
+    const remappings: string[] = await getRemappings(rootPath);
+
+    const compiledFiles = await compileSol(solidityFiles, 'auto', {
+        basePath: rootPath,
+        remapping: remappings,
+        includePath: [rootPath],
+    });
+    
+    return new ASTReader()
+        .read(compiledFiles.data, ASTKind.Any, compiledFiles.files)
+        // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
+        .filter(sourceUnit => sourceUnit.absolutePath.startsWith(contractsPath));
+}
+
+
+export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {
+    const compiledFile = await compileSol(filePath, 'auto');
+    return new ASTReader()
+        .read(compiledFile.data, ASTKind.Any, compiledFile.files)[0]
+};

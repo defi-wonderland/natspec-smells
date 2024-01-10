@@ -1,16 +1,19 @@
 import { validate } from '../src/validator';
-import { parseSolidityFile } from '../test/test-utils';
-import { SolcContractNode } from "../src/types/solc-typed-ast.t";
+import { Config } from '../src/utils';
+import { getFileCompiledSource } from '../src/utils';
+import { NodeToProcess } from "../src/types/solc-typed-ast.t";
+import { ContractDefinition } from 'solc-typed-ast';
 
-describe.only('validator function', () => {
-    let nodes: SolcContractNode[];
-    let functionParsedData: SolcContractNode;
+describe('validator function', () => {
+    let contract: ContractDefinition;
+    let node: NodeToProcess;
+    let config: Config;
 
     beforeAll(async () => {
         const file = 'sample-data/BasicSample.sol';
-        const compileResult = await parseSolidityFile(file);
-        nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
-        functionParsedData = nodes[1];
+        const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
+        contract = compileResult.vContracts[0];
+        node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
     });
 
     let natspec = {
@@ -47,7 +50,7 @@ describe.only('validator function', () => {
     };
 
     it('should validate proper natspec', () => {
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec, config);
         expect(result).toEqual([]);
     });
 
@@ -74,7 +77,7 @@ describe.only('validator function', () => {
             ]
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec, config);
         expect(result).toContainEqual(`@param ${paramName} is missing`);
     });
 
@@ -104,24 +107,12 @@ describe.only('validator function', () => {
             returns: []
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec, config);
         expect(result).toContainEqual(`@return ${paramName} is missing`);
     });
 
-    // it('should reveal extra natspec for returned values', () => {
-    //     const paramName = 'someValue';
-    //     natspec.returns.push({
-    //         name: paramName,
-    //         content: 'Some text'
-    //     });
-
-    //     const result = validate(functionParsedData, natspec);
-    //     expect(result).toContainEqual(`Found natspec for undefined returned value ${paramName}`);
-    // });
-
     it('should reveal missing natspec for unnamed returned values', () => {
-        functionParsedData = nodes[5];
-        const paramName = '';
+        node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
         let natspec = {
             tags: [
                 {
@@ -151,7 +142,7 @@ describe.only('validator function', () => {
             ]
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec, config);
         expect(result).toContainEqual(`@return missing for unnamed return`);
     });
 
@@ -162,13 +153,83 @@ describe.only('validator function', () => {
     // it('should reveal missing natspec for an internal function');
     
     it('should reveal missing natspec for a variable', () => {
-        functionParsedData = nodes[0];
+        node = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;
         natspec = {
             tags: [],
             params: [],
             returns: []
         };
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec, config);
         expect(result).toContainEqual(`Natspec is missing`);
+    });
+
+    it('should reveal missing natspec for an error', () => {
+        node = contract.vErrors.find(({ name }) => name === 'BasicSample_SomeError')!;
+        const paramName = '_param1';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Some error missing parameter natspec'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec, config);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for an event', () => {
+        node = contract.vEvents.find(({ name }) => name === 'BasicSample_BasicEvent')!;
+        const paramName = '_param1';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'An event missing parameter natspec'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec, config);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for an modifier', () => {
+        node = contract.vModifiers.find(({ name }) => name === 'transferFee')!;
+        const paramName = '_receiver';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Modifier notice'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec, config);
+        expect(result).toContainEqual(`@param ${paramName} is missing`);
+    });
+
+    it('should reveal missing natspec for a struct', () => {
+        node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+        const paramName1 = 'someAddress';
+        const paramName2 = 'someNumber';
+        natspec = {
+            tags: [
+                {
+                    name: 'notice',
+                    content: 'Modifier notice'
+                }
+            ],
+            params: [],
+            returns: []
+        };
+        const result = validate(node, natspec, config);
+        expect(result).toContainEqual(`@param ${paramName1} is missing`);
+        expect(result).toContainEqual(`@param ${paramName2} is missing`);
     });
 });

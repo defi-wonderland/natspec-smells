@@ -1,7 +1,7 @@
 import { parseNodeNatspec } from "./parser";
-import { SolcContractNode } from "./types/solc-typed-ast.t";
 import { Config } from './utils';
 import { validate } from "./validator";
+import { SourceUnit, FunctionDefinition } from 'solc-typed-ast';
 import fs from 'fs';
 
 interface IWarning {
@@ -9,41 +9,40 @@ interface IWarning {
     messages: string[];
 }
 
-// TODO: better check all the options here
-const ignoredNodeTypes = ['UsingForDirective'];
-
-export async function processSources(sources: any, config: Config): Promise<IWarning[]> {
+export async function processSources(sourceUnits: SourceUnit[], config: Config): Promise<IWarning[]> {
     let warnings: IWarning[] = [];
 
-    for (const [fileName, source] of Object.entries(sources)) {
-        if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
-        if(config.ignore.some(path => fileName.startsWith(path))) continue;
-
-        const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
-        fileContracts.forEach((contract: any) => {
-            const nodes = contract.nodes as SolcContractNode[];
-    
-            nodes
-            .filter(node => !ignoredNodeTypes.includes(node.nodeType))
+    sourceUnits.forEach(sourceUnit => {
+        sourceUnit.vContracts.forEach(contract => {
+            [
+                ...contract.vEnums,
+                ...contract.vErrors,
+                ...contract.vEvents,
+                ...contract.vFunctions,
+                ...contract.vModifiers,
+                ...contract.vStateVariables,
+                ...contract.vStructs
+            ]
             .forEach(node => {
-                if(node.kind == 'constructor' && !config.constructorNatspec) return;
+                if (!node) return;
 
                 const nodeNatspec = parseNodeNatspec(node);
                 const validationMessages = validate(node, nodeNatspec, config);
-                const nodeName = node.name || node.kind;
-                const absolutePath = (source as any).ast.absolutePath;
-                const sourceCode = fs.readFileSync(absolutePath, 'utf8');
+
+                // the constructor function definition does not have a name, but it has kind: 'constructor'
+                const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
+                const sourceCode = fs.readFileSync(sourceUnit.absolutePath, "utf8");
                 const line = lineNumber(nodeName as string, sourceCode);
     
                 if (validationMessages.length) {
                     warnings.push({
-                        location: `${fileName}:${line}\n${contract.name}:${nodeName}`,
+                        location: `${sourceUnit.absolutePath}:${line}\n${contract.name}:${nodeName}`,
                         messages: validationMessages,
                     });
                 }
             });
         });
-    }
+    });
 
     return warnings;
 }

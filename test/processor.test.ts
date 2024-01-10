@@ -1,13 +1,14 @@
 import { processSources } from '../src/processor';
-import { parseSolidityFile } from './test-utils';
+import { getFileCompiledSource } from '../src/utils';
+import { Config } from '../src/utils';
 
 describe('processSources', () => {
+    let config: Config;
 
     describe('LibrarySample.sol', () => {
-
         it('should return warnings only for the library method empty natspec', async () => {
-            const sources = (await parseSolidityFile('sample-data/LibrarySample.sol')).data.sources;
-            const warnings = await processSources(sources);
+            const source = await getFileCompiledSource('sample-data/LibrarySample.sol');
+            const warnings = await processSources([source], config);
             expect(warnings).toEqual([
                 {
                     location: "sample-data/LibrarySample.sol:5\nStringUtils:nothing",
