@@ -20,9 +20,7 @@ export async function processSources(sourceUnits: SourceUnit[]): Promise<IWarnin
                 ...contract.vFunctions,
                 ...contract.vModifiers,
                 ...contract.vStateVariables,
-                ...contract.vStructs,
-                ...contract.vUsedErrors, // TODO: check if this should be processed
-                ...contract.vUsedEvents, // TODO: check if this should be processed
+                ...contract.vStructs
             ]
             .forEach(node => {
                 if (!node) return;
