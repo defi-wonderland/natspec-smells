@@ -21,8 +21,7 @@ export function validate(node: NodeToProcess, natspec: Natspec): string[] {
     } else if(node instanceof EventDefinition) {
         alerts = [...alerts, ...validateParameters(node, natspec)];
     } else if(node instanceof FunctionDefinition) {
-        alerts = [...alerts, ...validateParameters(node, natspec)];
-        alerts = [...alerts, ...validateReturnParameters(node, natspec)];
+        alerts = [...alerts, ...validateParameters(node, natspec), ...validateReturnParameters(node, natspec)];
     } else if(node instanceof ModifierDefinition) {
         alerts = [...alerts, ...validateParameters(node, natspec)];
     } else if(node instanceof StructDefinition) {
