@@ -4,6 +4,7 @@ import path from 'path';
 export interface Config {
     base: string;
     contracts: string,
+    enforceInheritdoc: boolean,
     constructorNatspec: boolean,
     ignore: string[],
 }
