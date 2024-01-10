@@ -44,6 +44,11 @@ function getArguments(): Config {
                 description: 'Directory of your solidity contracts',
                 required: true,
             },
+            constructorNatspec: {
+                type: 'boolean',
+                description: 'True if constructor natspec should be checked',
+                default: true,
+            },
             ignore: {
                 describe: 'Ignore directories',
                 default: [],

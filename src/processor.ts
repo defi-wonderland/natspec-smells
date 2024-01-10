@@ -26,6 +26,8 @@ export async function processSources(sources: any, config: Config): Promise<IWar
             nodes
             .filter(node => !ignoredNodeTypes.includes(node.nodeType))
             .forEach(node => {
+                if(node.kind == 'constructor' && !config.constructorNatspec) return;
+
                 const nodeNatspec = parseNodeNatspec(node);
                 const validationMessages = validate(node, nodeNatspec);
                 const nodeName = node.name || node.kind;
