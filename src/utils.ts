@@ -1,6 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+export interface Config {
+    base: string;
+    contracts: string
+}
+
 export async function getSolidityFiles(dir: string): Promise<string[]> {
     let files = await fs.readdir(dir, { withFileTypes: true });
     let solidityFiles: string[] = [];

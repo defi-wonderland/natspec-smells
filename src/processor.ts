@@ -1,5 +1,6 @@
 import { parseNodeNatspec } from "./parser";
 import { SolcContractNode } from "./types/solc-typed-ast.t";
+import { Config } from './utils';
 import { validate } from "./validator";
 import fs from 'fs';
 
@@ -11,7 +12,7 @@ interface IWarning {
 // TODO: better check all the options here
 const ignoredNodeTypes = ['UsingForDirective'];
 
-export async function processSources(sources: any): Promise<IWarning[]> {
+export async function processSources(sources: any, config: Config): Promise<IWarning[]> {
     let warnings: IWarning[] = [];
 
     for (const [fileName, source] of Object.entries(sources)) {
@@ -28,7 +29,7 @@ export async function processSources(sources: any): Promise<IWarning[]> {
                 const validationMessages = validate(node, nodeNatspec);
                 const nodeName = node.name || node.kind;
                 const absolutePath = (source as any).ast.absolutePath;
-                const sourceCode = fs.readFileSync(absolutePath, "utf8");
+                const sourceCode = fs.readFileSync(absolutePath, 'utf8');
                 const line = lineNumber(nodeName as string, sourceCode);
     
                 if (validationMessages.length) {
