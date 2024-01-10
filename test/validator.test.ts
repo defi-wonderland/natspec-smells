@@ -1,16 +1,17 @@
 import { validate } from '../src/validator';
-import { parseSolidityFile } from '../test/test-utils';
-import { SolcContractNode } from "../src/types/solc-typed-ast.t";
+import { getFileCompiledSource } from '../src/utils';
+import { NodeToProcess } from "../src/types/solc-typed-ast.t";
+import { ContractDefinition } from 'solc-typed-ast';
 
 describe('validator function', () => {
-    let nodes: SolcContractNode[];
-    let functionParsedData: SolcContractNode;
+    let contract: ContractDefinition;
+    let node: NodeToProcess;
 
     beforeAll(async () => {
         const file = 'sample-data/BasicSample.sol';
-        const compileResult = await parseSolidityFile(file);
-        nodes = compileResult.data.sources[file].ast.nodes[1].nodes as SolcContractNode[];
-        functionParsedData = nodes[1];
+        const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
+        contract = compileResult.vContracts[0];
+        node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
     });
 
     let natspec = {
@@ -47,7 +48,7 @@ describe('validator function', () => {
     };
 
     it('should validate proper natspec', () => {
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec);
         expect(result).toEqual([]);
     });
 
@@ -74,7 +75,7 @@ describe('validator function', () => {
             ]
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec);
         expect(result).toContainEqual(`@param ${paramName} is missing`);
     });
 
@@ -104,23 +105,12 @@ describe('validator function', () => {
             returns: []
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec);
         expect(result).toContainEqual(`@return ${paramName} is missing`);
     });
 
-    // it('should reveal extra natspec for returned values', () => {
-    //     const paramName = 'someValue';
-    //     natspec.returns.push({
-    //         name: paramName,
-    //         content: 'Some text'
-    //     });
-
-    //     const result = validate(functionParsedData, natspec);
-    //     expect(result).toContainEqual(`Found natspec for undefined returned value ${paramName}`);
-    // });
-
     it('should reveal missing natspec for unnamed returned values', () => {
-        functionParsedData = nodes[5];
+        node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
         const paramName = '';
         let natspec = {
             tags: [
@@ -151,7 +141,7 @@ describe('validator function', () => {
             ]
         };
 
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec);
         expect(result).toContainEqual(`@return missing for unnamed return`);
     });
 
@@ -162,13 +152,14 @@ describe('validator function', () => {
     // it('should reveal missing natspec for an internal function');
     
     it('should reveal missing natspec for a variable', () => {
-        functionParsedData = nodes[0];
+        node = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;
         natspec = {
             tags: [],
             params: [],
             returns: []
         };
-        const result = validate(functionParsedData, natspec);
+        const result = validate(node, natspec);
+        console.log('variable result', result);
         expect(result).toContainEqual(`Natspec is missing`);
     });
 });
