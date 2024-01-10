@@ -23,6 +23,7 @@ import { processSources } from './processor';
 
 function getArguments(): Config {
     return yargs(hideBin(process.argv))
+        .strict()
         .options({
             base: {
                 type: 'string',
