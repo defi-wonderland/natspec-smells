@@ -3,7 +3,8 @@ import path from 'path';
 
 export interface Config {
     base: string;
-    contracts: string
+    contracts: string,
+    ignore: string[],
 }
 
 export async function getSolidityFiles(dir: string): Promise<string[]> {

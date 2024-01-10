@@ -17,6 +17,7 @@ export async function processSources(sources: any, config: Config): Promise<IWar
 
     for (const [fileName, source] of Object.entries(sources)) {
         if (fileName.startsWith('node_modules') || fileName.startsWith('lib')) continue;
+        if(config.ignore.some(path => fileName.startsWith(path))) continue;
 
         const fileContracts = (source as any).ast.nodes.filter((node: any) => node.nodeType === 'ContractDefinition');
         fileContracts.forEach((contract: any) => {

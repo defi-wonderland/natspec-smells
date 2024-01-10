@@ -43,7 +43,13 @@ function getArguments(): Config {
                 type: 'string',
                 description: 'Directory of your solidity contracts',
                 required: true,
-            }
+            },
+            ignore: {
+                describe: 'Ignore directories',
+                default: [],
+                type: 'array',
+                string: true,
+            },
         })
         .parseSync();
 }
