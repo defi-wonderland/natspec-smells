@@ -3,7 +3,13 @@ import { getFileCompiledSource } from '../src/utils';
 import { Config } from '../src/utils';
 
 describe('processSources', () => {
-    let config: Config;
+    const config: Config = {
+        base: '.',
+        contracts: './sample-data',
+        enforceInheritdoc: false,
+        constructorNatspec: false,
+        ignore: []
+    };
 
     describe('LibrarySample.sol', () => {
         it('should return warnings only for the library method empty natspec', async () => {

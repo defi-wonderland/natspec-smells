@@ -7,7 +7,14 @@ import { ContractDefinition } from 'solc-typed-ast';
 describe('validator function', () => {
     let contract: ContractDefinition;
     let node: NodeToProcess;
-    let config: Config;
+
+    const config: Config = {
+        base: '.',
+        contracts: './sample-data',
+        enforceInheritdoc: false,
+        constructorNatspec: false,
+        ignore: []
+    };
 
     beforeAll(async () => {
         const file = 'sample-data/BasicSample.sol';
