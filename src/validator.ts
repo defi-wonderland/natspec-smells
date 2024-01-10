@@ -43,7 +43,14 @@ export function validate(node: NodeToProcess, natspec: Natspec): string[] {
     } else if(node instanceof ModifierDefinition) {
         alerts = [...alerts, ...validateParameters(node, natspec)];
     } else if(node instanceof StructDefinition) {
-        // TODO: Process structs
+        let members = node.vMembers.map(p => p.name);
+        let natspecMembers = natspec.params.map(p => p.name);
+    
+        for(let memberName of members) {
+            if(!natspecMembers.includes(memberName)) {
+                alerts.push(`@param ${memberName} is missing`);
+            }
+        }
     } else if(node instanceof VariableDeclaration) {
         // Only the presence of a notice is validated
     }

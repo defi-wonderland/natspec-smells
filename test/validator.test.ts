@@ -214,7 +214,8 @@ describe('validator function', () => {
 
     it('should reveal missing natspec for a struct', () => {
         node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
-        const paramName = '_receiver';
+        const paramName1 = 'someAddress';
+        const paramName2 = 'someNumber';
         natspec = {
             tags: [
                 {
@@ -226,6 +227,7 @@ describe('validator function', () => {
             returns: []
         };
         const result = validate(node, natspec);
-        expect(result).toContainEqual(`@param ${paramName} is missing`);
+        expect(result).toContainEqual(`@param ${paramName1} is missing`);
+        expect(result).toContainEqual(`@param ${paramName2} is missing`);
     });
 });
