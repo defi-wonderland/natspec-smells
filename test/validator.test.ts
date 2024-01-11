@@ -9,7 +9,7 @@ describe('validator function', () => {
     let node: NodeToProcess;
 
     const config: Config = {
-        base: '.',
+        root: '.',
         contracts: './sample-data',
         enforceInheritdoc: false,
         constructorNatspec: false,

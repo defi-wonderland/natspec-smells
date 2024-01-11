@@ -3,7 +3,7 @@ import path from 'path';
 import { ASTKind, ASTReader, SourceUnit, compileSol } from 'solc-typed-ast';
 
 export interface Config {
-    base: string;
+    root: string;
     contracts: string,
     enforceInheritdoc: boolean,
     constructorNatspec: boolean,

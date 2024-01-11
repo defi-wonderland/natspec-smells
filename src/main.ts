@@ -7,7 +7,7 @@ import { processSources } from './processor';
 (async () => {
     const config: Config = getArguments();
     
-    const sourceUnits = await getProjectCompiledSources(config.base, config.contracts, config.ignore);
+    const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, config.ignore);
     if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
     const warnings = await processSources(sourceUnits, config);
@@ -25,7 +25,7 @@ function getArguments(): Config {
     return yargs(hideBin(process.argv))
         .strict()
         .options({
-            base: {
+            root: {
                 type: 'string',
                 description: 'The target root directory',
                 default: './',

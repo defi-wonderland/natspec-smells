@@ -4,7 +4,7 @@ import { Config } from '../src/utils';
 
 describe('processSources', () => {
     const config: Config = {
-        base: '.',
+        root: '.',
         contracts: './sample-data',
         enforceInheritdoc: false,
         constructorNatspec: false,

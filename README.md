@@ -11,17 +11,15 @@ As simple as it gets, run:
 npx @defi-wonderland/natspec-smells --contracts ./solidity
 ```
 
-
 ## Options
 
 ### `--contracts` (Required)
 Relative path to your solidity files.
 
-### `--base`
-Base directory to be used.
+### `--root`
+Root directory to be used.
 
 Default: `./`
-
 
 ## Contributors
 
