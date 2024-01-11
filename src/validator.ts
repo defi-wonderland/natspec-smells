@@ -16,7 +16,7 @@ export function validate(node: NodeToProcess, natspec: Natspec, config: Config):
     }
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
-    if(!natspec.tags.length && !natspec.inheritdoc) return [`Natspec is missing`];
+    if(!natspec.tags.length) return [`Natspec is missing`];
 
     // Validate the completeness of the documentation
     let alerts: string[] = [];
