@@ -7,6 +7,7 @@ Some description will be written here.
 ## Usage
 
 As simple as it gets, run:
+
 ```bash
 npx @defi-wonderland/natspec-smells --contracts ./solidity
 ```
@@ -14,24 +15,29 @@ npx @defi-wonderland/natspec-smells --contracts ./solidity
 ## Options
 
 ### `--contracts` (Required)
+
 Relative path to your solidity files.
 
 ### `--root`
+
 Root directory to be used.
 
 Default: `./`
 
 ### `--enforceInheritdoc`
+
 Whether `@inheritdoc` is used or not.
 
 Default: `true`
 
 ### `--constructorNatspec`
+
 Whether to enforce natspec for constructors.
 
 Default: `false`
 
 ### `--ignore`
+
 Glob pattern of files and directories to exclude from processing.
 
 Default: `[]`
