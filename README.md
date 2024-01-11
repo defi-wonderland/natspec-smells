@@ -11,17 +11,30 @@ As simple as it gets, run:
 npx @defi-wonderland/natspec-smells --contracts ./solidity
 ```
 
-
 ## Options
 
 ### `--contracts` (Required)
 Relative path to your solidity files.
 
-### `--base`
-Base directory to be used.
+### `--root`
+Root directory to be used.
 
 Default: `./`
 
+### `--enforceInheritdoc`
+Whether `@inheritdoc` is used or not.
+
+Default: `true`
+
+### `--constructorNatspec`
+Whether to enforce natspec for constructors.
+
+Default: `false`
+
+### `--ignore`
+Glob pattern of files and directories to exclude from processing.
+
+Default: `[]`
 
 ## Contributors
 

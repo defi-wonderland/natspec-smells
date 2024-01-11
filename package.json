@@ -11,6 +11,7 @@
     "test": "jest ./test"
   },
   "dependencies": {
+    "fast-glob": "3.3.2",
     "solc-typed-ast": "17.0.3",
     "yargs": "17.7.2"
   },
