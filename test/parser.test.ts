@@ -123,7 +123,7 @@ describe('Parser', () => {
     });
 
     it('should parse multiline descriptions', async () => {
-      const node = contract.vFunctions.find(({ name }) => name === '_viewComplex')!;
+      const node = contract.vFunctions.find(({ name }) => name === '_viewMultiline')!;
       const result = parser.parseNodeNatspec(node);
 
       expect(result).toEqual(mockNatspec({
