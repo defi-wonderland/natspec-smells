@@ -12,7 +12,7 @@ import { Processor } from './processor';
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
   const processor = new Processor(config);
-  const warnings = processor.processSources(sourceUnits, config);
+  const warnings = processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
     console.warn(location);

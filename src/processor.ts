@@ -1,4 +1,4 @@
-import fs from 'fs';
+// import fs from 'fs';
 import { parseNodeNatspec } from './parser';
 import { Config } from './utils';
 import { Validator } from './validator';
@@ -19,18 +19,12 @@ export class Processor {
     this.validator = new Validator(config);
   }
 
-  processSources(sourceUnits: SourceUnit[], config: Config): IWarning[] {
-    let warnings: IWarning[] = [];
-
-    sourceUnits.forEach((sourceUnit) => {
-      sourceUnit.vContracts.forEach((contract) => {
-        this.selectEligibleNodes(contract).map((node) => {
-          warnings = [...warnings, ...this.processNode(sourceUnit, node, contract)];
-        });
-      });
-    });
-
-    return warnings;
+  processSources(sourceUnits: SourceUnit[]): IWarning[] {
+    return sourceUnits.flatMap((sourceUnit) =>
+      sourceUnit.vContracts.flatMap((contract) =>
+        this.selectEligibleNodes(contract).flatMap((node) => this.validateNodeNatspec(sourceUnit, node, contract))
+      )
+    );
   }
 
   selectEligibleNodes(contract: ContractDefinition): NodeToProcess[] {
@@ -50,7 +44,7 @@ export class Processor {
     return this.validator.validate(node, nodeNatspec);
   }
 
-  processNode(sourceUnit: SourceUnit, node: NodeToProcess, contract: ContractDefinition): IWarning[] {
+  validateNodeNatspec(sourceUnit: SourceUnit, node: NodeToProcess, contract: ContractDefinition): IWarning[] {
     if (!node) return [];
 
     const validationMessages: string[] = this.validateNatspec(node);
@@ -65,10 +59,11 @@ export class Processor {
   formatLocation(node: NodeToProcess, sourceUnit: SourceUnit, contract: ContractDefinition): string {
     // the constructor function definition does not have a name, but it has kind: 'constructor'
     const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
-    const sourceCode = fs.readFileSync(sourceUnit.absolutePath, 'utf8');
-    const line = this.lineNumber(nodeName as string, sourceCode);
+    // TODO: Fix the line number calculation
+    // const sourceCode = fs.readFileSync(sourceUnit.absolutePath, 'utf8');
+    // const line = this.lineNumber(nodeName as string, sourceCode);
 
-    return `${sourceUnit.absolutePath}:${line}\n${contract.name}:${nodeName}`;
+    return `${sourceUnit.absolutePath}\n${contract.name}:${nodeName}`;
   }
 
   lineNumberByIndex(index: number, string: string): Number {
