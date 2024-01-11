@@ -17,8 +17,8 @@ export function mockNatspec(mockNatspec: MockNatspec): Natspec {
   const natspec: Natspec = {
     tags: mockNatspec.tags || [],
     params: mockNatspec.params || [],
-    returns: mockNatspec.returns || []
-  }
+    returns: mockNatspec.returns || [],
+  };
 
   if (mockNatspec.inheritdoc) natspec.inheritdoc = mockNatspec.inheritdoc;
 
