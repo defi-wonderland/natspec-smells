@@ -3,7 +3,7 @@
 
 # Natspec Smells
 
-Some description will be written here.
+Just like code, documentation can smell, too. `natspec-smells` aims to help automatically identify missing or incomplete natspec.
 
 ## Usage
 
@@ -12,6 +12,20 @@ As simple as it gets, run:
 npx @defi-wonderland/natspec-smells --contracts ./solidity
 ```
 
+Example output:
+```text
+sample-data/BasicSample.sol:16
+BasicSample:constructor
+  Natspec is missing
+
+sample-data/BasicSample.sol:21
+BasicSample:BasicSample_BasicEvent
+  @param _param1 is missing
+
+sample-data/BasicSample.sol:8
+BasicSample:TestStruct
+  @return someAddress is missing
+```
 
 ## Options
 
@@ -22,7 +36,6 @@ Relative path to your solidity files.
 Base directory to be used.
 
 Default: `./`
-
 
 ## Contributors
 
