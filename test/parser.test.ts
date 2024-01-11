@@ -47,8 +47,6 @@ describe('parseNodeNatspec', () => {
             const functionNode = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
             const result = parseNodeNatspec(functionNode);
 
-            console.log(result);
-
             expect(result).toEqual({
                 tags: [{
                     name: 'notice',
@@ -91,7 +89,6 @@ describe('parseNodeNatspec', () => {
         it('should parse multiline descriptions', async () => {
             const functionNode = contract.vFunctions.find(({ name }) => name === 'multiline')!;
             const result = parseNodeNatspec(functionNode);
-            console.log(result);
 
             expect(result).toEqual({
                 tags: [{

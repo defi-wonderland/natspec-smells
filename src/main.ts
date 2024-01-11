@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-import { ASTKind, ASTReader, compileSol } from 'solc-typed-ast';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { getProjectCompiledSources, getRemappings, getSolidityFiles } from './utils';
+import { globSync } from 'fast-glob';
+import { getProjectCompiledSources, Config } from './utils';
 import { processSources } from './processor';
 
 (async () => {
-    const { base, contracts } = getArguments();
-    
-    const sourceUnits = await getProjectCompiledSources(base, contracts);
+    const config: Config = getArguments();
+    const ignoredPaths = config.ignore.map(path => globSync(path, { cwd: config.root })).flat();
+    const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
     if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
-    const warnings = await processSources(sourceUnits);
+    const warnings = await processSources(sourceUnits, config);
 
     warnings.forEach(({ location, messages }) => {
         console.warn(location);
@@ -22,18 +22,35 @@ import { processSources } from './processor';
     });
 })().catch(console.error);
 
-function getArguments() {
+function getArguments(): Config {
     return yargs(hideBin(process.argv))
+        .strict()
         .options({
-            'base': {
+            root: {
                 type: 'string',
-                description: 'Directory of your root',
+                description: 'The target root directory',
                 default: './',
             },
-            'contracts': {
+            contracts: {
                 type: 'string',
-                description: 'Directory of your solidity contracts',
+                description: 'The directory containing your Solidity contracts',
                 required: true,
+            },
+            enforceInheritdoc: {
+                type: 'boolean',
+                description: 'If set to true, all external and public functions must have @inheritdoc',
+                default: true,
+            },
+            constructorNatspec: {
+                type: 'boolean',
+                description: 'True if constructor natspec is mandatory',
+                default: false,
+            },
+            ignore: {
+                describe: 'Glob pattern of files and directories to exclude from processing',
+                default: [],
+                type: 'array',
+                string: true,
             },
         })
         .parseSync();

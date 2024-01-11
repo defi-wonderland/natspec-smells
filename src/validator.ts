@@ -1,19 +1,25 @@
 import { Natspec } from '../src/types/natspec.t';
+import { Config } from './utils';
 import { NodeToProcess } from './types/solc-typed-ast.t';
 import { EnumDefinition, ErrorDefinition, EventDefinition, FunctionDefinition, ModifierDefinition, StructDefinition, VariableDeclaration } from "solc-typed-ast";
 
-export function validate(node: NodeToProcess, natspec: Natspec): string[] {
-    let alerts: string[] = [];
+export function validate(node: NodeToProcess, natspec: Natspec, config: Config): string[] {
+    // There is inheritdoc, no other validation is needed
+    if(natspec.inheritdoc) return [];
 
-    if (natspec.inheritdoc) {
-        return alerts;
+    // Inheritdoc is enforced but not present, returning an error
+    if(config.enforceInheritdoc && requiresInheritdoc(node)) return [`@inheritdoc is missing`];
+
+    // Validate natspec for the constructor only if configured
+    if(node instanceof FunctionDefinition && node.kind === 'constructor') {
+        return config.constructorNatspec ? validateParameters(node, natspec) : [];
     }
 
-    if(!natspec.tags.length) {
-        alerts.push(`Natspec is missing`);
-        return alerts;
-    };
+    // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
+    if(!natspec.tags.length) return [`Natspec is missing`];
 
+    // Validate the completeness of the documentation
+    let alerts: string[] = [];
     if(node instanceof EnumDefinition) {
         // TODO: Process enums
     } else if(node instanceof ErrorDefinition) {
@@ -82,6 +88,21 @@ function validateMembers(node: StructDefinition, natspec: Natspec): string[] {
             alerts.push(`@param ${memberName} is missing`);
         }
     }
-    
+
     return alerts;
+}
+
+function requiresInheritdoc(node: NodeToProcess): boolean {
+    let _requiresInheritdoc: boolean = false;
+
+    // External or public function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
+
+    // Internal virtual function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
+
+    // Public variable
+    _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
+
+    return _requiresInheritdoc;
 }
