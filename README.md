@@ -1,4 +1,5 @@
-[![image](https://img.shields.io/npm/v/@defi-wonderland/natspec-smells.svg?style=flat-square)](https://www.npmjs.org/package/@defi-wonderland/natspec-smells)
+[![Version](https://img.shields.io/npm/v/@defi-wonderland/natspec-smells?label=Version)](https://www.npmjs.com/package/@defi-wonderland/natspec-smells)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/defi-wonderland/natspec-smells/blob/main/LICENSE)
 
 # Natspec Smells
 
