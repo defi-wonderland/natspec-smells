@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import {globSync} from 'glob';
+import { globSync } from 'fast-glob';
 import { getProjectCompiledSources, Config } from './utils';
 import { processSources } from './processor';
 
