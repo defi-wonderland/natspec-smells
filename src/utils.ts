@@ -58,7 +58,7 @@ export async function getProjectCompiledSources(rootPath: string, contractsPath:
         // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
         .filter(sourceUnit => isFileInDirectory(contractsPath, sourceUnit.absolutePath))
         // avoid processing files from ignored directories
-        .filter(sourceUnit => !ignoredPaths.some(ignoredPath => isFileInDirectory(ignoredPath, sourceUnit.absolutePath)));
+        .filter(sourceUnit => !ignoredPaths.some(ignoredPath => ignoredPath === sourceUnit.absolutePath));
 }
 
 export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {
