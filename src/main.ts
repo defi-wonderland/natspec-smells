@@ -47,7 +47,7 @@ function getArguments(): Config {
                 default: false,
             },
             ignore: {
-                describe: 'List of directories to exclude from processing',
+                describe: 'Glob pattern of files and directories to exclude from processing',
                 default: [],
                 type: 'array',
                 string: true,

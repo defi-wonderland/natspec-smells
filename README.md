@@ -32,7 +32,7 @@ Whether to enforce natspec for constructors.
 Default: `false`
 
 ### `--ignore`
-The list of directories to exclude from the analysis.
+Glob pattern of files and directories to exclude from processing.
 
 Default: `[]`
 
