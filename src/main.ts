@@ -43,7 +43,7 @@ function getArguments(): Config {
             constructorNatspec: {
                 type: 'boolean',
                 description: 'True if constructor natspec is mandatory',
-                default: true,
+                default: false,
             },
             ignore: {
                 describe: 'List of directories to exclude from processing',
