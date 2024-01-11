@@ -1,6 +1,6 @@
 import { Validator } from '../src/validator';
-import { Config } from '../src/utils';
-import { getFileCompiledSource } from '../src/utils';
+import { Config } from '../src/types/config.t';
+import { getFileCompiledSource } from './utils';
 import { NodeToProcess } from '../src/types/solc-typed-ast.t';
 import { ContractDefinition } from 'solc-typed-ast';
 

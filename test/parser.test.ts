@@ -1,6 +1,6 @@
 import { ContractDefinition } from 'solc-typed-ast';
 import { Parser } from '../src/parser';
-import { getFileCompiledSource } from '../src/utils';
+import { getFileCompiledSource } from './utils';
 
 describe('Parser', () => {
   const parser: Parser = new Parser();

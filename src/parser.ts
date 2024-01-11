@@ -6,7 +6,7 @@ export class Parser {
     if (!node.documentation) {
       return { tags: [], params: [], returns: [] };
     }
-    
+
     let currentTag: NatspecDefinition | null = null;
     const result: Natspec = {
       tags: [],
@@ -20,7 +20,7 @@ export class Parser {
       const tagTypeMatch = line.match(/^\s*@(\w+)/);
       if (tagTypeMatch) {
         const tagName = tagTypeMatch[1];
-  
+
         if (tagName === 'inheritdoc') {
           const tagMatch = line.match(/^\s*@(\w+) (.*)$/);
           if (tagMatch) {
@@ -44,7 +44,7 @@ export class Parser {
         currentTag.content += '\n' + line;
       }
     });
-  
+
     return result;
   }
 }

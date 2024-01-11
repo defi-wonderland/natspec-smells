@@ -1,6 +1,6 @@
 import { Processor } from '../src/processor';
-import { getFileCompiledSource } from '../src/utils';
-import { Config } from '../src/utils';
+import { getFileCompiledSource } from './utils';
+import { Config } from '../src/types/config.t';
 
 describe('processSources', () => {
   const config: Config = {

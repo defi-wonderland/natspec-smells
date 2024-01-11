@@ -1,5 +1,5 @@
 import { Natspec } from '../src/types/natspec.t';
-import { Config } from './utils';
+import { Config } from './types/config.t';
 import { NodeToProcess } from './types/solc-typed-ast.t';
 import {
   EnumDefinition,

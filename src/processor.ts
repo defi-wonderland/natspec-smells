@@ -1,6 +1,6 @@
 // import fs from 'fs';
 import { Parser } from './parser';
-import { Config } from './utils';
+import { Config } from './types/config.t';
 import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 import { NodeToProcess } from './types/solc-typed-ast.t';
