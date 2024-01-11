@@ -21,6 +21,21 @@ Root directory to be used.
 
 Default: `./`
 
+### `--enforceInheritdoc`
+Whether `@inheritdoc` is used or not.
+
+Default: `true`
+
+### `--constructorNatspec`
+Whether to enforce natspec for constructors.
+
+Default: `false`
+
+### `--ignore`
+The list of directories to exclude from the analysis.
+
+Default: `[]`
+
 ## Contributors
 
 Natspec Smells was built with ❤️ by [Wonderland](https://defi.sucks).

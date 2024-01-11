@@ -37,7 +37,7 @@ function getArguments(): Config {
             },
             enforceInheritdoc: {
                 type: 'boolean',
-                description: 'When set to true, all interface methods must have natspec',
+                description: 'If set to true, all external and public functions must have @inheritdoc',
                 default: true,
             },
             constructorNatspec: {
