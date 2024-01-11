@@ -1,6 +1,6 @@
 import { parseNodeNatspec } from './parser';
 import { Config } from './utils';
-import { validate } from './validator';
+import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition } from 'solc-typed-ast';
 import fs from 'fs';
 
@@ -11,6 +11,7 @@ interface IWarning {
 
 export async function processSources(sourceUnits: SourceUnit[], config: Config): Promise<IWarning[]> {
   let warnings: IWarning[] = [];
+  const validator: Validator = new Validator(config);
 
   sourceUnits.forEach((sourceUnit) => {
     sourceUnit.vContracts.forEach((contract) => {
@@ -26,7 +27,7 @@ export async function processSources(sourceUnits: SourceUnit[], config: Config):
         if (!node) return;
 
         const nodeNatspec = parseNodeNatspec(node);
-        const validationMessages = validate(node, nodeNatspec, config);
+        const validationMessages = validator.validate(node, nodeNatspec);
 
         // the constructor function definition does not have a name, but it has kind: 'constructor'
         const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
