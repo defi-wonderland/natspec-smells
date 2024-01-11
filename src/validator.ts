@@ -59,7 +59,7 @@ export class Validator {
   }
 
   // All defined parameters should have natspec
-  validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {    
+  validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     return definedParameters.filter((p) => !natspecParams.includes(p)).map((p) => `@param ${p} is missing`);
   }
