@@ -1,5 +1,5 @@
 // import fs from 'fs';
-import { parseNodeNatspec } from './parser';
+import { Parser } from './parser';
 import { Config } from './utils';
 import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
@@ -13,10 +13,12 @@ interface IWarning {
 export class Processor {
   config: Config;
   validator: Validator;
+  parser: Parser;
 
   constructor(config: Config) {
     this.config = config;
     this.validator = new Validator(config);
+    this.parser = new Parser();
   }
 
   processSources(sourceUnits: SourceUnit[]): IWarning[] {
@@ -40,7 +42,7 @@ export class Processor {
   }
 
   validateNatspec(node: NodeToProcess): string[] {
-    const nodeNatspec = parseNodeNatspec(node);
+    const nodeNatspec = this.parser.parseNodeNatspec(node);
     return this.validator.validate(node, nodeNatspec);
   }
 
