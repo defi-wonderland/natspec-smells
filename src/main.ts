@@ -2,11 +2,14 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { globSync } from 'fast-glob';
-import { getProjectCompiledSources, Config } from './utils';
+import { getProjectCompiledSources } from './utils';
 import { processSources } from './processor';
+import { getConfig } from './config';
 
 (async () => {
-  const config: Config = getArguments();
+  const { config: configPath } = getArguments();
+  const config = await getConfig(configPath);
+
   const ignoredPaths = config.ignore.map((path) => globSync(path, { cwd: config.root })).flat();
   const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
@@ -22,35 +25,14 @@ import { processSources } from './processor';
   });
 })().catch(console.error);
 
-function getArguments(): Config {
+function getArguments() {
   return yargs(hideBin(process.argv))
     .strict()
     .options({
-      root: {
+      config: {
         type: 'string',
-        description: 'The target root directory',
-        default: './',
-      },
-      contracts: {
-        type: 'string',
-        description: 'The directory containing your Solidity contracts',
-        required: true,
-      },
-      enforceInheritdoc: {
-        type: 'boolean',
-        description: 'If set to true, all external and public functions must have @inheritdoc',
-        default: true,
-      },
-      constructorNatspec: {
-        type: 'boolean',
-        description: 'True if constructor natspec is mandatory',
-        default: false,
-      },
-      ignore: {
-        describe: 'Glob pattern of files and directories to exclude from processing',
-        default: [],
-        type: 'array',
-        string: true,
+        description: 'Path to your config file',
+        default: './natspec-smells.config.js',
       },
     })
     .parseSync();
