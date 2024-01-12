@@ -17,11 +17,11 @@ npx @defi-wonderland/natspec-smells --contracts ./solidity
 
 | Option                 | Description                                                       | Required | Default |
 | ---------------------- | ----------------------------------------------------------------- | -------- | ------- |
-| `--contracts`          | Relative path to your solidity files.                             | Yes      |         |
-| `--root`               | Root directory to be used.                                        | No       | `./`    |
-| `--enforceInheritdoc`  | Whether `@inheritdoc` is used or not.                             | No       | `true`  |
-| `--constructorNatspec` | Whether to enforce natspec for constructors.                      | No       | `false` |
-| `--ignore`             | Glob pattern of files and directories to exclude from processing. | No       | `[]`    |
+| `contracts`          | Relative path to your solidity files.                             | Yes      |         |
+| `root`               | Root directory to be used.                                        | No       | `./`    |
+| `enforceInheritdoc`  | Whether `@inheritdoc` is used or not.                             | No       | `true`  |
+| `constructorNatspec` | Whether to enforce natspec for constructors.                      | No       | `false` |
+| `ignore`             | List of glob pattern of files and directories to exclude from processing. | No       | `[]`    |
 
 ## Contributors
 
