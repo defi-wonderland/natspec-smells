@@ -341,18 +341,14 @@ describe('Parser', () => {
       const node = contract.vStateVariables.find(({ name }) => name === 'SOME_CONSTANT')!;
       const result = parser.parseNodeNatspec(node);
 
-      expect(result).toEqual(
-        mockNatspec({})
-      );
+      expect(result).toEqual(mockNatspec({}));
     });
 
     it('should not parse regular comments as natspec', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionWithParams')!;
       const result = parser.parseNodeNatspec(node);
 
-      expect(result).toEqual(
-        mockNatspec({})
-      );
+      expect(result).toEqual(mockNatspec({}));
     });
 
     it('should parse natspec with multiple spaces', async () => {
@@ -365,20 +361,20 @@ describe('Parser', () => {
             {
               name: 'notice',
               content: 'Some private stuff',
-            }
+            },
           ],
           params: [
             {
               name: '_paramName',
               content: 'The parameter name',
-            }
+            },
           ],
           returns: [
             {
               name: '_returned',
               content: 'The returned value',
-            }
-          ]
+            },
+          ],
         })
       );
     });
@@ -387,9 +383,7 @@ describe('Parser', () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewInternal')!;
       const result = parser.parseNodeNatspec(node);
 
-      expect(result).toEqual(
-        mockNatspec({})
-      );
+      expect(result).toEqual(mockNatspec({}));
     });
 
     it('should parse block natspec with invalid formatting', async () => {
@@ -421,8 +415,8 @@ describe('Parser', () => {
             },
             {
               name: 'dev',
-              content: 'What have I done'
-            }
+              content: 'What have I done',
+            },
           ],
         })
       );

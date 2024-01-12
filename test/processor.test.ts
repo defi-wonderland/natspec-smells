@@ -22,24 +22,24 @@ describe('Processor', () => {
     const nodeName = faker.lorem.word();
 
     const sourceUnit = mockSourceUnit({
-      absolutePath: absolutePath
+      absolutePath: absolutePath,
     });
 
     const contract = mockContractDefinition({
-      name: contractName
+      name: contractName,
     });
 
     it('should format the location of the node', () => {
       const node = mockNodeToProcess({
-        name: nodeName
+        name: nodeName,
       });
-  
+
       expect(processor.formatLocation(node, sourceUnit, contract)).toEqual(`${absolutePath}\n${contractName}:${nodeName}`);
     });
 
     it('should format the location of a constructor', () => {
       const node = mockFunctionDefinition({
-        kind: FunctionKind.Constructor
+        kind: FunctionKind.Constructor,
       });
 
       expect(processor.formatLocation(node, sourceUnit, contract)).toEqual(`${absolutePath}\n${contractName}:constructor`);
@@ -112,17 +112,17 @@ describe('Processor', () => {
 
     it('should not select using directives', () => {
       const eligibleNodes = processor.selectEligibleNodes(contract);
-      expect(eligibleNodes.some((node) => node instanceof UsingForDirective )).toBeFalsy();
+      expect(eligibleNodes.some((node) => node instanceof UsingForDirective)).toBeFalsy();
     });
 
     it('should not select user defined value types', () => {
       const eligibleNodes = processor.selectEligibleNodes(contract);
-      expect(eligibleNodes.some((node) => node instanceof UserDefinedType )).toBeFalsy();
+      expect(eligibleNodes.some((node) => node instanceof UserDefinedType)).toBeFalsy();
     });
 
     it('should select the constructor only once', () => {
       const eligibleNodes = processor.selectEligibleNodes(contract);
-      expect(eligibleNodes.filter((node) => node instanceof FunctionDefinition && node.isConstructor ).length).toEqual(1);
+      expect(eligibleNodes.filter((node) => node instanceof FunctionDefinition && node.isConstructor).length).toEqual(1);
     });
   });
 });
