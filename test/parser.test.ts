@@ -1,10 +1,9 @@
 import { ContractDefinition } from 'solc-typed-ast';
-import { Parser } from '../src/parser';
 import { getFileCompiledSource } from './utils';
+import { parseNodeNatspec } from '../src/utils';
 import { mockNatspec } from './mocks';
 
 describe('Parser', () => {
-  const parser: Parser = new Parser();
   let contract: ContractDefinition;
 
   describe('Contract', () => {
@@ -15,7 +14,7 @@ describe('Parser', () => {
 
     it('should parse the inheritdoc tag', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionNoParams')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -32,7 +31,7 @@ describe('Parser', () => {
 
     it('should parse constant', async () => {
       const node = contract.vStateVariables.find(({ name }) => name === 'SOME_CONSTANT')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -45,7 +44,7 @@ describe('Parser', () => {
 
     it('should parse variable', async () => {
       const node = contract.vStateVariables.find(({ name }) => name === 'someVariable')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -58,7 +57,7 @@ describe('Parser', () => {
 
     it('should parse modifier', async () => {
       const node = contract.vModifiers.find(({ name }) => name === 'someModifier')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -80,7 +79,7 @@ describe('Parser', () => {
 
     it('should parse external function', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionNoParams')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -99,7 +98,7 @@ describe('Parser', () => {
 
     it('should parse private function', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewPrivate')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -131,7 +130,7 @@ describe('Parser', () => {
 
     it('should parse multiline descriptions', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewMultiline')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -147,7 +146,7 @@ describe('Parser', () => {
 
     it('should parse multiple of the same tag', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewDuplicateTag')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -174,7 +173,7 @@ describe('Parser', () => {
 
     it('should parse error', async () => {
       const node = contract.vErrors.find(({ name }) => name === 'SimpleError')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -190,7 +189,7 @@ describe('Parser', () => {
 
     it('should parse event', async () => {
       const node = contract.vEvents.find(({ name }) => name === 'SimpleEvent')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -206,7 +205,7 @@ describe('Parser', () => {
 
     it('should parse struct', async () => {
       const node = contract.vStructs.find(({ name }) => name === 'SimplestStruct')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -235,7 +234,7 @@ describe('Parser', () => {
     // TODO: Parse natspec for enums
     // it('should parse enum', async () => {
     //   const node = contract.vEnums.find(({ name }) => name === 'SimpleEnum')!;
-    //   const result = parser.parseNodeNatspec(node);
+    //   const result = parseNodeNatspec(node);
 
     //   expect(result).toEqual(mockNatspec({
     //     tags: [],
@@ -244,7 +243,7 @@ describe('Parser', () => {
 
     it('should parse external function without parameters', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionNoParams')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -270,7 +269,7 @@ describe('Parser', () => {
 
     it('should parse external function with parameters', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionWithParams')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -309,7 +308,7 @@ describe('Parser', () => {
 
     it('should parse struct', async () => {
       const node = contract.vStructs.find(({ name }) => name === 'SimpleStruct')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -320,7 +319,7 @@ describe('Parser', () => {
 
     it('should parse inheritdoc + natspec', async () => {
       const node = contract.vStateVariables.find(({ name }) => name === 'someVariable')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -339,21 +338,21 @@ describe('Parser', () => {
 
     it('should not parse the inheritdoc tag with just 2 slashes', async () => {
       const node = contract.vStateVariables.find(({ name }) => name === 'SOME_CONSTANT')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(mockNatspec({}));
     });
 
     it('should not parse regular comments as natspec', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionWithParams')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(mockNatspec({}));
     });
 
     it('should parse natspec with multiple spaces', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewPrivate')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -381,14 +380,14 @@ describe('Parser', () => {
 
     it('should not parse natspec with invalid number of slashes', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewInternal')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(mockNatspec({}));
     });
 
     it('should parse block natspec with invalid formatting', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewBlockLinterFail')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
@@ -404,7 +403,7 @@ describe('Parser', () => {
 
     it('should parse block natspec with invalid formatting', async () => {
       const node = contract.vFunctions.find(({ name }) => name === '_viewLinterFail')!;
-      const result = parser.parseNodeNatspec(node);
+      const result = parseNodeNatspec(node);
 
       expect(result).toEqual(
         mockNatspec({
