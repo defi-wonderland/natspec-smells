@@ -1,4 +1,4 @@
-// import fs from 'fs';
+import fs from 'fs';
 import { Parser } from './parser';
 import { Config } from './types/config.t';
 import { Validator } from './validator';
@@ -61,26 +61,14 @@ export class Processor {
   formatLocation(node: NodeToProcess, sourceUnit: SourceUnit, contract: ContractDefinition): string {
     // the constructor function definition does not have a name, but it has kind: 'constructor'
     const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
-    // TODO: Fix the line number calculation
-    // const sourceCode = fs.readFileSync(sourceUnit.absolutePath, 'utf8');
-    // const line = this.lineNumber(nodeName as string, sourceCode);
-
-    return `${sourceUnit.absolutePath}\n${contract.name}:${nodeName}`;
+    const line = this.getLineNumberFromSrc(sourceUnit.absolutePath, node.src);
+    return `${sourceUnit.absolutePath}:${line}\n${contract.name}:${nodeName}`;
   }
 
-  // private lineNumberByIndex(index: number, string: string): Number {
-  //   let line = 0;
-  //   let match;
-  //   let re = /(^)[\S\s]/gm;
-
-  //   while ((match = re.exec(string))) {
-  //     if (match.index > index) break;
-  //     line++;
-  //   }
-  //   return line;
-  // }
-
-  // private lineNumber(needle: string, haystack: string): Number {
-  //   return this.lineNumberByIndex(haystack.indexOf(needle), haystack);
-  // }
+  private getLineNumberFromSrc(filePath: string, src: string) {
+    const [start] = src.split(':').map(Number);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const lines = fileContent.substring(0, start).split('\n');
+    return lines.length; // Line number
+  }
 }
