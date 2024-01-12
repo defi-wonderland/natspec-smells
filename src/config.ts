@@ -1,4 +1,4 @@
-import { InternalConfig, UserConfig } from "./types/config.t";
+import { InternalConfig, UserConfig } from "./types/config";
 
 export async function getConfig(configPath: string): Promise<InternalConfig> {
     const configModule = await import(configPath);

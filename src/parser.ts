@@ -1,5 +1,5 @@
-import { Natspec, NatspecDefinition } from './types/natspec.t';
-import { NodeToProcess } from './types/solc-typed-ast.t';
+import { Natspec, NatspecDefinition } from './types/natspec';
+import { NodeToProcess } from './types/solc-typed-ast';
 
 export function parseNodeNatspec(node: NodeToProcess): Natspec {
   if (!node.documentation) {

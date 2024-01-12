@@ -1,7 +1,7 @@
 import { validate } from '../src/validator';
 import { Config } from '../src/utils';
 import { getFileCompiledSource } from '../src/utils';
-import { NodeToProcess } from '../src/types/solc-typed-ast.t';
+import { NodeToProcess } from '../src/types/solc-typed-ast';
 import { ContractDefinition } from 'solc-typed-ast';
 
 describe('validator function', () => {
