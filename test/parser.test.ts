@@ -51,12 +51,6 @@ describe('Parser', () => {
           inheritdoc: {
             content: 'IParserTest',
           },
-          tags: [
-            {
-              name: 'dev',
-              content: 'Providing context',
-            },
-          ],
         })
       );
     });
@@ -300,6 +294,134 @@ describe('Parser', () => {
               name: 'The',
               content: 'returned value',
             },
+          ],
+        })
+      );
+    });
+  });
+
+  describe('Contract with invalid natspec', () => {
+    beforeAll(async () => {
+      const compileResult = await getFileCompiledSource('sample-data/ParserTest.sol');
+      contract = compileResult.vContracts.find(({ name }) => name === 'ParserTestFunny')!;
+    });
+
+    it('should parse struct', async () => {
+      const node = contract.vStructs.find(({ name }) => name === 'SimpleStruct')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [],
+        })
+      );
+    });
+
+    it('should parse inheritdoc + natspec', async () => {
+      const node = contract.vStateVariables.find(({ name }) => name === 'someVariable')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          inheritdoc: {
+            content: 'IParserTest',
+          },
+          tags: [
+            {
+              name: 'dev',
+              content: 'Providing context',
+            },
+          ],
+        })
+      );
+    });
+
+    it('should not parse the inheritdoc tag with just 2 slashes', async () => {
+      const node = contract.vStateVariables.find(({ name }) => name === 'SOME_CONSTANT')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({})
+      );
+    });
+
+    it('should not parse regular comments as natspec', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionWithParams')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({})
+      );
+    });
+
+    it('should parse natspec with multiple spaces', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === '_viewPrivate')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [
+            {
+              name: 'notice',
+              content: 'Some private stuff',
+            }
+          ],
+          params: [
+            {
+              name: '_paramName',
+              content: 'The parameter name',
+            }
+          ],
+          returns: [
+            {
+              name: '_returned',
+              content: 'The returned value',
+            }
+          ]
+        })
+      );
+    });
+
+    it('should not parse natspec with invalid number of slashes', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === '_viewInternal')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({})
+      );
+    });
+
+    it('should parse block natspec with invalid formatting', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === '_viewBlockLinterFail')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [
+            {
+              name: 'notice',
+              content: 'Some text',
+            },
+          ],
+        })
+      );
+    });
+
+    it('should parse block natspec with invalid formatting', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === '_viewLinterFail')!;
+      const result = parser.parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [
+            {
+              name: 'notice',
+              content: 'Linter fail',
+            },
+            {
+              name: 'dev',
+              content: 'What have I done'
+            }
           ],
         })
       );

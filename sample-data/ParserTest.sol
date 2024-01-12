@@ -31,12 +31,9 @@ interface IParserTest {
    */
    function viewFunctionWithParams(uint256 _param1, uint256 _param2) external view returns (uint256);
 
-
-   // @notice Forgot one slash but it's sill natspec
-   //// @dev Too many slashes are fine too
-   /// @return Huh?
+   /// @notice A state variable
+   /// @return Some value
    function someVariable() external view returns (uint256);
-
 
   /// @notice A struct holding 2 variables of type uint256
   /// @member a  The first variable
@@ -47,15 +44,13 @@ interface IParserTest {
     uint256 b;
   }
 
-  /// @notice Linter fail
-    /// @return      _returned What's being returned
-   function SOME_CONSTANT() external view returns (uint256 _returned);
+  /// @notice A constant of type uint256
+  function SOME_CONSTANT() external view returns (uint256 _returned);
 }
 
 /// @notice A contract with correct natspec
 contract ParserTest is IParserTest {
   /// @inheritdoc IParserTest
-  /// @dev Providing context
   uint256 public someVariable;
 
   /// @inheritdoc IParserTest
@@ -138,7 +133,6 @@ contract ParserTestFunny is IParserTest {
   uint256 public constant SOME_CONSTANT = 123;
 
   /// @inheritdoc IParserTest
-  /// @dev Why does it have a comment here?
   function viewFunctionNoParams() external view returns (uint256){
     return 1;
   }
@@ -161,44 +155,29 @@ contract ParserTestFunny is IParserTest {
    * She's cool
    */
 
-  /// @notice Some private stuff
-  /// @dev Dev comment for the private function
+  /// @notice   Some private stuff
   /// @param      _paramName The parameter name
-  /// @return     _returned The returned value
+  /// @return     _returned     The returned value
   function _viewPrivate(uint256 _paramName) private pure returns (uint256 _returned) {
     return 1;
   }
 
-  /// @notice Some internal stuff
-  /// @dev Dev comment for the internal function
-  /// @param _paramName The parameter name
-  /// @return _returned The returned value
+  // @notice Forgot one slash and it's not natspec anymore
+  //// @dev Too many slashes is fine though
+  //// @return _returned The returned value
   function _viewInternal(uint256 _paramName) internal pure returns (uint256 _returned) {
     return 1;
   }
 
-  // Random comment
-  /// @notice Some internal stuff
-  ///         Separate line
-  ///         Third one
-  function _viewMultiline() internal pure {
+   /**** @notice Some text
+    ** */
+  function _viewBlockLinterFail() internal pure {
   }
-
-  /// @notice Some internal stuff
-  /// @notice Separate line
-  function _viewDuplicateTag() internal pure {
-
-  }
-
-   // @notice Forgot one slash but it's sill natspec
-   //// @dev Too many slashes are fine too
-   /// @return Huh?
-   function _internalIncorrectSlashes() internal pure returns (uint256) {
-    return 0;
-   }
 
  /// @notice Linter fail
-     /// @dev      Oh god please help us
-   function _internalLinterFail() internal pure {}
+     /// @dev      What have I done
+  function _viewLinterFail() internal pure {
+
+  }
 }
 // forgefmt: disable-end
