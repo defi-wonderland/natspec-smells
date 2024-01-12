@@ -27,6 +27,7 @@
   "devDependencies": {
     "@commitlint/cli": "17.6.5",
     "@commitlint/config-conventional": "17.6.5",
+    "@faker-js/faker": "8.3.1",
     "@types/jest": "29.5.11",
     "@types/node": "20.10.7",
     "husky": "8.0.3",

@@ -1,5 +1,5 @@
 import { Natspec } from '../src/types/natspec.t';
-import { Config } from './utils';
+import { Config } from './types/config.t';
 import { NodeToProcess } from './types/solc-typed-ast.t';
 import {
   EnumDefinition,
@@ -11,106 +11,100 @@ import {
   VariableDeclaration,
 } from 'solc-typed-ast';
 
-export function validate(node: NodeToProcess, natspec: Natspec, config: Config): string[] {
-  // There is inheritdoc, no other validation is needed
-  if (natspec.inheritdoc) return [];
+export class Validator {
+  config: Config;
 
-  // Inheritdoc is enforced but not present, returning an error
-  if (config.enforceInheritdoc && requiresInheritdoc(node)) return [`@inheritdoc is missing`];
-
-  // Validate natspec for the constructor only if configured
-  if (node instanceof FunctionDefinition && node.kind === 'constructor') {
-    return config.constructorNatspec ? validateParameters(node, natspec) : [];
+  constructor(config: Config) {
+    this.config = config;
   }
 
-  // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
-  if (!natspec.tags.length) return [`Natspec is missing`];
+  validate(node: NodeToProcess, natspec: Natspec): string[] {
+    // There is inheritdoc, no other validation is needed
+    if (natspec.inheritdoc) return [];
 
-  // Validate the completeness of the documentation
-  let alerts: string[] = [];
-  if (node instanceof EnumDefinition) {
-    // TODO: Process enums
-  } else if (node instanceof ErrorDefinition) {
-    alerts = [...alerts, ...validateParameters(node, natspec)];
-  } else if (node instanceof EventDefinition) {
-    alerts = [...alerts, ...validateParameters(node, natspec)];
-  } else if (node instanceof FunctionDefinition) {
-    alerts = [...alerts, ...validateParameters(node, natspec), ...validateReturnParameters(node, natspec)];
-  } else if (node instanceof ModifierDefinition) {
-    alerts = [...alerts, ...validateParameters(node, natspec)];
-  } else if (node instanceof StructDefinition) {
-    alerts = [...alerts, ...validateMembers(node, natspec)];
-  } else if (node instanceof VariableDeclaration) {
-    // Only the presence of a notice is validated
-  }
+    // Inheritdoc is enforced but not present, returning an error
+    if (this.config.enforceInheritdoc && this.requiresInheritdoc(node)) return [`@inheritdoc is missing`];
 
-  return alerts;
-}
+    const natspecParams = natspec.params.map((p) => p.name);
 
-function validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspec: Natspec): string[] {
-  // Make sure all defined parameters have natspec
-  let alerts: string[] = [];
-
-  let definedParameters = node.vParameters.vParameters.map((p) => p.name);
-  let natspecParameters = natspec.params.map((p) => p.name);
-
-  for (let paramName of definedParameters) {
-    if (!natspecParameters.includes(paramName)) {
-      alerts.push(`@param ${paramName} is missing`);
+    // Validate natspec for the constructor only if configured
+    if (node instanceof FunctionDefinition && node.kind === 'constructor') {
+      return this.config.constructorNatspec ? this.validateParameters(node, natspecParams) : [];
     }
-  }
 
-  return alerts;
-}
+    // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
+    if (!natspec.tags.length) return [`Natspec is missing`];
 
-function validateReturnParameters(node: FunctionDefinition, natspec: Natspec): string[] {
-  let alerts: string[] = [];
-  let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
-  let natspecReturns = natspec.returns.map((p) => p.name);
+    // Validate the completeness of the documentation
+    let alerts: string[] = [];
 
-  // Make sure all defined returns have natspec
-  for (let paramName of functionReturns) {
-    if (!natspecReturns.includes(paramName)) {
-      let message = paramName === '' ? '@return missing for unnamed return' : `@return ${paramName} is missing`;
-      alerts.push(message);
+    if (node instanceof EnumDefinition) {
+      // TODO: Process enums
+    } else if (node instanceof ErrorDefinition) {
+      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+    } else if (node instanceof EventDefinition) {
+      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+    } else if (node instanceof FunctionDefinition) {
+      const natspecReturns = natspec.returns.map((p) => p.name);
+      alerts = [...alerts, ...this.validateParameters(node, natspecParams), ...this.validateReturnParameters(node, natspecReturns)];
+    } else if (node instanceof ModifierDefinition) {
+      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+    } else if (node instanceof StructDefinition) {
+      alerts = [...alerts, ...this.validateMembers(node, natspecParams)];
+    } else if (node instanceof VariableDeclaration) {
+      // Only the presence of a notice is validated
     }
+
+    return alerts;
   }
 
-  // Make sure there is no natspec defined for non-existing returns
-  for (let paramName of natspecReturns) {
-    if (paramName && !functionReturns.includes(paramName)) {
-      alerts.push(`Missing named return for: @return ${paramName}`);
+  // All defined parameters should have natspec
+  private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
+    let definedParameters = node.vParameters.vParameters.map((p) => p.name);
+    return definedParameters.filter((p) => !natspecParams.includes(p)).map((p) => `@param ${p} is missing`);
+  }
+
+  // All members of a struct should have natspec
+  private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
+    let members = node.vMembers.map((p) => p.name);
+    return members.filter((m) => !natspecParams.includes(m)).map((m) => `@param ${m} is missing`);
+  }
+
+  // All returned parameters should have natspec
+  private validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {
+    let alerts: string[] = [];
+    let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
+
+    // Make sure all defined returns have natspec
+    for (let paramName of functionReturns) {
+      if (!natspecReturns.includes(paramName)) {
+        let message = paramName === '' ? '@return missing for unnamed return' : `@return ${paramName} is missing`;
+        alerts.push(message);
+      }
     }
-  }
 
-  return alerts;
-}
-
-function validateMembers(node: StructDefinition, natspec: Natspec): string[] {
-  let alerts: string[] = [];
-  let members = node.vMembers.map((p) => p.name);
-  let natspecMembers = natspec.params.map((p) => p.name);
-
-  for (let memberName of members) {
-    if (!natspecMembers.includes(memberName)) {
-      alerts.push(`@param ${memberName} is missing`);
+    // Make sure there is no natspec defined for non-existing returns
+    for (let paramName of natspecReturns) {
+      if (paramName && !functionReturns.includes(paramName)) {
+        alerts.push(`Missing named return for: @return ${paramName}`);
+      }
     }
+
+    return alerts;
   }
 
-  return alerts;
-}
+  private requiresInheritdoc(node: NodeToProcess): boolean {
+    let _requiresInheritdoc: boolean = false;
 
-function requiresInheritdoc(node: NodeToProcess): boolean {
-  let _requiresInheritdoc: boolean = false;
+    // External or public function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
 
-  // External or public function
-  _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
+    // Internal virtual function
+    _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
 
-  // Internal virtual function
-  _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
+    // Public variable
+    _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
 
-  // Public variable
-  _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
-
-  return _requiresInheritdoc;
+    return _requiresInheritdoc;
+  }
 }

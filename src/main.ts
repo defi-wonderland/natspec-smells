@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { Config } from './types/config.t';
+import { getProjectCompiledSources } from './utils';
 import { globSync } from 'fast-glob';
-import { getProjectCompiledSources, Config } from './utils';
-import { processSources } from './processor';
+import { Processor } from './processor';
 
 (async () => {
   const config: Config = getArguments();
-  const ignoredPaths = config.ignore.map((path) => globSync(path, { cwd: config.root })).flat();
+  const ignoredPaths = config.ignore.map((path: string) => globSync(path, { cwd: config.root })).flat();
   const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
-  const warnings = await processSources(sourceUnits, config);
+  const processor = new Processor(config);
+  const warnings = processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
     console.warn(location);
