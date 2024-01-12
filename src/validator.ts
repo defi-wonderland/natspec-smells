@@ -1,4 +1,4 @@
-import { InternalConfig } from './types/config';
+import { Config } from './types/config';
 import { Natspec } from './types/natspec';
 import { NodeToProcess } from './types/solc-typed-ast';
 import {
@@ -12,9 +12,9 @@ import {
 } from 'solc-typed-ast';
 
 export class Validator {
-  config: InternalConfig;
+  config: Config;
 
-  constructor(config: InternalConfig) {
+  constructor(config: Config) {
     this.config = config;
   }
 

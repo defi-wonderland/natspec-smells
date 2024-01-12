@@ -2,13 +2,13 @@ import { Validator } from '../src/validator';
 import { getFileCompiledSource } from './utils';
 import { NodeToProcess } from '../src/types/solc-typed-ast.d';
 import { ContractDefinition } from 'solc-typed-ast';
-import { InternalConfig } from '../src/types/config';
+import { Config } from '../src/types/config';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
   let node: NodeToProcess;
 
-  const config: InternalConfig = {
+  const config: Config = {
     root: '.',
     include: './sample-data',
     exclude: [],

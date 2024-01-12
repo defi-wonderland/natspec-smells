@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { InternalConfig } from './types/config';
+import { Config } from './types/config';
 import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 import { NodeToProcess } from './types/solc-typed-ast.d';
@@ -11,10 +11,10 @@ interface IWarning {
 }
 
 export class Processor {
-  config: InternalConfig;
+  config: Config;
   validator: Validator;
 
-  constructor(config: InternalConfig) {
+  constructor(config: Config) {
     this.config = config;
     this.validator = new Validator(config);
   }

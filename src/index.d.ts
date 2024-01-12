@@ -1,1 +1,1 @@
-export { UserConfig } from './types/config';
+export { Config } from './types/config';

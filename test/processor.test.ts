@@ -1,10 +1,10 @@
-import { InternalConfig } from '../src/types/config';
+import { Config } from '../src/types/config';
 import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective } from 'solc-typed-ast';
 import { getFileCompiledSource } from './utils';
 import { Processor } from '../src/processor';
 
 describe('Processor', () => {
-  const config: InternalConfig = {
+  const config: Config = {
     root: '.',
     include: './sample-data',
     exclude: [],

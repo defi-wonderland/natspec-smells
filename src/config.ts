@@ -1,15 +1,15 @@
-import { InternalConfig, UserConfig } from './types/config';
+import { Config } from './types/config';
 
-export async function getConfig(configPath: string): Promise<InternalConfig> {
+export async function getConfig(configPath: string): Promise<Config> {
   const configModule = await import(configPath);
-  const userConfig: UserConfig = 'default' in configModule ? configModule.default : configModule;
-  if (!userConfig.contracts) throw new Error('Config must specify a root directory');
+  const config: Partial<Config> = 'default' in configModule ? configModule.default : configModule;
+  if (!config.include) throw new Error('Config must specify a root directory');
 
   return {
-    contracts: userConfig.contracts,
-    root: userConfig.root || './',
-    enforceInheritdoc: userConfig.enforceInheritdoc ?? true,
-    constructorNatspec: userConfig.constructorNatspec ?? false,
-    ignore: userConfig.ignore || [],
+    include: config.include,
+    root: config.root || './',
+    enforceInheritdoc: config.enforceInheritdoc ?? true,
+    constructorNatspec: config.constructorNatspec ?? false,
+    exclude: config.exclude || [],
   };
 }
