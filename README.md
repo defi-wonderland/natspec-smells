@@ -1,8 +1,9 @@
-[![image](https://img.shields.io/npm/v/@defi-wonderland/natspec-smells.svg?style=flat-square)](https://www.npmjs.org/package/@defi-wonderland/natspec-smells)
+[![Version](https://img.shields.io/npm/v/@defi-wonderland/natspec-smells?label=Version)](https://www.npmjs.com/package/@defi-wonderland/natspec-smells)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/defi-wonderland/natspec-smells/blob/main/LICENSE)
 
 # Natspec Smells
 
-Some description will be written here.
+Just like code, documentation can smell, too. `natspec-smells` aims to help automatically identify missing or incomplete natspec.
 
 ## Usage
 
@@ -14,33 +15,13 @@ npx @defi-wonderland/natspec-smells --contracts ./solidity
 
 ## Options
 
-### `--contracts` (Required)
-
-Relative path to your solidity files.
-
-### `--root`
-
-Root directory to be used.
-
-Default: `./`
-
-### `--enforceInheritdoc`
-
-Whether `@inheritdoc` is used or not.
-
-Default: `true`
-
-### `--constructorNatspec`
-
-Whether to enforce natspec for constructors.
-
-Default: `false`
-
-### `--ignore`
-
-Glob pattern of files and directories to exclude from processing.
-
-Default: `[]`
+| Option               | Description                                                               | Required | Default |
+| -------------------- | ------------------------------------------------------------------------- | -------- | ------- |
+| `contracts`          | Relative path to your solidity files.                                     | Yes      |         |
+| `root`               | Root directory to be used.                                                | No       | `./`    |
+| `enforceInheritdoc`  | Whether `@inheritdoc` is used or not.                                     | No       | `true`  |
+| `constructorNatspec` | Whether to enforce natspec for constructors.                              | No       | `false` |
+| `ignore`             | List of glob pattern of files and directories to exclude from processing. | No       | `[]`    |
 
 ## Contributors
 
