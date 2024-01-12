@@ -1,6 +1,7 @@
 import { ContractDefinition } from 'solc-typed-ast';
 import { Parser } from '../src/parser';
-import { getFileCompiledSource, mockNatspec } from './utils';
+import { getFileCompiledSource } from './utils';
+import { mockNatspec } from './mocks';
 
 describe('Parser', () => {
   const parser: Parser = new Parser();
