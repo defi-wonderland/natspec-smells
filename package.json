@@ -9,11 +9,11 @@
     "build": "tsc",
     "lint:check": "prettier --check .",
     "lint:fix": "sort-package-json && prettier --write .",
-    "start": "ts-node ./src/main.ts",
-    "test": "jest ./test",
-    "postinstall": "husky install",
     "prepack": "pinst --disable",
-    "postpack": "pinst --enable"
+    "postpack": "pinst --enable",
+    "prepare": "husky install",
+    "start": "ts-node ./src/main.ts",
+    "test": "jest ./test"
   },
   "lint-staged": {
     "package.json": "sort-package-json",
