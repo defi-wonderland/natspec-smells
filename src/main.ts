@@ -2,12 +2,26 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { Config } from './types/config.t';
-import { Runner } from './runner';
+import { getProjectCompiledSources } from './utils';
+import { globSync } from 'fast-glob';
+import { Processor } from './processor';
 
 (async () => {
   const config: Config = getArguments();
-  const runner: Runner = new Runner(config);
-  await runner.run();
+  const ignoredPaths = config.ignore.map((path: string) => globSync(path, { cwd: config.root })).flat();
+  const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
+  if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
+
+  const processor = new Processor(config);
+  const warnings = processor.processSources(sourceUnits);
+
+  warnings.forEach(({ location, messages }) => {
+    console.warn(location);
+    messages.forEach((message) => {
+      console.warn(`  ${message}`);
+    });
+    console.warn();
+  });
 })().catch(console.error);
 
 function getArguments(): Config {
