@@ -8,34 +8,40 @@ Just like code, documentation can smell, too. `natspec-smells` aims to help auto
 ## Usage
 
 As simple as it gets, run:
+
 ```bash
 npx @defi-wonderland/natspec-smells --contracts ./solidity
-```
-
-Example output:
-```text
-sample-data/BasicSample.sol:16
-BasicSample:constructor
-  Natspec is missing
-
-sample-data/BasicSample.sol:21
-BasicSample:BasicSample_BasicEvent
-  @param _param1 is missing
-
-sample-data/BasicSample.sol:8
-BasicSample:TestStruct
-  @return someAddress is missing
 ```
 
 ## Options
 
 ### `--contracts` (Required)
+
 Relative path to your solidity files.
 
-### `--base`
-Base directory to be used.
+### `--root`
+
+Root directory to be used.
 
 Default: `./`
+
+### `--enforceInheritdoc`
+
+Whether `@inheritdoc` is used or not.
+
+Default: `true`
+
+### `--constructorNatspec`
+
+Whether to enforce natspec for constructors.
+
+Default: `false`
+
+### `--ignore`
+
+Glob pattern of files and directories to exclude from processing.
+
+Default: `[]`
 
 ## Contributors
 
