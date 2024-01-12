@@ -22,7 +22,9 @@ export class Processor {
   processSources(sourceUnits: SourceUnit[]): IWarning[] {
     return sourceUnits.flatMap((sourceUnit) =>
       sourceUnit.vContracts.flatMap((contract) =>
-        this.selectEligibleNodes(contract).flatMap((node) => this.validateNodeNatspec(sourceUnit, node, contract))
+        this.selectEligibleNodes(contract)
+          .map((node) => this.validateNodeNatspec(sourceUnit, node, contract))
+          .filter((warning) => warning.messages.length)
       )
     );
   }
@@ -40,19 +42,18 @@ export class Processor {
   }
 
   validateNatspec(node: NodeToProcess): string[] {
+    if (!node) return [];
     const nodeNatspec = parseNodeNatspec(node);
     return this.validator.validate(node, nodeNatspec);
   }
 
-  validateNodeNatspec(sourceUnit: SourceUnit, node: NodeToProcess, contract: ContractDefinition): IWarning[] {
-    if (!node) return [];
-
+  validateNodeNatspec(sourceUnit: SourceUnit, node: NodeToProcess, contract: ContractDefinition): IWarning {
     const validationMessages: string[] = this.validateNatspec(node);
 
     if (validationMessages.length) {
-      return [{ location: this.formatLocation(node, sourceUnit, contract), messages: validationMessages }];
+      return { location: this.formatLocation(node, sourceUnit, contract), messages: validationMessages };
     } else {
-      return [];
+      return { location: '', messages: [] };
     }
   }
 
