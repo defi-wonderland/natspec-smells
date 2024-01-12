@@ -5,5 +5,5 @@
 /** @type {import('@defi-wonderland/natspec-smells').UserConfig} */
 module.exports = {
   contracts: 'solidity',
-  ignore: ['tests', 'scripts']
+  ignore: ['tests', 'scripts'],
 };
