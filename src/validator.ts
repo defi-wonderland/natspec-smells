@@ -59,19 +59,19 @@ export class Validator {
   }
 
   // All defined parameters should have natspec
-  validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
+  private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     return definedParameters.filter((p) => !natspecParams.includes(p)).map((p) => `@param ${p} is missing`);
   }
 
   // All members of a struct should have natspec
-  validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
+  private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
     let members = node.vMembers.map((p) => p.name);
     return members.filter((m) => !natspecParams.includes(m)).map((m) => `@param ${m} is missing`);
   }
 
   // All returned parameters should have natspec
-  validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {
+  private validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {
     let alerts: string[] = [];
     let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
 
@@ -93,7 +93,7 @@ export class Validator {
     return alerts;
   }
 
-  requiresInheritdoc(node: NodeToProcess): boolean {
+  private requiresInheritdoc(node: NodeToProcess): boolean {
     let _requiresInheritdoc: boolean = false;
 
     // External or public function
