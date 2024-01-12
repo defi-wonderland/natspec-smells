@@ -1,5 +1,5 @@
+import { InternalConfig } from './types/config';
 import { Natspec } from './types/natspec';
-import { Config } from './utils';
 import { NodeToProcess } from './types/solc-typed-ast';
 import {
   EnumDefinition,
@@ -11,7 +11,7 @@ import {
   VariableDeclaration,
 } from 'solc-typed-ast';
 
-export function validate(node: NodeToProcess, natspec: Natspec, config: Config): string[] {
+export function validate(node: NodeToProcess, natspec: Natspec, config: InternalConfig): string[] {
   // There is inheritdoc, no other validation is needed
   if (natspec.inheritdoc) return [];
 

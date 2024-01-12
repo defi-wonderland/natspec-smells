@@ -10,8 +10,8 @@ import { getConfig } from './config';
   const { config: configPath } = getArguments();
   const config = await getConfig(configPath);
 
-  const ignoredPaths = config.ignore.map((path) => globSync(path, { cwd: config.root })).flat();
-  const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
+  const excludedPaths = config.exclude.map((path) => globSync(path, { cwd: config.root })).flat();
+  const sourceUnits = await getProjectCompiledSources(config.root, config.include, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
   const warnings = await processSources(sourceUnits, config);

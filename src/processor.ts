@@ -1,15 +1,15 @@
 import { parseNodeNatspec } from './parser';
-import { Config } from './utils';
 import { validate } from './validator';
 import { SourceUnit, FunctionDefinition } from 'solc-typed-ast';
 import fs from 'fs';
+import { InternalConfig } from './types/config';
 
 interface IWarning {
   location: string;
   messages: string[];
 }
 
-export async function processSources(sourceUnits: SourceUnit[], config: Config): Promise<IWarning[]> {
+export async function processSources(sourceUnits: SourceUnit[], config: InternalConfig): Promise<IWarning[]> {
   let warnings: IWarning[] = [];
 
   sourceUnits.forEach((sourceUnit) => {

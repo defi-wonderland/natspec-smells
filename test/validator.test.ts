@@ -1,19 +1,19 @@
 import { validate } from '../src/validator';
-import { Config } from '../src/utils';
 import { getFileCompiledSource } from '../src/utils';
 import { NodeToProcess } from '../src/types/solc-typed-ast';
 import { ContractDefinition } from 'solc-typed-ast';
+import { InternalConfig } from '../src/types/config';
 
 describe('validator function', () => {
   let contract: ContractDefinition;
   let node: NodeToProcess;
 
-  const config: Config = {
+  const config: InternalConfig = {
     root: '.',
-    contracts: './sample-data',
+    include: './sample-data',
+    exclude: [],
     enforceInheritdoc: false,
     constructorNatspec: false,
-    ignore: [],
   };
 
   beforeAll(async () => {

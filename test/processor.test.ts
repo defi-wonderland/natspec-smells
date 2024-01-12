@@ -1,14 +1,14 @@
 import { processSources } from '../src/processor';
 import { getFileCompiledSource } from '../src/utils';
-import { Config } from '../src/utils';
+import { InternalConfig } from '../src/types/config';
 
 describe('processSources', () => {
-  const config: Config = {
+  const config: InternalConfig = {
     root: '.',
-    contracts: './sample-data',
+    include: './sample-data',
+    exclude: [],
     enforceInheritdoc: false,
     constructorNatspec: false,
-    ignore: [],
   };
 
   describe('LibrarySample.sol', () => {
