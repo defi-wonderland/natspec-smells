@@ -68,19 +68,19 @@ export class Processor {
     return `${sourceUnit.absolutePath}\n${contract.name}:${nodeName}`;
   }
 
-  lineNumberByIndex(index: number, string: string): Number {
-    let line = 0;
-    let match;
-    let re = /(^)[\S\s]/gm;
+  // private lineNumberByIndex(index: number, string: string): Number {
+  //   let line = 0;
+  //   let match;
+  //   let re = /(^)[\S\s]/gm;
 
-    while ((match = re.exec(string))) {
-      if (match.index > index) break;
-      line++;
-    }
-    return line;
-  }
+  //   while ((match = re.exec(string))) {
+  //     if (match.index > index) break;
+  //     line++;
+  //   }
+  //   return line;
+  // }
 
-  lineNumber(needle: string, haystack: string): Number {
-    return this.lineNumberByIndex(haystack.indexOf(needle), haystack);
-  }
+  // private lineNumber(needle: string, haystack: string): Number {
+  //   return this.lineNumberByIndex(haystack.indexOf(needle), haystack);
+  // }
 }
