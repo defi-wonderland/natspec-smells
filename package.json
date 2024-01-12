@@ -1,7 +1,14 @@
 {
   "name": "@defi-wonderland/natspec-smells",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Automatically identify missing or incomplete natspec",
+  "homepage": "https://github.com/defi-wonderland/natspec-smells#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/defi-wonderland/natspec-smells.git"
+  },
   "license": "MIT",
+  "author": "Wonderland",
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
   "bin": "./lib/main.js",
