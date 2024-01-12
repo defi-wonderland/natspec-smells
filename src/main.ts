@@ -3,7 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { globSync } from 'fast-glob';
 import { getProjectCompiledSources } from './utils';
-import { processSources } from './processor';
+import { Processor } from './processor';
 import { getConfig } from './config';
 
 (async () => {
@@ -14,7 +14,8 @@ import { getConfig } from './config';
   const sourceUnits = await getProjectCompiledSources(config.root, config.include, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
-  const warnings = await processSources(sourceUnits, config);
+  const processor = new Processor(config);
+  const warnings = processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
     console.warn(location);

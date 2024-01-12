@@ -1,10 +1,10 @@
-import { validate } from '../src/validator';
-import { getFileCompiledSource } from '../src/utils';
-import { NodeToProcess } from '../src/types/solc-typed-ast';
+import { Validator } from '../src/validator';
+import { getFileCompiledSource } from './utils';
+import { NodeToProcess } from '../src/types/solc-typed-ast.d';
 import { ContractDefinition } from 'solc-typed-ast';
 import { InternalConfig } from '../src/types/config';
 
-describe('validator function', () => {
+describe('Validator', () => {
   let contract: ContractDefinition;
   let node: NodeToProcess;
 
@@ -15,6 +15,8 @@ describe('validator function', () => {
     enforceInheritdoc: false,
     constructorNatspec: false,
   };
+
+  const validator: Validator = new Validator(config);
 
   beforeAll(async () => {
     const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
@@ -56,7 +58,7 @@ describe('validator function', () => {
   };
 
   it('should validate proper natspec', () => {
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toEqual([]);
   });
 
@@ -83,7 +85,7 @@ describe('validator function', () => {
       ],
     };
 
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName} is missing`);
   });
 
@@ -113,7 +115,7 @@ describe('validator function', () => {
       returns: [],
     };
 
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@return ${paramName} is missing`);
   });
 
@@ -148,7 +150,7 @@ describe('validator function', () => {
       ],
     };
 
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@return missing for unnamed return`);
   });
 
@@ -165,7 +167,7 @@ describe('validator function', () => {
       params: [],
       returns: [],
     };
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`Natspec is missing`);
   });
 
@@ -182,7 +184,7 @@ describe('validator function', () => {
       params: [],
       returns: [],
     };
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName} is missing`);
   });
 
@@ -199,7 +201,7 @@ describe('validator function', () => {
       params: [],
       returns: [],
     };
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName} is missing`);
   });
 
@@ -216,7 +218,7 @@ describe('validator function', () => {
       params: [],
       returns: [],
     };
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName} is missing`);
   });
 
@@ -234,7 +236,7 @@ describe('validator function', () => {
       params: [],
       returns: [],
     };
-    const result = validate(node, natspec, config);
+    const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName1} is missing`);
     expect(result).toContainEqual(`@param ${paramName2} is missing`);
   });
