@@ -7,6 +7,7 @@ import {
   ModifierDefinition,
   StructDefinition,
   VariableDeclaration,
+  ContractDefinition,
 } from 'solc-typed-ast';
 
 export class Validator {
@@ -102,6 +103,9 @@ export class Validator {
 
     // Public variable
     _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
+
+    // The node is in a contract
+    _requiresInheritdoc &&= node.parent instanceof ContractDefinition && node.parent.kind === 'contract';
 
     return _requiresInheritdoc;
   }
