@@ -27,7 +27,7 @@ export class Processor {
         for (const node of nodes) {
           // Find warning messages of the natspec of the node
           const messages = this.validateNatspec(node);
-          if (messages) {
+          if (messages.length) {
             // Add the warning messages to the list together with the natspec location
             warnings.push({
               location: this.formatLocation(sourceUnit.absolutePath, fileContent, contract, node),
