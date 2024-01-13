@@ -96,7 +96,8 @@ export class Validator {
     let _requiresInheritdoc: boolean = false;
 
     // External or public function
-    _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
+    _requiresInheritdoc ||=
+      node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public') && !node.isConstructor;
 
     // Internal virtual function
     _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
