@@ -1,9 +1,7 @@
-import fs from 'fs';
-import { Config } from './types/config.t';
 import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
-import { NodeToProcess } from './types/solc-typed-ast.t';
-import { parseNodeNatspec } from './utils';
+import { NodeToProcess } from './types/solc-typed-ast.d';
+import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
 
 interface IWarning {
   location: string;
@@ -11,13 +9,7 @@ interface IWarning {
 }
 
 export class Processor {
-  config: Config;
-  validator: Validator;
-
-  constructor(config: Config) {
-    this.config = config;
-    this.validator = new Validator(config);
-  }
+  constructor(private validator: Validator) {}
 
   processSources(sourceUnits: SourceUnit[]): IWarning[] {
     return sourceUnits.flatMap((sourceUnit) =>
@@ -60,14 +52,7 @@ export class Processor {
   formatLocation(node: NodeToProcess, sourceUnit: SourceUnit, contract: ContractDefinition): string {
     // the constructor function definition does not have a name, but it has kind: 'constructor'
     const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
-    const line = this.getLineNumberFromSrc(sourceUnit.absolutePath, node.src);
+    const line = getLineNumberFromSrc(sourceUnit.absolutePath, node.src);
     return `${sourceUnit.absolutePath}:${line}\n${contract.name}:${nodeName}`;
-  }
-
-  private getLineNumberFromSrc(filePath: string, src: string) {
-    const [start] = src.split(':').map(Number);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const lines = fileContent.substring(0, start).split('\n');
-    return lines.length; // Line number
   }
 }

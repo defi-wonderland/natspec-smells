@@ -1,18 +1,24 @@
+import { Config } from '../src/types/config';
 import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective } from 'solc-typed-ast';
 import { getFileCompiledSource } from './utils';
 import { Processor } from '../src/processor';
-import { Config } from '../src/types/config.t';
+import { Validator } from '../src/validator';
 
 describe('Processor', () => {
-  const config: Config = {
-    root: '.',
-    contracts: './sample-data',
-    enforceInheritdoc: false,
-    constructorNatspec: false,
-    ignore: [],
-  };
+  let processor: Processor;
 
-  const processor: Processor = new Processor(config);
+  beforeAll(() => {
+    const config: Config = {
+      root: '.',
+      include: './sample-data',
+      exclude: [],
+      enforceInheritdoc: false,
+      constructorNatspec: false,
+    };
+
+    const validator = new Validator(config);
+    processor = new Processor(validator);
+  });
 
   // TODO: Fix these tests
   // describe('formatLocation', () => {

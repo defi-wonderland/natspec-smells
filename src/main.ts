@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { Config } from './types/config.t';
-import { getProjectCompiledSources } from './utils';
 import { globSync } from 'fast-glob';
+import { getProjectCompiledSources } from './utils';
 import { Processor } from './processor';
+import { Config } from './types/config';
+import { Validator } from './validator';
 
 (async () => {
   const config: Config = getArguments();
-  const ignoredPaths = config.ignore.map((path: string) => globSync(path, { cwd: config.root })).flat();
-  const sourceUnits = await getProjectCompiledSources(config.root, config.contracts, ignoredPaths);
+
+  const excludedPaths = config.exclude.map((path) => globSync(path, { cwd: config.root })).flat();
+  const sourceUnits = await getProjectCompiledSources(config.root, config.include, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
-  const processor = new Processor(config);
+  const validator = new Validator(config);
+  const processor = new Processor(validator);
   const warnings = processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
@@ -28,32 +31,34 @@ function getArguments(): Config {
   return yargs(hideBin(process.argv))
     .strict()
     .options({
+      include: {
+        type: 'string',
+        description: 'Glob pattern of files to process.',
+        required: true,
+      },
+      exclude: {
+        type: 'array',
+        description: 'Glob patterns of files to exclude.',
+        default: [],
+        string: true,
+      },
       root: {
         type: 'string',
-        description: 'The target root directory',
+        description: 'Root directory of the project.',
         default: './',
-      },
-      contracts: {
-        type: 'string',
-        description: 'The directory containing your Solidity contracts',
-        required: true,
       },
       enforceInheritdoc: {
         type: 'boolean',
-        description: 'If set to true, all external and public functions must have @inheritdoc',
+        description: 'If set to true, all external and public functions must have @inheritdoc.',
         default: true,
       },
       constructorNatspec: {
         type: 'boolean',
-        description: 'True if constructor natspec is mandatory',
+        description: 'True if constructor natspec is mandatory.',
         default: false,
       },
-      ignore: {
-        describe: 'Glob pattern of files and directories to exclude from processing',
-        default: [],
-        type: 'array',
-        string: true,
-      },
     })
+    .config()
+    .default('config', 'natspec-smells.config')
     .parseSync();
 }
