@@ -115,3 +115,9 @@ export function parseNodeNatspec(node: NodeToProcess): Natspec {
 
   return result;
 }
+
+export async function getLineNumberFromSrc(fileContent: string, src: string) {
+  const [start] = src.split(':').map(Number);
+  const lines = fileContent.substring(0, start).split('\n');
+  return lines.length; // Line number
+}

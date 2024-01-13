@@ -5,6 +5,7 @@ import { globSync } from 'fast-glob';
 import { getProjectCompiledSources } from './utils';
 import { Processor } from './processor';
 import { Config } from './types/config';
+import { Validator } from './validator';
 
 (async () => {
   const config: Config = getArguments();
@@ -13,7 +14,8 @@ import { Config } from './types/config';
   const sourceUnits = await getProjectCompiledSources(config.root, config.include, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
-  const processor = new Processor(config);
+  const validator = new Validator(config);
+  const processor = new Processor(validator);
   const warnings = processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
@@ -25,7 +27,7 @@ import { Config } from './types/config';
   });
 })().catch(console.error);
 
-function getArguments() {
+function getArguments(): Config {
   return yargs(hideBin(process.argv))
     .strict()
     .options({
@@ -57,7 +59,6 @@ function getArguments() {
       },
     })
     .config()
-    .alias('include', 'include-path')
-    .alias('exclude', 'exclude-path')
+    .default('config', 'natspec-smells.config')
     .parseSync();
 }
