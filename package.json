@@ -10,7 +10,7 @@
   "license": "MIT",
   "author": "Wonderland",
   "main": "lib/main.js",
-  "types": "lib/main.js",
+  "types": "lib/types.d.ts",
   "bin": "./lib/main.js",
   "scripts": {
     "build": "tsc",

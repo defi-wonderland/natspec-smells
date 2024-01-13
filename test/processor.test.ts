@@ -1,5 +1,5 @@
-import { Config } from '../src/types/config';
 import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective } from 'solc-typed-ast';
+import { Config } from '../src/types';
 import { getFileCompiledSource } from './utils';
 import { Processor } from '../src/processor';
 import { Validator } from '../src/validator';

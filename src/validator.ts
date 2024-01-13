@@ -1,6 +1,4 @@
-import { Config } from './types/config';
-import { Natspec } from './types/natspec';
-import { NodeToProcess } from './types/solc-typed-ast';
+import { Config, Natspec, NodeToProcess } from './types';
 import {
   EnumDefinition,
   ErrorDefinition,

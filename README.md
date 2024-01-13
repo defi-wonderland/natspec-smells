@@ -35,7 +35,7 @@ npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|
 
    ```javascript
    /**
-    * For full explanation of each supported config, make sure to check the Config type below
+    * List of supported options: https://github.com/defi-wonderland/natspec-smells?tab=readme-ov-file#options
     */
 
    /** @type {import('@defi-wonderland/natspec-smells').Config} */

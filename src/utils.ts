@@ -1,8 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { ASTKind, ASTReader, SourceUnit, compileSol } from 'solc-typed-ast';
-import { Natspec, NatspecDefinition } from './types/natspec.d';
-import { NodeToProcess } from './types/solc-typed-ast.d';
+import { Natspec, NatspecDefinition, NodeToProcess } from './types';
 
 export async function getSolidityFiles(dir: string): Promise<string[]> {
   let files = await fs.readdir(dir, { withFileTypes: true });

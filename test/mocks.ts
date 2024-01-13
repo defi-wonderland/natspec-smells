@@ -1,6 +1,5 @@
-import { Natspec } from '../src/types/natspec.d';
 import { SourceUnit, ContractDefinition, FunctionDefinition } from 'solc-typed-ast';
-import { NodeToProcess } from '../src/types/solc-typed-ast.d';
+import { Natspec, NodeToProcess } from '../src/types';
 
 export function mockNatspec(mockNatspec: Partial<Natspec>): Natspec {
   const natspec: Natspec = {
