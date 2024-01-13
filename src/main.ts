@@ -7,6 +7,9 @@ import { Processor } from './processor';
 import { Config } from './types/config';
 import { Validator } from './validator';
 
+// export config for type reference
+export { Config } from './types/config';
+
 (async () => {
   const config: Config = getArguments();
 

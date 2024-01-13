@@ -20,7 +20,7 @@ Want to quickly check if your natspec smells?
 Just run:
 
 ```
-npx @defi-wonderland/natspec-smells --include src --exclude test --exclude scripts
+npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|scripts)/**/*.sol
 ```
 
 ## Recommended setup
@@ -40,8 +40,8 @@ npx @defi-wonderland/natspec-smells --include src --exclude test --exclude scrip
 
    /** @type {import('@defi-wonderland/natspec-smells').Config} */
    module.exports = {
-     include: "src",
-     exclude: ["tests", "scripts"],
+     include: "solidity",
+     exclude: ["solidity/(test|scripts)/**/*.sol"],
    };
    ```
 
@@ -71,3 +71,4 @@ Natspec Smells was built with ❤️ by [Wonderland](https://defi.sucks).
 Wonderland the largest core development group in web3. Our commitment is to a financial future that's open, decentralized, and accessible to all.
 
 [DeFi sucks](https://defi.sucks), but Wonderland is here to make it better.
+``
