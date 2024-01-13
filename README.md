@@ -3,9 +3,27 @@
 
 # Natspec Smells
 
-Just like code, documentation can smell, too. `natspec-smells` aims to help automatically identify missing or incomplete natspec.
+Just like code, documentation can smell too.
+Natspec Smells aims to help automatically identify missing or incomplete natspec.
 
-## Usage
+What can it do?
+
+- Verifies natspec for: constructors, variables, functions, ~~structs~~, errors, events, modifiers
+- Finds misspelled or missing @param or @return's.
+- Lets you enforce the need for @inheritdoc in public/external functions.
+- Can integrate on your daily workflow, or just as a final check.
+
+## No setup usage
+
+Want to quickly check if your natspec smells?
+
+Just run:
+
+```
+npx @defi-wonderland/natspec-smells --include src --exclude test --exclude scripts
+```
+
+## Recommended setup
 
 1. Install the package:
 
