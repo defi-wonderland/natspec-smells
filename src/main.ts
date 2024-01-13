@@ -16,7 +16,7 @@ import { Validator } from './validator';
 
   const validator = new Validator(config);
   const processor = new Processor(validator);
-  const warnings = processor.processSources(sourceUnits);
+  const warnings = await processor.processSources(sourceUnits);
 
   warnings.forEach(({ location, messages }) => {
     console.warn(location);

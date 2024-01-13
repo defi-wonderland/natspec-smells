@@ -3,30 +3,71 @@
 
 # Natspec Smells
 
-Just like code, documentation can smell, too. `natspec-smells` aims to help automatically identify missing or incomplete natspec.
+Just like code, documentation can smell too.
+Natspec Smells aims to help automatically identify missing or incomplete natspec.
 
-## Usage
+What can it do?
 
-As simple as it gets, run:
+- Verifies natspec for: constructors, variables, functions, ~~structs~~, errors, events, modifiers
+- Finds misspelled or missing `@param` or `@return`'s.
+- Lets you enforce the need for `@inheritdoc` in public/external functions.
+- Can integrate on your daily workflow, or just as a final check.
 
-```bash
-npx @defi-wonderland/natspec-smells --contracts ./solidity
+## No setup usage
+
+Want to quickly check if your natspec smells?
+
+Just run:
+
 ```
+npx @defi-wonderland/natspec-smells --include src --exclude test --exclude scripts
+```
+
+## Recommended setup
+
+1. Install the package:
+
+   ```bash
+   yarn add --dev @defi-wonderland/natspec-smells
+   ```
+
+2. Create a config file named `natspec-smells.config.js`, you can use the following as an example:
+
+   ```javascript
+   /**
+    * For full explanation of each supported config, make sure to check the Config type below
+    */
+
+   /** @type {import('@defi-wonderland/natspec-smells').Config} */
+   module.exports = {
+     include: "src",
+     exclude: ["tests", "scripts"],
+   };
+   ```
+
+3. Run
+   ```bash
+   yarn @defi-wonderland/natspec-smells
+   ```
+
+## Verify your natspec in CI
+
+_Soon to come._
 
 ## Options
 
-| Option               | Description                                                               | Required | Default |
-| -------------------- | ------------------------------------------------------------------------- | -------- | ------- |
-| `contracts`          | Relative path to your solidity files.                                     | Yes      |         |
-| `root`               | Root directory to be used.                                                | No       | `./`    |
-| `enforceInheritdoc`  | Whether `@inheritdoc` is used or not.                                     | No       | `true`  |
-| `constructorNatspec` | Whether to enforce natspec for constructors.                              | No       | `false` |
-| `ignore`             | List of glob pattern of files and directories to exclude from processing. | No       | `[]`    |
+| Option               | Description                                                        | Required | Default |
+| -------------------- | ------------------------------------------------------------------ | -------- | ------- |
+| `include`            | Glob pattern of files to process.                                  | Yes      |         |
+| `exclude`            | Glob patterns of files to exclude.                                 | No       | `[]`    |
+| `root`               | Project root directory.                                            | No       | `./`    |
+| `enforceInheritdoc`  | True if all external and public functions should have @inheritdoc. | No       | `true`  |
+| `constructorNatspec` | True if the constructor should have natspec.                       | No       | `false` |
 
 ## Contributors
 
 Natspec Smells was built with ❤️ by [Wonderland](https://defi.sucks).
 
-Wonderland is a team of top Web3 researchers, developers, and operators who believe that the future needs to be open-source, permissionless, and decentralized.
+Wonderland the largest core development group in web3. Our commitment is to a financial future that's open, decentralized, and accessible to all.
 
 [DeFi sucks](https://defi.sucks), but Wonderland is here to make it better.
