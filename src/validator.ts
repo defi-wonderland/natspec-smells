@@ -1,6 +1,4 @@
-import { Config } from './types/config';
-import { Natspec } from './types/natspec';
-import { NodeToProcess } from './types/solc-typed-ast';
+import { Config, Natspec, NodeToProcess } from './types';
 import {
   EnumDefinition,
   ErrorDefinition,
@@ -9,6 +7,7 @@ import {
   ModifierDefinition,
   StructDefinition,
   VariableDeclaration,
+  ContractDefinition,
 } from 'solc-typed-ast';
 
 export class Validator {
@@ -97,13 +96,17 @@ export class Validator {
     let _requiresInheritdoc: boolean = false;
 
     // External or public function
-    _requiresInheritdoc ||= node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public');
+    _requiresInheritdoc ||=
+      node instanceof FunctionDefinition && (node.visibility === 'external' || node.visibility === 'public') && !node.isConstructor;
 
     // Internal virtual function
     _requiresInheritdoc ||= node instanceof FunctionDefinition && node.visibility === 'internal' && node.virtual;
 
     // Public variable
     _requiresInheritdoc ||= node instanceof VariableDeclaration && node.visibility === 'public';
+
+    // The node is in a contract
+    _requiresInheritdoc &&= node.parent instanceof ContractDefinition && node.parent.kind === 'contract';
 
     return _requiresInheritdoc;
   }

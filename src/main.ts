@@ -4,7 +4,7 @@ import { hideBin } from 'yargs/helpers';
 import { globSync } from 'fast-glob';
 import { getProjectCompiledSources } from './utils';
 import { Processor } from './processor';
-import { Config } from './types/config';
+import { Config } from './types';
 import { Validator } from './validator';
 
 (async () => {

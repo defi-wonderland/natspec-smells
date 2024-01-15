@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { Validator } from './validator';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
-import { NodeToProcess } from './types/solc-typed-ast.d';
+import { NodeToProcess } from './types';
 import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
 
 interface IWarning {
@@ -27,7 +27,7 @@ export class Processor {
         for (const node of nodes) {
           // Find warning messages of the natspec of the node
           const messages = this.validateNatspec(node);
-          if (messages) {
+          if (messages.length) {
             // Add the warning messages to the list together with the natspec location
             warnings.push({
               location: this.formatLocation(sourceUnit.absolutePath, fileContent, contract, node),
