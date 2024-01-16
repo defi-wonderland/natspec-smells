@@ -30,7 +30,7 @@ export class Processor {
           if (messages.length) {
             // Add the warning messages to the list together with the natspec location
             warnings.push({
-              location: this.formatLocation(sourceUnit.absolutePath, fileContent, contract, node),
+              location: this.formatLocation(sourceUnit.absolutePath, fileContent, contract.name, node),
               messages,
             });
           }
@@ -59,10 +59,10 @@ export class Processor {
     return this.validator.validate(node, nodeNatspec);
   }
 
-  formatLocation(filePath: string, fileContent: string, contract: ContractDefinition, node: NodeToProcess): string {
+  formatLocation(filePath: string, fileContent: string, contractName: string, node: NodeToProcess): string {
     // the constructor function definition does not have a name, but it has kind: 'constructor'
     const nodeName = node instanceof FunctionDefinition ? node.name || node.kind : node.name;
     const line: number = getLineNumberFromSrc(fileContent, node.src);
-    return `${filePath}:${line}\n${contract.name}:${nodeName}`;
+    return `${filePath}:${line}\n${contractName}:${nodeName}`;
   }
 }
