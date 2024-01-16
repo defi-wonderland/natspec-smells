@@ -1,55 +1,48 @@
-import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective } from 'solc-typed-ast';
-import { Config } from '../src/types';
-import { getFileCompiledSource } from './utils';
+import { faker } from '@faker-js/faker';
+import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective, FunctionKind } from 'solc-typed-ast';
+import * as utils from '../src/utils';
 import { Processor } from '../src/processor';
 import { Validator } from '../src/validator';
+import { getFileCompiledSource } from './utils';
+import { mockFunctionDefinition, mockNodeToProcess, mockConfig } from './mocks';
 
 describe('Processor', () => {
-  let processor: Processor;
+  const validator = new Validator(mockConfig({}));
+  const processor = new Processor(validator);
 
-  beforeAll(() => {
-    const config: Config = {
-      root: '.',
-      include: './sample-data',
-      exclude: [],
-      enforceInheritdoc: false,
-      constructorNatspec: false,
-    };
+  describe('formatLocation', () => {
+    const absolutePath = faker.system.filePath();
+    const contractName = faker.lorem.word();
+    const nodeName = faker.lorem.word();
+    const fileContent = faker.lorem.sentence();
+    const lineNumber = faker.number.int(100);
+    const src = '${lineNumber}:1:0';
+    const getLineNumberFromSrcSpy = jest.spyOn(utils, 'getLineNumberFromSrc').mockImplementation(() => lineNumber);
 
-    const validator = new Validator(config);
-    processor = new Processor(validator);
+    it('should format the location of a node', () => {
+      const node = mockNodeToProcess({ name: nodeName, src: src });
+      const formattedLocation = processor.formatLocation(absolutePath, fileContent, contractName, node);
+
+      expect(getLineNumberFromSrcSpy).toHaveBeenCalledWith(fileContent, src);
+      expect(formattedLocation).toEqual(`${absolutePath}:${lineNumber}\n${contractName}:${nodeName}`);
+    });
+
+    it('should format the location of a constructor', () => {
+      const node = mockFunctionDefinition({ kind: FunctionKind.Constructor, src: src });
+      const formattedLocation = processor.formatLocation(absolutePath, fileContent, contractName, node);
+
+      expect(getLineNumberFromSrcSpy).toHaveBeenCalledWith(fileContent, src);
+      expect(formattedLocation).toEqual(`${absolutePath}:${lineNumber}\n${contractName}:constructor`);
+    });
+
+    it('should format the location of a function', () => {
+      const node = mockFunctionDefinition({ name: nodeName, src: src });
+      const formattedLocation = processor.formatLocation(absolutePath, fileContent, contractName, node);
+
+      expect(getLineNumberFromSrcSpy).toHaveBeenCalledWith(fileContent, src);
+      expect(formattedLocation).toEqual(`${absolutePath}:${lineNumber}\n${contractName}:${nodeName}`);
+    });
   });
-
-  // TODO: Fix these tests
-  // describe('formatLocation', () => {
-  //   const absolutePath = faker.system.filePath();
-  //   const contractName = faker.lorem.word();
-  //   const nodeName = faker.lorem.word();
-
-  //   const sourceUnit = mockSourceUnit({
-  //     absolutePath: absolutePath,
-  //   });
-
-  //   const contract = mockContractDefinition({
-  //     name: contractName,
-  //   });
-
-  //   it('should format the location of the node', () => {
-  //     const node = mockNodeToProcess({
-  //       name: nodeName,
-  //     });
-
-  //     expect(processor.formatLocation(node, sourceUnit, contract)).toEqual(`${absolutePath}\n${contractName}:${nodeName}`);
-  //   });
-
-  //   it('should format the location of a constructor', () => {
-  //     const node = mockFunctionDefinition({
-  //       kind: FunctionKind.Constructor,
-  //     });
-
-  //     expect(processor.formatLocation(node, sourceUnit, contract)).toEqual(`${absolutePath}\n${contractName}:constructor`);
-  //   });
-  // });
 
   describe('selectEligibleNodes', () => {
     let contract: ContractDefinition;
