@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.19;
 
-contract BasicSample {
+abstract contract AbstractBasic {
+    function overriddenFunction() internal pure virtual returns (uint256 _returned);
+}
+
+contract BasicSample is AbstractBasic {
     /**
      * @notice Some notice of the struct
      */
@@ -71,6 +75,15 @@ contract BasicSample {
     {
         return (true, 111);
     }
+
+    /**
+     * @notice This function should have an inheritdoc tag
+     */
+    function overriddenFunction() internal pure override returns (uint256 _returned) {
+        return 1;
+    }
+
+    function virtualFunction() public pure virtual returns (uint256 _returned) {}
 
     /**
      * @notice Modifier notice

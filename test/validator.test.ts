@@ -2,12 +2,13 @@ import { ContractDefinition } from 'solc-typed-ast';
 import { Validator } from '../src/validator';
 import { getFileCompiledSource } from './utils';
 import { Config, NodeToProcess } from '../src/types';
+import { before } from 'node:test';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
   let node: NodeToProcess;
 
-  const config: Config = {
+  let config: Config = {
     root: '.',
     include: './sample-data',
     exclude: [],
@@ -15,12 +16,11 @@ describe('Validator', () => {
     constructorNatspec: false,
   };
 
-  const validator: Validator = new Validator(config);
+  let validator: Validator = new Validator(config);
 
   beforeAll(async () => {
     const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
-    contract = compileResult.vContracts[0];
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    contract = compileResult.vContracts.find(({ name }) => name === 'BasicSample')!;
   });
 
   let natspec = {
@@ -57,11 +57,14 @@ describe('Validator', () => {
   };
 
   it('should validate proper natspec', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+
     const result = validator.validate(node, natspec);
     expect(result).toEqual([]);
   });
 
   it('should reveal missing natspec for parameters', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
     const paramName = '_magicNumber';
     let natspec = {
       tags: [
@@ -238,5 +241,41 @@ describe('Validator', () => {
     const result = validator.validate(node, natspec);
     expect(result).toContainEqual(`@param ${paramName1} is missing`);
     expect(result).toContainEqual(`@param ${paramName2} is missing`);
+  });
+
+  describe('with enforced inheritdoc', () => {
+    beforeAll(async () => {
+      config = {
+        root: '.',
+        include: './sample-data',
+        exclude: [],
+        enforceInheritdoc: true,
+        constructorNatspec: false,
+      };
+
+      validator = new Validator(config);
+    });
+
+    it('should reveal missing inheritdoc for an overridden function', () => {
+      node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+      natspec = {
+        tags: [],
+        params: [],
+        returns: [],
+      };
+      const result = validator.validate(node, natspec);
+      expect(result).toContainEqual(`@inheritdoc is missing`);
+    });
+
+    it('should reveal missing inheritdoc for a virtual function', () => {
+      node = contract.vFunctions.find(({ name }) => name === 'virtualFunction')!;
+      natspec = {
+        tags: [],
+        params: [],
+        returns: [],
+      };
+      const result = validator.validate(node, natspec);
+      expect(result).toContainEqual(`@inheritdoc is missing`);
+    });
   });
 });
