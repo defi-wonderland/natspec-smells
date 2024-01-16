@@ -1,6 +1,6 @@
 {
   "name": "@defi-wonderland/natspec-smells",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically identify missing or incomplete natspec",
   "homepage": "https://github.com/defi-wonderland/natspec-smells#readme",
   "repository": {
