@@ -1,22 +1,13 @@
 import { ContractDefinition } from 'solc-typed-ast';
 import { Validator } from '../src/validator';
 import { getFileCompiledSource } from './utils';
-import { Config, NodeToProcess } from '../src/types';
-import { before } from 'node:test';
+import { NodeToProcess } from '../src/types';
+import { mockConfig } from './mocks';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
   let node: NodeToProcess;
-
-  let config: Config = {
-    root: '.',
-    include: './sample-data',
-    exclude: [],
-    enforceInheritdoc: false,
-    constructorNatspec: false,
-  };
-
-  let validator: Validator = new Validator(config);
+  let validator: Validator = new Validator(mockConfig({}));
 
   beforeAll(async () => {
     const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
@@ -245,15 +236,7 @@ describe('Validator', () => {
 
   describe('with enforced inheritdoc', () => {
     beforeAll(async () => {
-      config = {
-        root: '.',
-        include: './sample-data',
-        exclude: [],
-        enforceInheritdoc: true,
-        constructorNatspec: false,
-      };
-
-      validator = new Validator(config);
+      validator = new Validator(mockConfig({ enforceInheritdoc: true }));
     });
 
     it('should reveal missing inheritdoc for an overridden function', () => {
