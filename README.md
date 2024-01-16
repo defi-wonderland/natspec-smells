@@ -71,4 +71,3 @@ Natspec Smells was built with ❤️ by [Wonderland](https://defi.sucks).
 Wonderland the largest core development group in web3. Our commitment is to a financial future that's open, decentralized, and accessible to all.
 
 [DeFi sucks](https://defi.sucks), but Wonderland is here to make it better.
-``
