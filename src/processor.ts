@@ -54,7 +54,6 @@ export class Processor {
   }
 
   validateNatspec(node: NodeToProcess): string[] {
-    if (!node) return [];
     const nodeNatspec = parseNodeNatspec(node);
     return this.validator.validate(node, nodeNatspec);
   }
