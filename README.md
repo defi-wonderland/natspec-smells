@@ -47,7 +47,7 @@ npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|
 
 3. Run
    ```bash
-   yarn @defi-wonderland/natspec-smells
+   yarn natspec-smells
    ```
 
 ## Verify your natspec in CI
