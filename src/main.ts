@@ -18,13 +18,17 @@ import { Validator } from './validator';
   const processor = new Processor(validator);
   const warnings = await processor.processSources(sourceUnits);
 
-  warnings.forEach(({ location, messages }) => {
-    console.warn(location);
-    messages.forEach((message) => {
-      console.warn(`  ${message}`);
+  if (warnings.length) {
+    warnings.forEach(({ location, messages }) => {
+      console.warn(location);
+      messages.forEach((message) => {
+        console.warn(`  ${message}`);
+      });
+      console.warn();
     });
-    console.warn();
-  });
+  } else {
+    console.warn('No issues found');
+  }
 })().catch(console.error);
 
 function getArguments(): Config {
