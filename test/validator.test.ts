@@ -156,6 +156,60 @@ describe('Validator', () => {
     expect(result).toContainEqual(`@return missing for unnamed return`);
   });
 
+  it('should warn of missed unnamed return', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleUnnamedReturn')!;
+    let natspec = {
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+        {
+          name: 'dev',
+          content: 'A dev comment',
+        },
+      ],
+      params: [],
+      returns: [
+        {
+          name: 'Some',
+          content: 'return data',
+        },
+      ],
+    };
+
+    const result = validator.validate(node, natspec);
+    console.log(result);
+    expect(result).toEqual([`@return missing for unnamed return`]); // only 1 warning
+  });
+
+  it('should warn even if @return is empty', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleUnnamedReturn')!;
+    let natspec = {
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+        {
+          name: 'dev',
+          content: 'A dev comment',
+        },
+      ],
+      params: [],
+      returns: [
+        {
+          name: '',
+          content: '',
+        },
+      ],
+    };
+
+    const result = validator.validate(node, natspec);
+    console.log(result);
+    expect(result).toEqual([`@return missing for unnamed return`]); // only 1 warning
+  });
+
   // TODO: Check overridden functions, virtual, etc?
   // it('should reveal missing natspec for an external function');
   // it('should reveal missing natspec for a public function');
@@ -276,36 +330,6 @@ describe('Validator', () => {
       };
       const result = validator.validate(node, natspec);
       expect(result).toContainEqual(`@inheritdoc is missing`);
-    });
-
-    it.only('should display unnamed returns correct', () => {
-      node = contract.vFunctions.find(({ name }) => name === 'externalSimpleUnnamedReturns')!;
-      let natspec = {
-        tags: [
-          {
-            name: 'notice',
-            content: 'External function that returns a bool',
-          },
-          {
-            name: 'dev',
-            content: 'A dev comment',
-          },
-          {
-            name: 'return',
-            content: 'Some return data',
-          },
-        ],
-        params: [],
-        returns: [
-          {
-            name: '',
-            content: 'Some return data',
-          },
-        ],
-      };
-
-      const result = validator.validate(node, natspec);
-      expect(result).toEqual([]);
     });
   });
 });

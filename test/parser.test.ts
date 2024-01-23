@@ -298,6 +298,28 @@ describe('Parser', () => {
         })
       );
     });
+
+    it.only('should parse empty return tag', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === 'functionUnnamedEmptyReturn')!;
+      const result = parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [],
+          params: [],
+          returns: [
+            {
+              name: '',
+              content: '',
+            },
+            {
+              name: '',
+              content: '',
+            },
+          ],
+        })
+      );
+    });
   });
 
   describe('Contract with invalid natspec', () => {

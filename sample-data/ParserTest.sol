@@ -137,6 +137,12 @@ contract ParserTestFunny is IParserTest {
     return 1;
   }
 
+  /// @return 
+  /// @return 
+  function functionUnnamedEmptyReturn() external view returns (uint256, bool){
+    return (1, true);
+  }
+
   // Forgot there is @inheritdoc and @notice
   function viewFunctionWithParams(uint256 _param1, uint256 _param2) external view returns (uint256) {
     return _param1 + _param2;
