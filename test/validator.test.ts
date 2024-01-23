@@ -277,5 +277,35 @@ describe('Validator', () => {
       const result = validator.validate(node, natspec);
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
+
+    it.only('should display unnamed returns correct', () => {
+      node = contract.vFunctions.find(({ name }) => name === 'externalSimpleUnnamedReturns')!;
+      let natspec = {
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+          {
+            name: 'dev',
+            content: 'A dev comment',
+          },
+          {
+            name: 'return',
+            content: 'Some return data',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '',
+            content: 'Some return data',
+          },
+        ],
+      };
+
+      const result = validator.validate(node, natspec);
+      expect(result).toEqual([]);
+    });
   });
 });

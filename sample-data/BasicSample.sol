@@ -42,6 +42,15 @@ contract BasicSample is AbstractBasic {
     }
 
     /**
+     * @notice External function that returns a bool
+     * @dev A dev comment
+     * @return Some return data
+     */
+    function externalSimpleUnnamedReturns() external pure returns (bool) {
+        return true;
+    }
+
+    /**
      * @notice Private test function
      * @param _magicNumber A parameter description
      */
