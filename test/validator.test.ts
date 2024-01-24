@@ -153,7 +153,7 @@ describe('Validator', () => {
     };
 
     const result = validator.validate(node, natspec);
-    expect(result).toContainEqual(`@return missing for unnamed return`);
+    expect(result).toContainEqual(`@return missing for unnamed return №2`);
   });
 
   it('should warn of missed unnamed return', () => {
@@ -179,7 +179,7 @@ describe('Validator', () => {
     };
 
     const result = validator.validate(node, natspec);
-    expect(result).toEqual([`@return missing for unnamed return`]); // only 1 warning
+    expect(result).toEqual([`@return missing for unnamed return №2`]); // only 1 warning
   });
 
   it('should not warn of extra natspec tags', () => {
@@ -283,7 +283,7 @@ describe('Validator', () => {
     };
 
     const result = validator.validate(node, natspec);
-    expect(result).toEqual(['@return _isMagic is missing', '@return missing for unnamed return']); // 2 warnings
+    expect(result).toEqual(['@return _isMagic is missing', '@return missing for unnamed return №2']); // 2 warnings
   });
 
   it('should warn if the last natspec tag is missing', () => {
@@ -318,7 +318,7 @@ describe('Validator', () => {
     };
 
     const result = validator.validate(node, natspec);
-    expect(result).toEqual(['@return missing for unnamed return']); // 1 warnings
+    expect(result).toEqual(['@return missing for unnamed return №2']); // 1 warnings
   });
 
   // TODO: Check overridden functions, virtual, etc?

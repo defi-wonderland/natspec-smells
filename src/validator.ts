@@ -77,8 +77,7 @@ export class Validator {
     // Make sure all defined returns have natspec
     for (let [paramIndex, paramName] of functionReturns.entries()) {
       if (paramIndex > natspecReturns.length - 1) {
-        // todo: add parameter index for unnamed returns
-        let message = paramName === '' ? '@return missing for unnamed return' : `@return ${paramName} is missing`;
+        let message = paramName === '' ? `@return missing for unnamed return №${paramIndex + 1}` : `@return ${paramName} is missing`;
         alerts.push(message);
       } else if (natspecReturns[paramIndex] !== paramName && paramName !== '') {
         let message = `@return ${paramName} is missing`;
