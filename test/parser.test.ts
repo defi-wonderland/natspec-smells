@@ -163,28 +163,6 @@ describe('Parser', () => {
         })
       );
     });
-
-    it('should correctly parse empty return tag', async () => {
-      const node = contract.vFunctions.find(({ name }) => name === 'functionUnnamedEmptyReturn')!;
-      const result = parseNodeNatspec(node);
-
-      expect(result).toEqual(
-        mockNatspec({
-          tags: [],
-          params: [],
-          returns: [
-            {
-              name: '',
-              content: '',
-            },
-            {
-              name: '',
-              content: '',
-            },
-          ],
-        })
-      );
-    });
   });
 
   describe('Interface', () => {
@@ -437,6 +415,28 @@ describe('Parser', () => {
             {
               name: 'dev',
               content: 'What have I done',
+            },
+          ],
+        })
+      );
+    });
+
+    it('should correctly parse empty return tag', async () => {
+      const node = contract.vFunctions.find(({ name }) => name === 'functionUnnamedEmptyReturn')!;
+      const result = parseNodeNatspec(node);
+
+      expect(result).toEqual(
+        mockNatspec({
+          tags: [],
+          params: [],
+          returns: [
+            {
+              name: '',
+              content: '',
+            },
+            {
+              name: '',
+              content: '',
             },
           ],
         })

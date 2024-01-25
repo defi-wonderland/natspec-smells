@@ -109,13 +109,6 @@ contract ParserTest is IParserTest {
   /// @notice Separate line
   function _viewDuplicateTag() internal pure {
   }
-
-  /// fun fact: here are extra spaces after 1st return
-  /// @return       
-  /// @return
-  function functionUnnamedEmptyReturn() external view returns (uint256, bool){
-    return (1, true);
-  }
 }
 
 // This is a contract with invalid / missing natspec
@@ -185,6 +178,13 @@ contract ParserTestFunny is IParserTest {
      /// @dev      What have I done
   function _viewLinterFail() internal pure {
 
+  }
+
+  /// fun fact: here are extra spaces after 1st return
+  /// @return       
+  /// @return
+  function functionUnnamedEmptyReturn() external view returns (uint256, bool){
+    return (1, true);
   }
 }
 // forgefmt: disable-end
