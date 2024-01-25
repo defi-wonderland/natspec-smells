@@ -156,7 +156,7 @@ describe('Validator', () => {
     expect(result).toContainEqual(`@return missing for unnamed return №2`);
   });
 
-  it('should warn of missed unnamed return', () => {
+  it('should warn of a missing unnamed return', () => {
     node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleUnnamedReturn')!;
     let natspec = {
       tags: [
