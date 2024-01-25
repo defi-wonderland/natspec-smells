@@ -110,7 +110,7 @@ contract ParserTest is IParserTest {
   function _viewDuplicateTag() internal pure {
   }
 
-  /// fun fact: here are extra spaces after 1st return
+  /// fun fact: there are extra spaces after the 1st return
   /// @return       
   /// @return
   function functionUnnamedEmptyReturn() external view returns (uint256, bool){
