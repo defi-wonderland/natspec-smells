@@ -75,17 +75,13 @@ export class Validator {
     let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
 
     // Make sure all defined returns have natspec
-    for (let paramName of functionReturns) {
-      if (!natspecReturns.includes(paramName)) {
-        let message = paramName === '' ? '@return missing for unnamed return' : `@return ${paramName} is missing`;
+    for (let [paramIndex, paramName] of functionReturns.entries()) {
+      if (paramIndex > natspecReturns.length - 1) {
+        let message = paramName === '' ? `@return missing for unnamed return №${paramIndex + 1}` : `@return ${paramName} is missing`;
         alerts.push(message);
-      }
-    }
-
-    // Make sure there is no natspec defined for non-existing returns
-    for (let paramName of natspecReturns) {
-      if (paramName && !functionReturns.includes(paramName)) {
-        alerts.push(`Missing named return for: @return ${paramName}`);
+      } else if (natspecReturns[paramIndex] !== paramName && paramName !== '') {
+        let message = `@return ${paramName} is missing`;
+        alerts.push(message);
       }
     }
 

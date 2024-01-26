@@ -77,6 +77,15 @@ contract BasicSample is AbstractBasic {
     }
 
     /**
+     * @notice External function that returns a bool
+     * @dev A dev comment
+     * @return Some return data
+     */
+    function externalSimpleMultipleUnnamedReturn() external pure returns (bool, uint256) {
+        return (true, 111);
+    }
+
+    /**
      * @notice This function should have an inheritdoc tag
      */
     function overriddenFunction() internal pure override returns (uint256 _returned) {

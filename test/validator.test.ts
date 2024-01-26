@@ -144,7 +144,103 @@ describe('Validator', () => {
     };
 
     const result = validator.validate(node, natspec);
-    expect(result).toContainEqual(`@return missing for unnamed return`);
+    expect(result).toContainEqual(`@return missing for unnamed return №2`);
+  });
+
+  it('should warn of a missing unnamed return', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleUnnamedReturn')!;
+    let natspec = {
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+        {
+          name: 'dev',
+          content: 'A dev comment',
+        },
+      ],
+      params: [],
+      returns: [
+        {
+          name: 'Some',
+          content: 'return data',
+        },
+      ],
+    };
+
+    const result = validator.validate(node, natspec);
+    expect(result).toEqual([`@return missing for unnamed return №2`]); // only 1 warning
+  });
+
+  it('should warn all returns if the first natspec tag is missing', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
+    let natspec = {
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+        {
+          name: 'dev',
+          content: 'A dev comment',
+        },
+      ],
+      params: [
+        {
+          name: '_magicNumber',
+          content: 'A parameter description',
+        },
+        {
+          name: '_name',
+          content: 'Another parameter description',
+        },
+      ],
+      returns: [
+        {
+          name: 'Some',
+          content: 'return data',
+        },
+      ],
+    };
+
+    const result = validator.validate(node, natspec);
+    expect(result).toEqual(['@return _isMagic is missing', '@return missing for unnamed return №2']); // 2 warnings
+  });
+
+  it('should warn if the last natspec tag is missing', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
+    let natspec = {
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+        {
+          name: 'dev',
+          content: 'A dev comment',
+        },
+      ],
+      params: [
+        {
+          name: '_magicNumber',
+          content: 'A parameter description',
+        },
+        {
+          name: '_name',
+          content: 'Another parameter description',
+        },
+      ],
+      returns: [
+        {
+          name: '_isMagic',
+          content: 'Some return data',
+        },
+      ],
+    };
+
+    const result = validator.validate(node, natspec);
+    expect(result).toEqual(['@return missing for unnamed return №2']); // 1 warnings
   });
 
   // TODO: Check overridden functions, virtual, etc?

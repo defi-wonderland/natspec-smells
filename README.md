@@ -47,7 +47,7 @@ npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|
 
 3. Run
    ```bash
-   yarn @defi-wonderland/natspec-smells
+   yarn natspec-smells
    ```
 
 ## Verify your natspec in CI
@@ -71,4 +71,3 @@ Natspec Smells was built with ❤️ by [Wonderland](https://defi.sucks).
 Wonderland the largest core development group in web3. Our commitment is to a financial future that's open, decentralized, and accessible to all.
 
 [DeFi sucks](https://defi.sucks), but Wonderland is here to make it better.
-``
