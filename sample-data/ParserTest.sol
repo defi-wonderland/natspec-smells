@@ -179,5 +179,12 @@ contract ParserTestFunny is IParserTest {
   function _viewLinterFail() internal pure {
 
   }
+
+  /// fun fact: there are extra spaces after the 1st return
+  /// @return       
+  /// @return
+  function functionUnnamedEmptyReturn() external view returns (uint256, bool){
+    return (1, true);
+  }
 }
 // forgefmt: disable-end
