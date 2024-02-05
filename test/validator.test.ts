@@ -265,14 +265,15 @@ describe('Validator', () => {
     expect(result).toContainEqual(`@param ${paramName2} is missing`);
   });
 
-  it('should ignore receive and fallback', () => {
-    node = contract.vFunctions.find(({ kind }) => kind === 'receive' || kind === 'fallback')!;
-    natspec = {
-      tags: [],
-      params: [],
-      returns: [],
-    };
-    const result = validator.validate(node, natspec);
+  it('should ignore the receive function', () => {
+    node = contract.vFunctions.find(({ kind }) => kind === 'receive')!;
+    const result = validator.validate(node, mockNatspec({}));
+    expect(result).toEqual([]);
+  });
+
+  it('should ignore the callback function', () => {
+    node = contract.vFunctions.find(({ kind }) => kind === 'fallback')!;
+    const result = validator.validate(node, mockNatspec({}));
     expect(result).toEqual([]);
   });
 
