@@ -11,7 +11,7 @@ describe('Validator', () => {
   let config: Config = {
     root: '.',
     include: './sample-data',
-    exclude: [],
+    exclude: '',
     enforceInheritdoc: false,
     constructorNatspec: false,
   };
@@ -344,7 +344,7 @@ describe('Validator', () => {
       config = {
         root: '.',
         include: './sample-data',
-        exclude: [],
+        exclude: '',
         enforceInheritdoc: true,
         constructorNatspec: false,
       };

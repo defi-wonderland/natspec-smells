@@ -11,7 +11,7 @@ describe('Processor', () => {
     const config: Config = {
       root: '.',
       include: './sample-data',
-      exclude: [],
+      exclude: '',
       enforceInheritdoc: false,
       constructorNatspec: false,
     };
