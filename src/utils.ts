@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ASTKind, ASTReader, SourceUnit, compileSol } from 'solc-typed-ast';
+import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
 
 export async function getSolidityFiles(dir: string): Promise<string[]> {
@@ -119,4 +119,8 @@ export function getLineNumberFromSrc(fileContent: string, src: string): number {
   const [start] = src.split(':').map(Number);
   const lines = fileContent.substring(0, start).split('\n');
   return lines.length; // Line number
+}
+
+export function matchesFunctionKind(node: NodeToProcess, kind: string): boolean {
+  return node instanceof FunctionDefinition && node.kind === kind;
 }
