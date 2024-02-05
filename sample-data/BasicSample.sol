@@ -100,4 +100,14 @@ contract BasicSample is AbstractBasic {
     modifier transferFee(uint256 _receiver) {
         _;
     }
+
+    /**
+     * @dev This func must be ignored
+     */
+    receive() external payable {}
+
+    /**
+     * @dev This func must be ignored
+     */
+    fallback() external {}
 }

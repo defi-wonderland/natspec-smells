@@ -18,6 +18,11 @@ export class Validator {
   }
 
   validate(node: NodeToProcess, natspec: Natspec): string[] {
+    // Ignore fallback and receive
+    if (node instanceof FunctionDefinition && (node.kind === 'receive' || node.kind === 'fallback')) {
+      return [];
+    }
+
     // There is inheritdoc, no other validation is needed
     if (natspec.inheritdoc) return [];
 
