@@ -10,7 +10,7 @@ describe('Validator', () => {
   let validator: Validator = new Validator(mockConfig({}));
 
   beforeAll(async () => {
-    const compileResult = await getFileCompiledSource('sample-data/BasicSample.sol');
+    const compileResult = await getFileCompiledSource('test/contracts/BasicSample.sol');
     contract = compileResult.vContracts.find(({ name }) => name === 'BasicSample')!;
   });
 

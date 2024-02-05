@@ -14,7 +14,7 @@ describe('Processor', () => {
     let contract: ContractDefinition;
 
     beforeAll(async () => {
-      const compileResult = await getFileCompiledSource('sample-data/ParserTest.sol');
+      const compileResult = await getFileCompiledSource('test/contracts/ParserTest.sol');
       contract = compileResult.vContracts.find(({ name }) => name === 'ParserTest')!;
     });
 
