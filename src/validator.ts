@@ -1,4 +1,5 @@
 import { Config, Natspec, NodeToProcess } from './types';
+import { matchesFunctionKind } from './utils';
 import {
   EnumDefinition,
   ErrorDefinition,
@@ -19,7 +20,7 @@ export class Validator {
 
   validate(node: NodeToProcess, natspec: Natspec): string[] {
     // Ignore fallback and receive
-    if (node instanceof FunctionDefinition && (node.kind === 'receive' || node.kind === 'fallback')) {
+    if (matchesFunctionKind(node, 'receive') || matchesFunctionKind(node, 'fallback')) {
       return [];
     }
 
@@ -32,8 +33,8 @@ export class Validator {
     const natspecParams = natspec.params.map((p) => p.name);
 
     // Validate natspec for the constructor only if configured
-    if (node instanceof FunctionDefinition && node.kind === 'constructor') {
-      return this.config.constructorNatspec ? this.validateParameters(node, natspecParams) : [];
+    if (matchesFunctionKind(node, 'constructor')) {
+      return this.config.constructorNatspec ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
     }
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
