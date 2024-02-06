@@ -20,8 +20,10 @@ Want to quickly check if your natspec smells?
 Just run:
 
 ```
-npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|scripts)/**/*.sol
+npx @defi-wonderland/natspec-smells --include "src/**/*.sol" --exclude "(test|script)/**/*.sol"
 ```
+
+**Please note** that the `--include` and `--exclude` parameters accept a glob string as input. Therefore, it is necessary to enclose these strings in quotes.
 
 ## Recommended setup
 
