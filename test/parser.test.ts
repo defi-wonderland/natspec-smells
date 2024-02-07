@@ -8,7 +8,7 @@ describe('Parser', () => {
 
   describe('Contract', () => {
     beforeAll(async () => {
-      const compileResult = await getFileCompiledSource('sample-data/ParserTest.sol');
+      const compileResult = await getFileCompiledSource('test/contracts/ParserTest.sol');
       contract = compileResult.vContracts.find(({ name }) => name === 'ParserTest')!;
     });
 
@@ -167,7 +167,7 @@ describe('Parser', () => {
 
   describe('Interface', () => {
     beforeAll(async () => {
-      const compileResult = await getFileCompiledSource('sample-data/ParserTest.sol');
+      const compileResult = await getFileCompiledSource('test/contracts/ParserTest.sol');
       contract = compileResult.vContracts.find(({ name }) => name === 'IParserTest')!;
     });
 
@@ -302,7 +302,7 @@ describe('Parser', () => {
 
   describe('Contract with invalid natspec', () => {
     beforeAll(async () => {
-      const compileResult = await getFileCompiledSource('sample-data/ParserTest.sol');
+      const compileResult = await getFileCompiledSource('test/contracts/ParserTest.sol');
       contract = compileResult.vContracts.find(({ name }) => name === 'ParserTestFunny')!;
     });
 
