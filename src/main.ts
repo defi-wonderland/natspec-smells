@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { globSync } from 'fast-glob';
+import { glob } from 'fast-glob';
 import { getProjectCompiledSources } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
@@ -10,8 +10,10 @@ import { Validator } from './validator';
 (async () => {
   const config: Config = getArguments();
 
-  const excludedPaths = config.exclude.map((path) => globSync(path, { cwd: config.root })).flat();
-  const sourceUnits = await getProjectCompiledSources(config.root, config.include, excludedPaths);
+  const includedPaths = await glob(config.include, { cwd: config.root });
+  const excludedPaths = await glob(config.exclude, { cwd: config.root });
+
+  const sourceUnits = await getProjectCompiledSources(config.root, includedPaths, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
   const validator = new Validator(config);
@@ -42,10 +44,9 @@ function getArguments(): Config {
         required: true,
       },
       exclude: {
-        type: 'array',
+        type: 'string',
         description: 'Glob patterns of files to exclude.',
-        default: [],
-        string: true,
+        default: '',
       },
       root: {
         type: 'string',
