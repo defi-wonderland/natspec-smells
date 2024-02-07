@@ -20,8 +20,10 @@ Want to quickly check if your natspec smells?
 Just run:
 
 ```
-npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|scripts)/**/*.sol
+npx @defi-wonderland/natspec-smells --include src --exclude "src/**/*.sol" "(test|scripts)/**/*.sol"
 ```
+
+**Please note** that the `--include` and `--exclude` parameters accept a glob string as input. Therefore, it is necessary to enclose these strings in quotes.
 
 ## Recommended setup
 
@@ -40,8 +42,8 @@ npx @defi-wonderland/natspec-smells --include solidity --exclude solidity/(test|
 
    /** @type {import('@defi-wonderland/natspec-smells').Config} */
    module.exports = {
-     include: "solidity",
-     exclude: ["solidity/(test|scripts)/**/*.sol"],
+     include: "src/**/*.sol",
+     exclude: "(test|scripts)/**/*.sol",
    };
    ```
 
@@ -59,7 +61,7 @@ _Soon to come._
 | Option               | Description                                                        | Required | Default |
 | -------------------- | ------------------------------------------------------------------ | -------- | ------- |
 | `include`            | Glob pattern of files to process.                                  | Yes      |         |
-| `exclude`            | Glob patterns of files to exclude.                                 | No       | `[]`    |
+| `exclude`            | Glob pattern of files to exclude.                                  | No       | `""`    |
 | `root`               | Project root directory.                                            | No       | `./`    |
 | `enforceInheritdoc`  | True if all external and public functions should have @inheritdoc. | No       | `true`  |
 | `constructorNatspec` | True if the constructor should have natspec.                       | No       | `false` |
