@@ -42,8 +42,8 @@ npx @defi-wonderland/natspec-smells --include "src/**/*.sol" --exclude "(test|sc
 
    /** @type {import('@defi-wonderland/natspec-smells').Config} */
    module.exports = {
-     include: "solidity",
-     exclude: ["solidity/(test|scripts)/**/*.sol"],
+     include: "src/**/*.sol",
+     exclude: "(test|scripts)/**/*.sol",
    };
    ```
 
