@@ -10,10 +10,10 @@ import { Validator } from './validator';
 (async () => {
   const config: Config = getArguments();
 
-  const includedPaths = await glob(config.include, { cwd: config.root });
   const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
+  const includedPaths = await glob(config.include, { cwd: config.root, ignore: excludedPaths });
 
-  const sourceUnits = await getProjectCompiledSources(config.root, includedPaths, excludedPaths);
+  const sourceUnits = await getProjectCompiledSources(config.root, includedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
   const validator = new Validator(config);
