@@ -10,7 +10,7 @@ import { Validator } from './validator';
 (async () => {
   const config: Config = getArguments();
 
-  const excludedPaths = await glob(config.exclude, { cwd: config.root });
+  const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
   const includedPaths = await glob(config.include, { cwd: config.root, ignore: excludedPaths });
 
   const sourceUnits = await getProjectCompiledSources(config.root, includedPaths);
