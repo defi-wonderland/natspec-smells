@@ -1,5 +1,5 @@
 import { Config, Natspec, NodeToProcess } from './types';
-import { matchesFunctionKind } from './utils';
+import { matchesFunctionKind, countElements } from './utils';
 import {
   EnumDefinition,
   ErrorDefinition,
@@ -66,13 +66,34 @@ export class Validator {
   // All defined parameters should have natspec
   private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
-    return definedParameters.filter((p) => !natspecParams.includes(p)).map((p) => `@param ${p} is missing`);
+    let alerts: string[] = [];
+    const counter = countElements(natspecParams);
+
+    for (let paramName of definedParameters) {
+      if (!natspecParams.includes(paramName)) {
+        alerts.push(`@param ${paramName} is missing`);
+      } else if (counter[paramName] > 1) {
+        alerts.push(`@param ${paramName} is duplicated`);
+      }
+    }
+    return alerts;
   }
 
   // All members of a struct should have natspec
   private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
     let members = node.vMembers.map((p) => p.name);
-    return members.filter((m) => !natspecParams.includes(m)).map((m) => `@param ${m} is missing`);
+    let alerts: string[] = [];
+    const counter = countElements(natspecParams);
+
+    for (let paramName of members) {
+      if (!natspecParams.includes(paramName)) {
+        alerts.push(`@param ${paramName} is missing`);
+      } else if (counter[paramName] > 1) {
+        alerts.push(`@param ${paramName} is duplicated`);
+      }
+    }
+
+    return alerts;
   }
 
   // All returned parameters should have natspec

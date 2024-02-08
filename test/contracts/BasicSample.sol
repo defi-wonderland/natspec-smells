@@ -35,6 +35,7 @@ contract BasicSample is AbstractBasic {
      * @dev A dev comment
      * @param  _magicNumber A parameter description
      * @param _name Another parameter description
+     * @param _name Another parameter description
      * @return _isMagic Some return data
      */
     function externalSimple(uint256 _magicNumber, string memory _name) external pure returns (bool _isMagic) {

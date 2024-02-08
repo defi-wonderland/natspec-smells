@@ -11,7 +11,7 @@ import { Validator } from './validator';
   const config: Config = getArguments();
 
   const includedPaths = await glob(config.include, { cwd: config.root });
-  const excludedPaths = await glob(config.exclude, { cwd: config.root });
+  const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
 
   const sourceUnits = await getProjectCompiledSources(config.root, includedPaths, excludedPaths);
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
@@ -45,7 +45,7 @@ function getArguments(): Config {
       },
       exclude: {
         type: 'string',
-        description: 'Glob patterns of files to exclude.',
+        description: 'Glob pattern of files to exclude.',
         default: '',
       },
       root: {

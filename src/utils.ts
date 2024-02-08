@@ -136,3 +136,10 @@ export function getLineNumberFromSrc(fileContent: string, src: string): number {
 export function matchesFunctionKind(node: NodeToProcess, kind: string): boolean {
   return node instanceof FunctionDefinition && node.kind === kind;
 }
+
+export function countElements(array: any[]) {
+  return array.reduce((acc, curr) => {
+    acc[curr] = (acc[curr] || 0) + 1;
+    return acc;
+  }, {});
+}
