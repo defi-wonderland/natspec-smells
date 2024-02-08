@@ -7,7 +7,7 @@ export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<st
   return files.filter((file) => file.endsWith('.sol')).map((file) => path.resolve(file));
 }
 
-export async function getProjectCompiledSources(rootPath: string, includedPaths: string[], excludedPaths: string[]): Promise<SourceUnit[]> {
+export async function getProjectCompiledSources(rootPath: string, includedPaths: string[]): Promise<SourceUnit[]> {
   // Fetch Solidity files from the specified directory
   const solidityFiles: string[] = await getSolidityFilesAbsolutePaths(includedPaths);
   const remappings: string[] = await getRemappings(rootPath);
@@ -23,8 +23,6 @@ export async function getProjectCompiledSources(rootPath: string, includedPaths:
       .read(compiledFiles.data, ASTKind.Any, compiledFiles.files)
       // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
       .filter((sourceUnit) => includedPaths.includes(sourceUnit.absolutePath))
-      // avoid processing files from excluded directories
-      .filter((sourceUnit) => !excludedPaths.includes(sourceUnit.absolutePath))
   );
 }
 
