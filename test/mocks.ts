@@ -1,5 +1,5 @@
 import { SourceUnit, ContractDefinition, FunctionDefinition } from 'solc-typed-ast';
-import { Natspec, NodeToProcess } from '../src/types';
+import { Natspec, NodeToProcess, Config } from '../src/types';
 
 export function mockNatspec(mockNatspec: Partial<Natspec>): Natspec {
   const natspec: Natspec = {
@@ -30,4 +30,8 @@ export function mockSourceUnit(mockSourceUnit: Partial<SourceUnit>): SourceUnit 
 
 export function mockContractDefinition(mockContractDefinition: Partial<ContractDefinition>): ContractDefinition {
   return mockContractDefinition as ContractDefinition;
+}
+
+export function mockConfig(mockConfig: Partial<Config>): Config {
+  return mockConfig as Config;
 }

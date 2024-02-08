@@ -3,25 +3,13 @@ import path from 'path';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
 
-export async function getSolidityFiles(dir: string): Promise<string[]> {
-  let files = await fs.readdir(dir, { withFileTypes: true });
-  let solidityFiles: string[] = [];
-
-  for (const file of files) {
-    const res = path.resolve(dir, file.name);
-    if (file.isDirectory()) {
-      solidityFiles = solidityFiles.concat(await getSolidityFiles(res));
-    } else if (file.isFile() && file.name.endsWith('.sol')) {
-      solidityFiles.push(res);
-    }
-  }
-
-  return solidityFiles;
+export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<string[]> {
+  return files.filter((file) => file.endsWith('.sol')).map((file) => path.resolve(file));
 }
 
-export async function getProjectCompiledSources(rootPath: string, includedPath: string, excludedPaths: string[]): Promise<SourceUnit[]> {
+export async function getProjectCompiledSources(rootPath: string, includedPaths: string[], excludedPaths: string[]): Promise<SourceUnit[]> {
   // Fetch Solidity files from the specified directory
-  const solidityFiles: string[] = await getSolidityFiles(includedPath);
+  const solidityFiles: string[] = await getSolidityFilesAbsolutePaths(includedPaths);
   const remappings: string[] = await getRemappings(rootPath);
 
   const compiledFiles = await compileSol(solidityFiles, 'auto', {
@@ -34,9 +22,9 @@ export async function getProjectCompiledSources(rootPath: string, includedPath: 
     new ASTReader()
       .read(compiledFiles.data, ASTKind.Any, compiledFiles.files)
       // avoid processing files that are not in the specified directory, e.g. node modules or other imported files
-      .filter((sourceUnit) => isFileInDirectory(includedPath, sourceUnit.absolutePath))
+      .filter((sourceUnit) => includedPaths.includes(sourceUnit.absolutePath))
       // avoid processing files from excluded directories
-      .filter((sourceUnit) => !excludedPaths.some((excludedPath) => excludedPath === sourceUnit.absolutePath))
+      .filter((sourceUnit) => !excludedPaths.includes(sourceUnit.absolutePath))
   );
 }
 
