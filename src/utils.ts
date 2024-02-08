@@ -55,16 +55,40 @@ export function isFileInDirectory(directory: string, filePath: string): boolean 
 }
 
 export async function getRemappings(rootPath: string): Promise<string[]> {
+  // First try the remappings.txt file
   try {
-    const filePath = path.join(rootPath, 'remappings.txt');
-    const fileContent = await fs.readFile(filePath, 'utf8');
+    return await getRemappingsFromFile(path.join(rootPath, 'remappings.txt'));
+  } catch (e) {
+    // If the remappings file does not exist, try foundry.toml
+    try {
+      return await getRemappingsFromConfig(path.join(rootPath, 'foundry.toml'));
+    } catch {
+      return [];
+    }
+  }
+}
 
-    return fileContent
-      .split('\n')
+export async function getRemappingsFromFile(remappingsPath: string): Promise<string[]> {
+  const remappingsContent = await fs.readFile(remappingsPath, 'utf8');
+
+  return remappingsContent
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length)
+    .map((line) => (line.slice(-1) === '/' ? line : line + '/'));
+}
+
+export async function getRemappingsFromConfig(foundryConfigPath: string): Promise<string[]> {
+  const foundryConfigContent = await fs.readFile(foundryConfigPath, 'utf8');
+  const regex = /\n+remappings[\s|\n]*\=[\s\n]*\[\n*\s*(?<remappings>[a-zA-Z-="'\/_,\n\s]+)/;
+  const matches = foundryConfigContent.match(regex);
+  if (matches) {
+    return matches
+      .groups!.remappings.split('\n')
       .map((line) => line.trim())
       .filter((line) => line.length)
-      .map((line) => (line.slice(-1) === '/' ? line : line + '/'));
-  } catch (e) {
+      .map((line) => line.replace(',', ''));
+  } else {
     return [];
   }
 }
