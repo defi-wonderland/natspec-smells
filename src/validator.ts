@@ -1,5 +1,5 @@
 import { Config, Natspec, NodeToProcess } from './types';
-import { matchesFunctionKind, countElements } from './utils';
+import { matchesFunctionKind, getElementFrequency } from './utils';
 import {
   EnumDefinition,
   ErrorDefinition,
@@ -67,7 +67,7 @@ export class Validator {
   private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     let alerts: string[] = [];
-    const counter = countElements(natspecParams);
+    const counter = getElementFrequency(natspecParams);
 
     for (let paramName of definedParameters) {
       if (!natspecParams.includes(paramName)) {
@@ -83,7 +83,7 @@ export class Validator {
   private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
     let members = node.vMembers.map((p) => p.name);
     let alerts: string[] = [];
-    const counter = countElements(natspecParams);
+    const counter = getElementFrequency(natspecParams);
 
     for (let paramName of members) {
       if (!natspecParams.includes(paramName)) {
