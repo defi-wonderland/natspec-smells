@@ -45,7 +45,7 @@ function getArguments(): Config {
       },
       exclude: {
         type: 'string',
-        description: 'Glob patterns of files to exclude.',
+        description: 'Glob pattern of files to exclude.',
         default: '',
       },
       root: {

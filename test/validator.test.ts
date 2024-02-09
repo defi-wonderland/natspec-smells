@@ -1,7 +1,7 @@
 import { ContractDefinition } from 'solc-typed-ast';
 import { Validator } from '../src/validator';
 import { NodeToProcess } from '../src/types';
-import { getFileCompiledSource, expectMissingTags } from './utils';
+import { getFileCompiledSource, expectWarning } from './utils';
 import { mockConfig, mockNatspec } from './mocks';
 
 describe('Validator', () => {
@@ -70,8 +70,34 @@ describe('Validator', () => {
       ],
     });
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@param', 1);
-    expect(result).toContainEqual(`@param ${paramName} is missing`);
+    expectWarning(result, `@param ${paramName} is missing`, 1);
+  });
+
+  it('should reveal duplicated natspec for parameters', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    const missingParamName = '_magicNumber';
+    const duplicatedParamName = '_name';
+    const natspec = mockNatspec({
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+      ],
+      params: [
+        {
+          name: duplicatedParamName,
+          content: 'Another parameter description',
+        },
+        {
+          name: duplicatedParamName,
+          content: 'Another parameter description',
+        },
+      ],
+    });
+    const result = validator.validate(node, natspec);
+    expectWarning(result, `@param ${missingParamName} is missing`, 1);
+    expectWarning(result, `@param ${duplicatedParamName} is duplicated`, 1);
   });
 
   it('should reveal missing natspec for returned values', () => {
@@ -95,8 +121,7 @@ describe('Validator', () => {
       ],
     });
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@return', 1);
-    expect(result).toContainEqual(`@return ${paramName} is missing`);
+    expectWarning(result, `@return ${paramName} is missing`, 1);
   });
 
   it('should reveal missing natspec for unnamed returned values', () => {
@@ -117,8 +142,7 @@ describe('Validator', () => {
     });
 
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@return', 1);
-    expect(result).toContainEqual(`@return missing for unnamed return №2`);
+    expectWarning(result, `@return missing for unnamed return №2`, 1);
   });
 
   it('should warn of a missing unnamed return', () => {
@@ -139,8 +163,7 @@ describe('Validator', () => {
     });
 
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@return', 1);
-    expect(result).toContainEqual(`@return missing for unnamed return №2`);
+    expectWarning(result, `@return missing for unnamed return №2`, 1);
   });
 
   it('should warn all returns if the first natspec tag is missing', () => {
@@ -161,9 +184,8 @@ describe('Validator', () => {
     });
 
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@return', 2);
-    expect(result).toContainEqual(`@return _isMagic is missing`);
-    expect(result).toContainEqual(`@return missing for unnamed return №2`);
+    expectWarning(result, `@return _isMagic is missing`, 1);
+    expectWarning(result, `@return missing for unnamed return №2`, 1);
   });
 
   it('should warn if the last natspec tag is missing', () => {
@@ -184,8 +206,7 @@ describe('Validator', () => {
     });
 
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@return', 1);
-    expect(result).toContainEqual(`@return missing for unnamed return №2`);
+    expectWarning(result, `@return missing for unnamed return №2`, 1);
   });
 
   // TODO: Check overridden functions, virtual, etc?
@@ -212,8 +233,7 @@ describe('Validator', () => {
       ],
     });
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@param', 1);
-    expect(result).toContainEqual(`@param ${paramName} is missing`);
+    expectWarning(result, `@param ${paramName} is missing`, 1);
   });
 
   it('should reveal missing natspec for an event', () => {
@@ -228,8 +248,7 @@ describe('Validator', () => {
       ],
     });
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@param', 1);
-    expect(result).toContainEqual(`@param ${paramName} is missing`);
+    expectWarning(result, `@param ${paramName} is missing`, 1);
   });
 
   it('should reveal missing natspec for an modifier', () => {
@@ -260,9 +279,7 @@ describe('Validator', () => {
       ],
     });
     const result = validator.validate(node, natspec);
-    expectMissingTags(result, '@param', 2);
-    expect(result).toContainEqual(`@param ${paramName1} is missing`);
-    expect(result).toContainEqual(`@param ${paramName2} is missing`);
+    expectWarning(result, `@param ${paramName1} is missing`, 1);
   });
 
   it('should ignore the receive function', () => {

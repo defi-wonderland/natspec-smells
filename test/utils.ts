@@ -5,6 +5,7 @@ export async function getFileCompiledSource(filePath: string): Promise<SourceUni
   return new ASTReader().read(compiledFile.data, ASTKind.Any, compiledFile.files)[0];
 }
 
-export function expectMissingTags(warnings: string[], tag: string, numberOfWarnings: number) {
-  expect(warnings.filter((warning) => warning.match(tag)).length).toBe(numberOfWarnings);
+export function expectWarning(warnArray: string[], expectedWarn: string, numberOfWarnings: number) {
+  expect(warnArray).toContain(expectedWarn);
+  expect(warnArray.filter((x) => x == expectedWarn).length).toBe(numberOfWarnings);
 }
