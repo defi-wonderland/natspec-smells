@@ -3,8 +3,8 @@ import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirect
 import * as utils from '../src/utils';
 import { Processor } from '../src/processor';
 import { Validator } from '../src/validator';
-import { getFileCompiledSource } from './utils';
-import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './mocks';
+import { getFileCompiledSource } from './utils/helpers';
+import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './utils/mocks';
 
 describe('Processor', () => {
   const validator = new Validator(mockConfig({}));

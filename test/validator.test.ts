@@ -1,8 +1,8 @@
 import { ContractDefinition } from 'solc-typed-ast';
 import { Validator } from '../src/validator';
 import { NodeToProcess } from '../src/types';
-import { getFileCompiledSource, expectWarning } from './utils';
-import { mockConfig, mockNatspec } from './mocks';
+import { getFileCompiledSource, expectWarning } from './utils/helpers';
+import { mockConfig, mockNatspec } from './utils/mocks';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
