@@ -209,11 +209,38 @@ describe('Validator', () => {
     expectWarning(result, `@return missing for unnamed return №2`, 1);
   });
 
-  // TODO: Check overridden functions, virtual, etc?
-  // it('should reveal missing natspec for an external function');
-  // it('should reveal missing natspec for a public function');
-  // it('should reveal missing natspec for a private function');
-  // it('should reveal missing natspec for an internal function');
+  it('should reveal missing natspec for a private function', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'privateSimple')!;
+    const natspec = mockNatspec({
+      tags: [
+        {
+          name: 'notice',
+          content: 'External function that returns a bool',
+        },
+      ],
+      params: [],
+    });
+
+    const result = validator.validate(node, natspec);
+    expectWarning(result, `@param _magicNumber is missing`, 1);
+  });
+
+  it('should reveal missing natspec for an internal function', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+    const result = validator.validate(
+      node,
+      mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+        ],
+        returns: [],
+      })
+    );
+    expectWarning(result, `@return _returned is missing`, 1);
+  });
 
   it('should reveal missing natspec for a variable', () => {
     node = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;

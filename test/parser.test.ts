@@ -231,16 +231,6 @@ describe('Parser', () => {
       );
     });
 
-    // TODO: Parse natspec for enums
-    // it('should parse enum', async () => {
-    //   const node = contract.vEnums.find(({ name }) => name === 'SimpleEnum')!;
-    //   const result = parseNodeNatspec(node);
-
-    //   expect(result).toEqual(mockNatspec({
-    //     tags: [],
-    //   }));
-    // });
-
     it('should parse external function without parameters', async () => {
       const node = contract.vFunctions.find(({ name }) => name === 'viewFunctionNoParams')!;
       const result = parseNodeNatspec(node);
