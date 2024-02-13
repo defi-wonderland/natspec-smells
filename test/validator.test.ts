@@ -321,6 +321,17 @@ describe('Validator', () => {
     expect(result).toEqual([]);
   });
 
+  it('should validate constructor if configured', () => {
+    // constructorNatspec = false by default
+    node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
+    const result = validator.validate(node, mockNatspec({}));
+    expect(result).toEqual([]);
+    // constructorNatspec = true
+    validator = new Validator(mockConfig({ constructorNatspec: true }));
+    const result2 = validator.validate(node, mockNatspec({}));
+    expectWarning(result2, `@param _randomFlag is missing`, 1);
+  });
+
   describe('with enforced inheritdoc', () => {
     beforeAll(async () => {
       validator = new Validator(mockConfig({ enforceInheritdoc: true }));
