@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective, FunctionKind } from 'solc-typed-ast';
 import * as utils from '../src/utils';
-import { Processor } from '../src/processor';
+import { Processor, IWarning } from '../src/processor';
 import { Validator } from '../src/validator';
 import { getFileCompiledSource } from './utils/helpers';
 import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './utils/mocks';
+import fs from 'fs/promises';
 
 describe('Processor', () => {
   const validator = new Validator(mockConfig({}));
@@ -114,13 +115,23 @@ describe('Processor', () => {
   });
 
   describe('formatLocation', () => {
-    const absolutePath = faker.system.filePath();
-    const contractName = faker.lorem.word();
-    const nodeName = faker.lorem.word();
-    const fileContent = faker.lorem.sentence();
-    const lineNumber = faker.number.int(100);
-    const src = '${lineNumber}:1:0';
-    const getLineNumberFromSrcSpy = jest.spyOn(utils, 'getLineNumberFromSrc').mockImplementation(() => lineNumber);
+    let absolutePath: string;
+    let contractName: string;
+    let nodeName: string;
+    let fileContent: string;
+    let lineNumber: number;
+    let src: string;
+    let getLineNumberFromSrcSpy: any;
+
+    beforeEach(async () => {
+      absolutePath = faker.system.filePath();
+      contractName = faker.lorem.word();
+      nodeName = faker.lorem.word();
+      fileContent = faker.lorem.sentence();
+      lineNumber = faker.number.int(100);
+      src = `${lineNumber}:1:0`;
+      getLineNumberFromSrcSpy = jest.spyOn(utils, 'getLineNumberFromSrc').mockImplementation(() => lineNumber);
+    });
 
     it('should format the location of a node', () => {
       const node = mockNodeToProcess({ name: nodeName, src: src });
@@ -144,6 +155,44 @@ describe('Processor', () => {
 
       expect(getLineNumberFromSrcSpy).toHaveBeenCalledWith(fileContent, src);
       expect(formattedLocation).toEqual(`${absolutePath}:${lineNumber}\n${contractName}:${nodeName}`);
+    });
+  });
+  describe('processSources', () => {
+    let absolutePath: string;
+    let fileContent: string;
+    let fakeSourseUnits: any;
+    let spySelectEligibleNodes: any;
+    let spyValidateNatspec: any;
+    let spyFormatLocation: any;
+
+    const fakeSourcesLength: number = 2;
+    const fakeContractsLength: number = 3;
+    const fakeNodesLength: number = 4;
+
+    beforeEach(async () => {
+      absolutePath = faker.system.filePath();
+      fileContent = faker.lorem.sentence();
+
+      fakeSourseUnits = new Array(fakeSourcesLength);
+      fakeSourseUnits.fill({
+        absolutePath: absolutePath,
+        vContracts: new Array(fakeContractsLength).fill({ name: 'mockContract' }),
+      });
+      spySelectEligibleNodes = jest.spyOn(processor, 'selectEligibleNodes');
+      spyValidateNatspec = jest.spyOn(processor, 'validateNatspec');
+      spyFormatLocation = jest.spyOn(processor, 'formatLocation');
+    });
+
+    it('should return correct sources', async () => {
+      fs.readFile = jest.fn().mockResolvedValue(fileContent);
+      spySelectEligibleNodes.mockReturnValue(new Array(fakeNodesLength));
+      spyValidateNatspec.mockReturnValue(['mockMessage']);
+      spyFormatLocation.mockReturnValue('mockLocation');
+
+      const warnings: IWarning[] = await processor.processSources(fakeSourseUnits);
+      expect(warnings).toHaveLength(fakeSourcesLength * fakeContractsLength * fakeNodesLength);
+      expect(warnings.every((warning) => warning.messages.includes('mockMessage'))).toBeTruthy();
+      expect(warnings.every((warning) => warning.location === 'mockLocation')).toBeTruthy();
     });
   });
 });

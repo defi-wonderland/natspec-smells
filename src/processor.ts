@@ -4,7 +4,7 @@ import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-a
 import { NodeToProcess } from './types';
 import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
 
-interface IWarning {
+export interface IWarning {
   location: string;
   messages: string[];
 }
