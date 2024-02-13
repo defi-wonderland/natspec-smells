@@ -17,7 +17,7 @@ describe('Utils', () => {
   describe('getProjectCompiledSources', () => {
     it('should return correct project compiled sources', async () => {
       const rootPath = './';
-      const includedPaths = ['test/contracts/BasicSample.sol', 'test/contracts/interfacedSample.sol'];
+      const includedPaths = ['test/contracts/BasicSample.sol', 'test/contracts/InterfacedSample.sol'];
       const compiledSources = await utils.getProjectCompiledSources(rootPath, includedPaths);
       expect(compiledSources.length).toBe(2);
     });
