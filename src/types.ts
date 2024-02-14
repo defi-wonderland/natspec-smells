@@ -49,3 +49,8 @@ export type NodeToProcess =
   | ModifierDefinition
   | VariableDeclaration
   | StructDefinition;
+
+export interface IWarning {
+  location: string;
+  messages: string[];
+}

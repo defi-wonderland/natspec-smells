@@ -7,6 +7,9 @@ import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
 
+/**
+ * Main function that processes the sources and prints the warnings
+ */
 (async () => {
   const config: Config = getArguments();
 
@@ -34,6 +37,10 @@ import { Validator } from './validator';
   });
 })().catch(console.error);
 
+/**
+ * Parses the command line arguments and returns the configuration
+ * @returns {Config}
+ */
 function getArguments(): Config {
   return yargs(hideBin(process.argv))
     .strict()
