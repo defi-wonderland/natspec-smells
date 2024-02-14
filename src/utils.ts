@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
+import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 
 export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<string[]> {
   return files.filter((file) => file.endsWith('.sol')).map((file) => path.resolve(file));

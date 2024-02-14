@@ -1,9 +1,8 @@
-import { FunctionDefinition, FunctionKind } from 'solc-typed-ast';
+import fs from 'fs/promises';
+import path from 'path';
 import * as utils from '../src/utils';
 import { mockFoundryConfig, mockFunctionDefinition } from './utils/mocks';
-import fs from 'fs/promises';
-
-import path from 'path';
+import { FunctionKind } from 'solc-typed-ast';
 
 describe('Utils', () => {
   describe('getSolidityFilesAbsolutePaths', () => {
@@ -14,6 +13,7 @@ describe('Utils', () => {
       expect(absolutePaths).toEqual(expectedOutput);
     });
   });
+
   describe('getProjectCompiledSources', () => {
     it('should return correct project compiled sources', async () => {
       const rootPath = './';
@@ -22,6 +22,7 @@ describe('Utils', () => {
       expect(compiledSources.length).toBe(2);
     });
   });
+
   describe('isFileInDirectory', () => {
     it('should return correct result', async () => {
       const directory = 'someDirectory';
@@ -29,6 +30,7 @@ describe('Utils', () => {
       const result = utils.isFileInDirectory(directory, filePath);
       expect(result).toBe(true);
     });
+
     it('should work with deep enclosure', async () => {
       const directory = 'someDirectory';
       const filePath = 'someDirectory/subDirectory/someFile.sol';
@@ -36,6 +38,7 @@ describe('Utils', () => {
       expect(result).toBe(true);
     });
   });
+
   describe('getRemappings', () => {
     it('should return correct remappings from file', async () => {
       const mockRemappingsList = ['test/contracts/=contracts/', 'contract/contracts/=contracts/'];

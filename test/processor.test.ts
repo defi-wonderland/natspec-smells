@@ -1,11 +1,11 @@
+import fs from 'fs/promises';
 import { faker } from '@faker-js/faker';
-import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective, FunctionKind } from 'solc-typed-ast';
 import { Processor, IWarning } from '../src/processor';
 import * as utils from '../src/utils';
 import { Validator } from '../src/validator';
 import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './utils/mocks';
 import { getFileCompiledSource } from './utils/helpers';
-import fs from 'fs/promises';
+import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective, FunctionKind } from 'solc-typed-ast';
 
 describe('Processor', () => {
   const validator = new Validator(mockConfig({}));
@@ -157,6 +157,7 @@ describe('Processor', () => {
       expect(formattedLocation).toEqual(`${absolutePath}:${lineNumber}\n${contractName}:${nodeName}`);
     });
   });
+
   describe('processSources', () => {
     let absolutePath: string;
     let fileContent: string;
