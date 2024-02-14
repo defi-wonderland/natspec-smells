@@ -312,22 +312,12 @@ describe('Validator', () => {
     });
   });
 
-  describe('with disabled contract-level natspec', () => {
-    beforeAll(async () => {
-      validator = new Validator(mockConfig({ contractNatspec: false }));
-      node = contract;
-    });
-    it('should ignore missing natspec for a contract if disabled (by default)', () => {
-      const result = validator.validate(node, mockNatspec({}));
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('with enforeced contract-level natspec', () => {
     beforeAll(() => {
       validator = new Validator(mockConfig({ contractNatspec: true }));
       node = contract;
     });
+
     it('should reveal missing natspec for a contract if enabled', () => {
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`Contract @notice is missing`);
@@ -337,6 +327,18 @@ describe('Validator', () => {
       const result = validator.validate(node, mockNatspec({ tags: [{ name: 'author', content: 'Some author' }] }));
       expect(result).toContainEqual(`Contract @notice is missing`);
       expect(result.length).toBe(1);
+    });
+  });
+
+  describe('with disabled contract-level natspec', () => {
+    beforeAll(async () => {
+      validator = new Validator(mockConfig({ contractNatspec: false }));
+      node = contract;
+    });
+
+    it('should ignore missing natspec for a contract if disabled (by default)', () => {
+      const result = validator.validate(node, mockNatspec({}));
+      expect(result).toEqual([]);
     });
   });
 });
