@@ -311,4 +311,27 @@ describe('Validator', () => {
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
   });
+
+  describe('proccess contract-level natspec', () => {
+    it('should ignore missing natspec for a contract if disabled (by default)', () => {
+      node = contract;
+      const result = validator.validate(node, mockNatspec({}));
+      expect(result).toEqual([]);
+    });
+
+    it('should reveal missing natspec for a contract if enabled', () => {
+      const newValidator = new Validator(mockConfig({ contractNatspec: true }));
+      node = contract;
+      const result = newValidator.validate(node, mockNatspec({}));
+      expect(result).toContainEqual(`Contract @notice is missing`);
+    });
+
+    it('should pay attention only to the @notice tag', () => {
+      const newValidator = new Validator(mockConfig({ contractNatspec: true }));
+      node = contract;
+      const result = newValidator.validate(node, mockNatspec({ tags: [{ name: 'author', content: 'Some author' }] }));
+      expect(result).toContainEqual(`Contract @notice is missing`);
+      expect(result.length).toBe(1);
+    });
+  });
 });
