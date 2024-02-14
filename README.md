@@ -23,7 +23,8 @@ Just run:
 npx @defi-wonderland/natspec-smells --include src --exclude "src/**/*.sol" "(test|scripts)/**/*.sol"
 ```
 
-**Please note** that the `--include` and `--exclude` parameters accept a glob string as input. Therefore, it is necessary to enclose these strings in quotes.
+> [!NOTE]
+> Remember to put quotes around the glob strings when using the `include` and `exclude` options.
 
 ## Recommended setup
 
@@ -42,8 +43,8 @@ npx @defi-wonderland/natspec-smells --include src --exclude "src/**/*.sol" "(tes
 
    /** @type {import('@defi-wonderland/natspec-smells').Config} */
    module.exports = {
-     include: "src/**/*.sol",
-     exclude: "(test|scripts)/**/*.sol",
+     include: 'src/**/*.sol',
+     exclude: '(test|scripts)/**/*.sol',
    };
    ```
 

@@ -12,10 +12,11 @@
       }
     },
     {
-      "files": "**.json",
+      "files": ["**.json", "**.md"],
       "options": {
         "tabWidth": 2,
-        "printWidth": 200
+        "printWidth": 200,
+        "singleQuote": true
       }
     }
   ]
