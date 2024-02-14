@@ -321,15 +321,28 @@ describe('Validator', () => {
     expect(result).toEqual([]);
   });
 
-  it('should validate constructor if configured', () => {
-    // constructorNatspec = false by default
-    node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
-    const result = validator.validate(node, mockNatspec({}));
-    expect(result).toEqual([]);
-    // constructorNatspec = true
-    validator = new Validator(mockConfig({ constructorNatspec: true }));
-    const result2 = validator.validate(node, mockNatspec({}));
-    expectWarning(result2, `@param _randomFlag is missing`, 1);
+  describe('with enforced constructor natspec', () => {
+    beforeAll(async () => {
+      validator = new Validator(mockConfig({ constructorNatspec: true }));
+      node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
+    });
+
+    it('should reveal missing constructor natspec', () => {
+      const result = validator.validate(node, mockNatspec({}));
+      expectWarning(result, `@param _randomFlag is missing`, 1);
+    });
+  });
+
+  describe('with disabled constructor natspec', () => {
+    beforeAll(async () => {
+      validator = new Validator(mockConfig({ constructorNatspec: false }));
+      node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
+    });
+
+    it('should ignore missing constructor natspec', () => {
+      const result = validator.validate(node, mockNatspec({}));
+      expect(result).toEqual([]);
+    });
   });
 
   describe('with enforced inheritdoc', () => {
