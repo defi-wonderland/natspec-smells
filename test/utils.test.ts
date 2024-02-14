@@ -66,6 +66,17 @@ describe('Utils', () => {
       expect(remappings).toEqual(expectedOutput);
     });
 
+    it('should return correct remappings from config with one-liner', async () => {
+      const mockRemappingsList = ['"ds-test/=node_modules/ds-test/src", "forge-std/=node_modules/forge-std/src"'];
+      const expectedOutput = ['ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src'];
+
+      const mockConfig = mockFoundryConfig(mockRemappingsList);
+      fs.readFile = jest.fn().mockResolvedValueOnce(mockConfig);
+
+      const remappings = await utils.getRemappingsFromConfig('');
+      expect(remappings).toEqual(expectedOutput);
+    });
+
     it('should return right remappings from file first', async () => {
       const spy = jest.spyOn(utils, 'getRemappingsFromFile');
       spy.mockResolvedValueOnce(['file']);
@@ -73,6 +84,7 @@ describe('Utils', () => {
       const output = await utils.getRemappings('');
       expect(output).toEqual(['file']);
     });
+
     it('should return remappings from config if fails', async () => {
       const spyGetRemappingsFromFile = jest.spyOn(utils, 'getRemappingsFromFile');
       spyGetRemappingsFromFile.mockRejectedValueOnce(new Error());
@@ -89,6 +101,7 @@ describe('Utils', () => {
       expect(output).toEqual([]);
     });
   });
+
   describe('getLineNumberFromSrc', () => {
     it('should return correct line number', async () => {
       const mockFileContent = '0\n1\n2\n3\n';

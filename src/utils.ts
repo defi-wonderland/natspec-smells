@@ -65,9 +65,9 @@ export async function getRemappingsFromConfig(foundryConfigPath: string): Promis
   const matches = foundryConfigContent.match(regex);
   if (matches) {
     return matches
-      .groups!.remappings.split('\n')
+      .groups!.remappings.split(',')
       .map((line) => line.trim())
-      .map((line) => line.replace(',', ''))
+      .map((line) => line.replace(/["']/g, ''))
       .filter((line) => line.length);
   } else {
     return [];
