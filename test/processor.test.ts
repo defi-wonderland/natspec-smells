@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { ContractDefinition, FunctionDefinition, UserDefinedType, UsingForDirective, FunctionKind } from 'solc-typed-ast';
-import * as utils from '../src/utils';
 import { Processor, IWarning } from '../src/processor';
+import * as utils from '../src/utils';
 import { Validator } from '../src/validator';
-import { getFileCompiledSource } from './utils/helpers';
 import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './utils/mocks';
+import { getFileCompiledSource } from './utils/helpers';
 import fs from 'fs/promises';
 
 describe('Processor', () => {
