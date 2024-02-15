@@ -40,46 +40,6 @@ describe('Utils', () => {
   });
 
   describe('getRemappings', () => {
-    it('should return correct remappings from file', async () => {
-      const mockRemappingsList = ['test/contracts/=contracts/', 'contract/contracts/=contracts/'];
-      fs.readFile = jest.fn().mockResolvedValueOnce(mockRemappingsList.join('\n'));
-      const remappings = await utils.getRemappingsFromFile('');
-      expect(remappings).toEqual(mockRemappingsList);
-    });
-
-    it('should return correct remappings from config', async () => {
-      const mockRemappingsList = [
-        '\n\n',
-        '@0x/contracts-utils/=../node_modules/@0x/contracts-utils/',
-        '\n\n\n',
-        '       @0x/c!@#%@$^#ghj45h7    /=121%Y&EVBH%^43text',
-        '\n\n     ',
-        '\n3215135&Q!~8763!!=/wet24hwevv//test',
-      ];
-      const expectedOutput = [
-        '@0x/contracts-utils/=../node_modules/@0x/contracts-utils/',
-        '@0x/c!@#%@$^#ghj45h7    /=121%Y&EVBH%^43text',
-        '3215135&Q!~8763!!=/wet24hwevv//test',
-      ];
-
-      const mockConfig = mockFoundryConfig(mockRemappingsList);
-      fs.readFile = jest.fn().mockResolvedValueOnce(mockConfig);
-
-      const remappings = await utils.getRemappingsFromConfig('');
-      expect(remappings).toEqual(expectedOutput);
-    });
-
-    it('should return correct remappings from config with one-liner', async () => {
-      const mockRemappingsList = ['"ds-test/=node_modules/ds-test/src", "forge-std/=node_modules/forge-std/src"'];
-      const expectedOutput = ['ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src'];
-
-      const mockConfig = mockFoundryConfig(mockRemappingsList);
-      fs.readFile = jest.fn().mockResolvedValueOnce(mockConfig);
-
-      const remappings = await utils.getRemappingsFromConfig('');
-      expect(remappings).toEqual(expectedOutput);
-    });
-
     it('should return right remappings from file first', async () => {
       const spy = jest.spyOn(utils, 'getRemappingsFromFile');
       spy.mockResolvedValueOnce(['file']);
@@ -102,6 +62,75 @@ describe('Utils', () => {
     it('should return empty array if all fails', async () => {
       const output = await utils.getRemappings('wrong/path');
       expect(output).toEqual([]);
+    });
+  });
+
+  describe('getRemappingsFromFile', () => {
+    it('should return correct remappings from file', async () => {
+      const mockRemappingsList = ['test/contracts/=contracts/', 'contract/contracts/=contracts/'];
+      fs.readFile = jest.fn().mockResolvedValueOnce(mockRemappingsList.join('\n'));
+      const remappings = await utils.getRemappingsFromFile('');
+      expect(remappings).toEqual(mockRemappingsList);
+    });
+  });
+
+  describe('getRemappingsFromConfig', () => {
+    it('should return correct remappings from config', async () => {
+      const remappings = new Map<string[], string[]>();
+
+      remappings.set(
+        [], // Expected value
+        [''] // Remappings strings that when parsed should return the expected value
+      );
+
+      remappings.set(
+        ['ds-test/=lib/ds-test/src'], // Expected value
+        [`remappings = [ 'ds-test/=lib/ds-test/src' ]`] // Remappings strings that when parsed should return the expected value
+      );
+
+      remappings.set(
+        ['ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src'], // Expected value
+        [
+          // Remappings strings that when parsed should return the expected value
+          `remappings = [ 'ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src' ]`,
+          `remappings= [ "ds-test/=node_modules/ds-test/src", 'forge-std/=node_modules/forge-std/src' ]`,
+          `remappings   =     ["ds-test/=node_modules/ds-test/src","forge-std/=node_modules/forge-std/src"]`,
+          `remappings   =     [
+            "ds-test/=node_modules/ds-test/src", "forge-std/=node_modules/forge-std/src" ]`,
+          `remappings   =[
+              "ds-test/=node_modules/ds-test/src",
+              "forge-std/=node_modules/forge-std/src" ]`,
+          `remappings = [
+
+            "ds-test/=node_modules/ds-test/src",    
+            "forge-std/=node_modules/forge-std/src",     
+          ]`,
+          `remappings = [ 'ds-test/=node_modules/ds-test/src',
+            'forge-std/=node_modules/forge-std/src'
+          ]`,
+        ]
+      );
+
+      remappings.set(
+        ['@0x/contracts-utils/=../../node_modules/@0x/contracts-utils/', 'ERC721A/=lib/ERC721A/contracts/'], // Expected value
+        [
+          // Remappings strings that when parsed should return the expected value
+          `remappings = [
+            '@0x/contracts-utils/=../../node_modules/@0x/contracts-utils/',
+            'ERC721A/=lib/ERC721A/contracts/',
+          ]`,
+        ]
+      );
+
+      for (const [expectedRemappings, remappingsLines] of remappings) {
+        for (const remappingsLine of remappingsLines) {
+          const mockConfig = mockFoundryConfig(remappingsLine);
+          fs.readFile = jest.fn().mockResolvedValueOnce(mockConfig);
+
+          const remappings = await utils.getRemappingsFromConfig('');
+          expect(remappings).toEqual(expectedRemappings);
+        }
+      }
     });
   });
 

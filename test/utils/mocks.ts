@@ -28,7 +28,7 @@ export function mockConfig(mockConfig: Partial<Config>): Config {
   return mockConfig as Config;
 }
 
-export function mockFoundryConfig(remappings: string[]): string {
+export function mockFoundryConfig(remappings: string): string {
   return `
     [profile.default]
     src = 'src'
@@ -36,7 +36,7 @@ export function mockFoundryConfig(remappings: string[]): string {
     test = 'test'
     path_pattern = '*.t.sol'
     libs = ["lib"]
-    remappings = [${remappings.join(',\n')}]
+    ${remappings}
     allow_paths = ["../node_modules"]
     cache_path = 'foundry-cache'
     optimizer_runs = 1000000
