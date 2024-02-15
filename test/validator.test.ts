@@ -1,12 +1,10 @@
 import { Validator } from '../src/validator';
-import { NodeToProcess } from '../src/types';
-import { getFileCompiledSource, expectWarning } from './utils/helpers';
+import { getFileCompiledSource, expectWarning, findNode } from './utils/helpers';
 import { mockConfig, mockNatspec } from './utils/mocks';
 import { ContractDefinition } from 'solc-typed-ast';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
-  let node: NodeToProcess;
   let validator: Validator = new Validator(mockConfig({}));
 
   beforeAll(async () => {
@@ -15,7 +13,7 @@ describe('Validator', () => {
   });
 
   it('should validate proper natspec', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    const node = findNode(contract.vFunctions, 'externalSimple');
     const natspec = mockNatspec({
       tags: [
         {
@@ -53,7 +51,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for parameters', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    const node = findNode(contract.vFunctions, 'externalSimple');
     const paramName = '_magicNumber';
     const natspec = mockNatspec({
       tags: [
@@ -74,7 +72,7 @@ describe('Validator', () => {
   });
 
   it('should reveal duplicated natspec for parameters', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    const node = findNode(contract.vFunctions, 'externalSimple');
     const missingParamName = '_magicNumber';
     const duplicatedParamName = '_name';
     const natspec = mockNatspec({
@@ -101,7 +99,7 @@ describe('Validator', () => {
   });
 
   it('should reveal duplicated natspec for struct members', () => {
-    node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+    const node = findNode(contract.vStructs, 'TestStruct');
     const missingParamName = 'someAddress';
     const duplicatedParamName = 'someNumber';
     const natspec = mockNatspec({
@@ -128,7 +126,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for returned values', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
+    const node = findNode(contract.vFunctions, 'externalSimple');
     const paramName = '_isMagic';
     const natspec = mockNatspec({
       tags: [
@@ -153,7 +151,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for unnamed returned values', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
+    const node = findNode(contract.vFunctions, 'externalSimpleMultipleReturn');
     const natspec = mockNatspec({
       tags: [
         {
@@ -174,7 +172,7 @@ describe('Validator', () => {
   });
 
   it('should warn of a missing unnamed return', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleUnnamedReturn')!;
+    const node = findNode(contract.vFunctions, 'externalSimpleMultipleUnnamedReturn');
     const natspec = mockNatspec({
       tags: [
         {
@@ -195,7 +193,7 @@ describe('Validator', () => {
   });
 
   it('should warn all returns if the first natspec tag is missing', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
+    const node = findNode(contract.vFunctions, 'externalSimpleMultipleReturn');
     const natspec = mockNatspec({
       tags: [
         {
@@ -217,7 +215,7 @@ describe('Validator', () => {
   });
 
   it('should warn if the last natspec tag is missing', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'externalSimpleMultipleReturn')!;
+    const node = findNode(contract.vFunctions, 'externalSimpleMultipleReturn');
     const natspec = mockNatspec({
       tags: [
         {
@@ -238,7 +236,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for a private function', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'privateSimple')!;
+    const node = findNode(contract.vFunctions, 'privateSimple');
     const natspec = mockNatspec({
       tags: [
         {
@@ -254,7 +252,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for an internal function', () => {
-    node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+    const node = findNode(contract.vFunctions, 'overriddenFunction');
     const result = validator.validate(
       node,
       mockNatspec({
@@ -271,13 +269,13 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for a constant', () => {
-    node = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;
+    const node = findNode(contract.vStateVariables, '_EMPTY_STRING');
     const result = validator.validate(node, mockNatspec({}));
     expect(result).toContainEqual(`Natspec is missing`);
   });
 
   it('should validate @notice for a public variable', () => {
-    node = contract.vStateVariables.find(({ name }) => name === 'somePublicNumber')!;
+    const node = findNode(contract.vStateVariables, 'somePublicNumber');
     const result = validator.validate(
       node,
       mockNatspec({
@@ -293,7 +291,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for an error', () => {
-    node = contract.vErrors.find(({ name }) => name === 'BasicSample_SomeError')!;
+    const node = findNode(contract.vErrors, 'BasicSample_SomeError');
     const paramName = '_param1';
     const natspec = mockNatspec({
       tags: [
@@ -308,7 +306,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for an event', () => {
-    node = contract.vEvents.find(({ name }) => name === 'BasicSample_BasicEvent')!;
+    const node = findNode(contract.vEvents, 'BasicSample_BasicEvent');
     const paramName = '_param1';
     const natspec = mockNatspec({
       tags: [
@@ -323,7 +321,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for an modifier', () => {
-    node = contract.vModifiers.find(({ name }) => name === 'transferFee')!;
+    const node = findNode(contract.vModifiers, 'transferFee');
     const paramName = '_receiver';
     const natspec = mockNatspec({
       tags: [
@@ -338,7 +336,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for a struct', () => {
-    node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+    const node = findNode(contract.vStructs, 'TestStruct');
     const paramName1 = 'someAddress';
     const natspec = mockNatspec({
       tags: [
@@ -353,13 +351,13 @@ describe('Validator', () => {
   });
 
   it('should ignore the receive function', () => {
-    node = contract.vFunctions.find(({ kind }) => kind === 'receive')!;
+    const node = contract.vFunctions.find(({ kind }) => kind === 'receive')!;
     const result = validator.validate(node, mockNatspec({}));
     expect(result).toEqual([]);
   });
 
   it('should ignore the callback function', () => {
-    node = contract.vFunctions.find(({ kind }) => kind === 'fallback')!;
+    const node = contract.vFunctions.find(({ kind }) => kind === 'fallback')!;
     const result = validator.validate(node, mockNatspec({}));
     expect(result).toEqual([]);
   });
@@ -367,10 +365,10 @@ describe('Validator', () => {
   describe('with enforced constructor natspec', () => {
     beforeAll(async () => {
       validator = new Validator(mockConfig({ constructorNatspec: true }));
-      node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
     });
 
     it('should reveal missing constructor natspec', () => {
+      const node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
       const result = validator.validate(node, mockNatspec({}));
       expectWarning(result, `@param _randomFlag is missing`, 1);
     });
@@ -379,10 +377,10 @@ describe('Validator', () => {
   describe('with disabled constructor natspec', () => {
     beforeAll(async () => {
       validator = new Validator(mockConfig({ constructorNatspec: false }));
-      node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
     });
 
     it('should ignore missing constructor natspec', () => {
+      const node = contract.vFunctions.find(({ kind }) => kind === 'constructor')!;
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toEqual([]);
     });
@@ -394,7 +392,7 @@ describe('Validator', () => {
     });
 
     it('should return no warnings if inheritdoc is in place', () => {
-      node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+      const node = findNode(contract.vFunctions, 'overriddenFunction');
       const natspec = mockNatspec({
         inheritdoc: { content: 'AbstractBasic' },
       });
@@ -404,19 +402,19 @@ describe('Validator', () => {
     });
 
     it('should reveal missing inheritdoc for an overridden function', () => {
-      node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+      const node = findNode(contract.vFunctions, 'overriddenFunction');
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
 
     it('should reveal missing inheritdoc for a virtual function', () => {
-      node = contract.vFunctions.find(({ name }) => name === 'virtualFunction')!;
+      const node = findNode(contract.vFunctions, 'virtualFunction');
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
 
     it('should reveal missing inheritdoc for a public variable', () => {
-      node = contract.vStateVariables.find(({ name }) => name === 'somePublicNumber')!;
+      const node = findNode(contract.vStateVariables, 'somePublicNumber');
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
