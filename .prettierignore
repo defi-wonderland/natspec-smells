@@ -23,3 +23,4 @@ yarn-error.log
 .husky/_/husky.sh
 yarn.lock
 LICENSE
+coverage

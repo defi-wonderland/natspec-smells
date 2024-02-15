@@ -31,6 +31,13 @@ contract BasicSample is AbstractBasic {
     bytes32 internal constant _EMPTY_STRING = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
 
     /**
+     * @notice A public state variable
+     */
+    uint256 public somePublicNumber;
+
+    constructor(bool _randomFlag) {}
+
+    /**
      * @notice External function that returns a bool
      * @dev A dev comment
      * @param  _magicNumber A parameter description
