@@ -128,6 +128,7 @@ describe('Validator', () => {
   });
 
   it('should reveal missing natspec for returned values', () => {
+    node = contract.vFunctions.find(({ name }) => name === 'externalSimple')!;
     const paramName = '_isMagic';
     const natspec = mockNatspec({
       tags: [
