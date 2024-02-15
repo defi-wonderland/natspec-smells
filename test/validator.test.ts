@@ -100,6 +100,33 @@ describe('Validator', () => {
     expectWarning(result, `@param ${duplicatedParamName} is duplicated`, 1);
   });
 
+  it('should reveal duplicated natspec for struct members', () => {
+    node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
+    const missingParamName = 'someAddress';
+    const duplicatedParamName = 'someNumber';
+    const natspec = mockNatspec({
+      tags: [
+        {
+          name: 'notice',
+          content: 'Some notice of the struct',
+        },
+      ],
+      params: [
+        {
+          name: duplicatedParamName,
+          content: 'Another parameter description',
+        },
+        {
+          name: duplicatedParamName,
+          content: 'Another parameter description',
+        },
+      ],
+    });
+    const result = validator.validate(node, natspec);
+    expectWarning(result, `@param ${missingParamName} is missing`, 1);
+    expectWarning(result, `@param ${duplicatedParamName} is duplicated`, 1);
+  });
+
   it('should reveal missing natspec for returned values', () => {
     const paramName = '_isMagic';
     const natspec = mockNatspec({
@@ -242,10 +269,26 @@ describe('Validator', () => {
     expectWarning(result, `@return _returned is missing`, 1);
   });
 
-  it('should reveal missing natspec for a variable', () => {
+  it('should reveal missing natspec for a constant', () => {
     node = contract.vStateVariables.find(({ name }) => name === '_EMPTY_STRING')!;
     const result = validator.validate(node, mockNatspec({}));
     expect(result).toContainEqual(`Natspec is missing`);
+  });
+
+  it('should validate @notice for a public variable', () => {
+    node = contract.vStateVariables.find(({ name }) => name === 'somePublicNumber')!;
+    const result = validator.validate(
+      node,
+      mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'Some public number',
+          },
+        ],
+      })
+    );
+    expect(result).toEqual([]);
   });
 
   it('should reveal missing natspec for an error', () => {
@@ -296,7 +339,6 @@ describe('Validator', () => {
   it('should reveal missing natspec for a struct', () => {
     node = contract.vStructs.find(({ name }) => name === 'TestStruct')!;
     const paramName1 = 'someAddress';
-    const paramName2 = 'someNumber';
     const natspec = mockNatspec({
       tags: [
         {
@@ -350,6 +392,16 @@ describe('Validator', () => {
       validator = new Validator(mockConfig({ enforceInheritdoc: true }));
     });
 
+    it('should return no warnings if inheritdoc is in place', () => {
+      node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
+      const natspec = mockNatspec({
+        inheritdoc: { content: 'AbstractBasic' },
+      });
+
+      const result = validator.validate(node, natspec);
+      expect(result).toEqual([]);
+    });
+
     it('should reveal missing inheritdoc for an overridden function', () => {
       node = contract.vFunctions.find(({ name }) => name === 'overriddenFunction')!;
       const result = validator.validate(node, mockNatspec({}));
@@ -358,6 +410,12 @@ describe('Validator', () => {
 
     it('should reveal missing inheritdoc for a virtual function', () => {
       node = contract.vFunctions.find(({ name }) => name === 'virtualFunction')!;
+      const result = validator.validate(node, mockNatspec({}));
+      expect(result).toContainEqual(`@inheritdoc is missing`);
+    });
+
+    it('should reveal missing inheritdoc for a public variable', () => {
+      node = contract.vStateVariables.find(({ name }) => name === 'somePublicNumber')!;
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`@inheritdoc is missing`);
     });
