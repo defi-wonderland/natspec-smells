@@ -161,7 +161,7 @@ describe('Processor', () => {
   describe('processSources', () => {
     let absolutePath: string;
     let fileContent: string;
-    let fakeSourseUnits: any;
+    let fakeSourceUnits: any;
     let spySelectEligibleNodes: any;
     let spyValidateNatspec: any;
     let spyFormatLocation: any;
@@ -174,8 +174,8 @@ describe('Processor', () => {
       absolutePath = faker.system.filePath();
       fileContent = faker.lorem.sentence();
 
-      fakeSourseUnits = new Array(fakeSourcesLength);
-      fakeSourseUnits.fill({
+      fakeSourceUnits = new Array(fakeSourcesLength);
+      fakeSourceUnits.fill({
         absolutePath: absolutePath,
         vContracts: new Array(fakeContractsLength).fill({ name: 'mockContract' }),
       });
@@ -190,7 +190,7 @@ describe('Processor', () => {
       spyValidateNatspec.mockReturnValue(['mockMessage']);
       spyFormatLocation.mockReturnValue('mockLocation');
 
-      const warnings: IWarning[] = await processor.processSources(fakeSourseUnits);
+      const warnings: IWarning[] = await processor.processSources(fakeSourceUnits);
       expect(warnings).toHaveLength(fakeSourcesLength * fakeContractsLength * fakeNodesLength);
       expect(warnings.every((warning) => warning.messages.includes('mockMessage'))).toBeTruthy();
       expect(warnings.every((warning) => warning.location === 'mockLocation')).toBeTruthy();
