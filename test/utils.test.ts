@@ -84,12 +84,17 @@ describe('Utils', () => {
       );
 
       remappings.set(
-        ['ds-test/=lib/ds-test/src'], // Expected value
-        [`remappings = [ 'ds-test/=lib/ds-test/src' ]`] // Remappings strings that when parsed should return the expected value
+        ['ds-test/=lib/ds-test/src/'], // Expected value
+        [`remappings = [ 'ds-test/=lib/ds-test/src/' ]`] // Remappings strings that when parsed should return the expected value
       );
 
       remappings.set(
-        ['ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src'], // Expected value
+        ['ds-test=lib/ds-test/src'], // Expected value
+        [`remappings = [ 'ds-test=lib/ds-test/src' ]`] // Remappings strings that when parsed should return the expected value
+      );
+
+      remappings.set(
+        ['ds-test/=node_modules/ds-test/src/', 'forge-std/=node_modules/forge-std/src/'], // Expected value
         [
           // Remappings strings that when parsed should return the expected value
           `remappings = [ 'ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src' ]`,
