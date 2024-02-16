@@ -134,6 +134,27 @@ describe('Utils', () => {
     });
   });
 
+  describe('fixTrailingSlash', () => {
+    const key = 'ds-test';
+    const value = 'node_modules/ds-test/src';
+
+    it('should add a missing trailing slash', async () => {
+      expect(utils.fixTrailingSlash(`${key}/=${value}`)).toEqual(`${key}/=${value}/`);
+    });
+
+    it('should remove an extra trailing slash', async () => {
+      expect(utils.fixTrailingSlash(`${key}=${value}/`)).toEqual(`${key}=${value}`);
+    });
+
+    it('should not change the line if the trailing slash is correctly placed', async () => {
+      expect(utils.fixTrailingSlash(`${key}/=${value}/`)).toEqual(`${key}/=${value}/`);
+    });
+
+    it('should not change the line if the trailing slash is not needed', async () => {
+      expect(utils.fixTrailingSlash(`${key}=${value}`)).toEqual(`${key}=${value}`);
+    });
+  });
+
   describe('getLineNumberFromSrc', () => {
     it('should return correct line number', async () => {
       const mockFileContent = '0\n1\n2\n3\n';
