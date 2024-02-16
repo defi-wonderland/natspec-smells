@@ -56,7 +56,7 @@ export async function getRemappingsFromFile(remappingsPath: string): Promise<str
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length)
-    .map((line) => (line.slice(-1) === '/' ? line : line + '/'));
+    .map((line) => sanitizeRemapping(line));
 }
 
 export async function getRemappingsFromConfig(foundryConfigPath: string): Promise<string[]> {
@@ -68,9 +68,22 @@ export async function getRemappingsFromConfig(foundryConfigPath: string): Promis
       .groups!.remappings.split(',')
       .map((line) => line.trim())
       .map((line) => line.replace(/["']/g, ''))
-      .filter((line) => line.length);
+      .filter((line) => line.length)
+      .map((line) => sanitizeRemapping(line));
   } else {
     return [];
+  }
+}
+
+export function sanitizeRemapping(line: string): string {
+  // Make sure the key and the value both either have or don't have a trailing slash
+  const [key, value] = line.split('=');
+  const slashNeeded = key.endsWith('/');
+
+  if (slashNeeded) {
+    return value.endsWith('/') ? line : `${line}/`;
+  } else {
+    return value.endsWith('/') ? line.slice(0, -1) : line;
   }
 }
 
