@@ -84,12 +84,17 @@ describe('Utils', () => {
       );
 
       remappings.set(
-        ['ds-test/=lib/ds-test/src'], // Expected value
-        [`remappings = [ 'ds-test/=lib/ds-test/src' ]`] // Remappings strings that when parsed should return the expected value
+        ['ds-test/=lib/ds-test/src/'], // Expected value
+        [`remappings = [ 'ds-test/=lib/ds-test/src/' ]`] // Remappings strings that when parsed should return the expected value
       );
 
       remappings.set(
-        ['ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src'], // Expected value
+        ['ds-test=lib/ds-test/src'], // Expected value
+        [`remappings = [ 'ds-test=lib/ds-test/src' ]`] // Remappings strings that when parsed should return the expected value
+      );
+
+      remappings.set(
+        ['ds-test/=node_modules/ds-test/src/', 'forge-std/=node_modules/forge-std/src/'], // Expected value
         [
           // Remappings strings that when parsed should return the expected value
           `remappings = [ 'ds-test/=node_modules/ds-test/src', 'forge-std/=node_modules/forge-std/src' ]`,
@@ -131,6 +136,27 @@ describe('Utils', () => {
           expect(remappings).toEqual(expectedRemappings);
         }
       }
+    });
+  });
+
+  describe('sanitizeRemapping', () => {
+    const key = 'ds-test';
+    const value = 'node_modules/ds-test/src';
+
+    it('should add a missing trailing slash', async () => {
+      expect(utils.sanitizeRemapping(`${key}/=${value}`)).toEqual(`${key}/=${value}/`);
+    });
+
+    it('should remove an extra trailing slash', async () => {
+      expect(utils.sanitizeRemapping(`${key}=${value}/`)).toEqual(`${key}=${value}`);
+    });
+
+    it('should not change the line if the trailing slash is correctly placed', async () => {
+      expect(utils.sanitizeRemapping(`${key}/=${value}/`)).toEqual(`${key}/=${value}/`);
+    });
+
+    it('should not change the line if the trailing slash is not needed', async () => {
+      expect(utils.sanitizeRemapping(`${key}=${value}`)).toEqual(`${key}=${value}`);
     });
   });
 
