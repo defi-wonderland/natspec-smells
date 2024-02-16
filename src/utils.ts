@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
+import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 
 /**
  * Returns the absolute paths of the Solidity files
@@ -60,11 +60,11 @@ export function isFileInDirectory(directory: string, filePath: string): boolean 
 export async function getRemappings(rootPath: string): Promise<string[]> {
   // First try the remappings.txt file
   try {
-    return await getRemappingsFromFile(path.join(rootPath, 'remappings.txt'));
+    return await exports.getRemappingsFromFile(path.join(rootPath, 'remappings.txt'));
   } catch (e) {
     // If the remappings file does not exist, try foundry.toml
     try {
-      return await getRemappingsFromConfig(path.join(rootPath, 'foundry.toml'));
+      return await exports.getRemappingsFromConfig(path.join(rootPath, 'foundry.toml'));
     } catch {
       return [];
     }
@@ -93,14 +93,14 @@ export async function getRemappingsFromFile(remappingsPath: string): Promise<str
  */
 export async function getRemappingsFromConfig(foundryConfigPath: string): Promise<string[]> {
   const foundryConfigContent = await fs.readFile(foundryConfigPath, 'utf8');
-  const regex = /\n+remappings[\s|\n]*\=[\s\n]*\[\n*\s*(?<remappings>[a-zA-Z-="'\/_,\n\s]+)/;
+  const regex = /remappings[\s|\n]*\=[\s\n]*\[(?<remappings>[^\]]+)]/;
   const matches = foundryConfigContent.match(regex);
   if (matches) {
     return matches
-      .groups!.remappings.split('\n')
+      .groups!.remappings.split(',')
       .map((line) => line.trim())
-      .filter((line) => line.length)
-      .map((line) => line.replace(',', ''));
+      .map((line) => line.replace(/["']/g, ''))
+      .filter((line) => line.length);
   } else {
     return [];
   }

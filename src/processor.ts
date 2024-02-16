@@ -1,12 +1,14 @@
 import fs from 'fs/promises';
 import { Validator } from './validator';
-import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
-import { NodeToProcess, IWarning } from './types';
+import { NodeToProcess } from './types';
 import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
+import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 
-/**
- * Processor class that processes the source files
- */
+export interface IWarning {
+  location: string;
+  messages: string[];
+}
+
 export class Processor {
   constructor(private validator: Validator) {}
 
