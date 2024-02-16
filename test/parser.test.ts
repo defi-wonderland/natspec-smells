@@ -379,19 +379,10 @@ describe('Parser', () => {
       const node = findNode(contract.vFunctions, '_viewBlockLinterFail');
       const result = parseNodeNatspec(node);
 
-      expect(result).toEqual(
-        mockNatspec({
-          tags: [
-            {
-              name: 'notice',
-              content: 'Some text',
-            },
-          ],
-        })
-      );
+      expect(result).toEqual(mockNatspec({}));
     });
 
-    it('should parse block natspec with invalid formatting', async () => {
+    it('should parse natspec with invalid formatting', async () => {
       const node = findNode(contract.vFunctions, '_viewLinterFail');
       const result = parseNodeNatspec(node);
 
