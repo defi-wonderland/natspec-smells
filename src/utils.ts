@@ -16,7 +16,7 @@ export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<st
  * Returns the list of source units of the compiled Solidity files
  * @param {string} rootPath - The root path of the project
  * @param {string[]} includedPaths - The list of included paths
- * @returns
+ * @returns {SourceUnit[]} - The list of source units extracted from the compiled files
  */
 export async function getProjectCompiledSources(rootPath: string, includedPaths: string[]): Promise<SourceUnit[]> {
   // Fetch Solidity files from the specified directory
@@ -41,7 +41,7 @@ export async function getProjectCompiledSources(rootPath: string, includedPaths:
  * Checks if the file path is in the specified directory
  * @param {string} directory - The directory path
  * @param {string} filePath - The file path
- * @returns
+ * @returns {boolean} - True if the file is in the directory
  */
 export function isFileInDirectory(directory: string, filePath: string): boolean {
   // Convert both paths to absolute and normalize them
@@ -107,8 +107,12 @@ export async function getRemappingsFromConfig(foundryConfigPath: string): Promis
   }
 }
 
+/**
+ * Makes sure both sides of a remapping either have or don't have a trailing slash
+ * @param {string} line - A line from the remappings array
+ * @returns {string} - The sanitized line
+ */
 export function sanitizeRemapping(line: string): string {
-  // Make sure the key and the value both either have or don't have a trailing slash
   const [key, value] = line.split('=');
   const slashNeeded = key.endsWith('/');
 

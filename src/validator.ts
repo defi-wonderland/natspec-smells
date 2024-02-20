@@ -123,8 +123,8 @@ export class Validator {
   /**
    * Validates the natspec for return parameters.
    * All returned parameters should have natspec
-   * @param {FunctionDefinition} node
-   * @param {(string | undefined)[]} natspecReturns
+   * @param {FunctionDefinition} node - The function node
+   * @param {(string | undefined)[]} natspecReturns - The list of `return` tags from the natspec
    * @returns {string[]} - The list of alerts
    */
   private validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {

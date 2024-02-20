@@ -39,7 +39,7 @@ import { Validator } from './validator';
 
 /**
  * Parses the command line arguments and returns the configuration
- * @returns {Config}
+ * @returns {Config} The config object
  */
 function getArguments(): Config {
   return yargs(hideBin(process.argv))
