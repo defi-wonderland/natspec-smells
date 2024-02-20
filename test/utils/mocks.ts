@@ -1,5 +1,5 @@
-import { SourceUnit, ContractDefinition, FunctionDefinition } from 'solc-typed-ast';
-import { Natspec, NodeToProcess, Config } from '../src/types';
+import { FunctionDefinition } from 'solc-typed-ast';
+import { Natspec, NodeToProcess, Config } from '../../src/types';
 
 export function mockNatspec(mockNatspec: Partial<Natspec>): Natspec {
   const natspec: Natspec = {
@@ -24,14 +24,22 @@ export function mockFunctionDefinition(mockFunctionDefinition: Partial<FunctionD
   return functionDefinition;
 }
 
-export function mockSourceUnit(mockSourceUnit: Partial<SourceUnit>): SourceUnit {
-  return mockSourceUnit as SourceUnit;
-}
-
-export function mockContractDefinition(mockContractDefinition: Partial<ContractDefinition>): ContractDefinition {
-  return mockContractDefinition as ContractDefinition;
-}
-
 export function mockConfig(mockConfig: Partial<Config>): Config {
   return mockConfig as Config;
+}
+
+export function mockFoundryConfig(remappings: string): string {
+  return `
+    [profile.default]
+    src = 'src'
+    out = 'foundry-artifacts'
+    test = 'test'
+    path_pattern = '*.t.sol'
+    libs = ["lib"]
+    ${remappings}
+    allow_paths = ["../node_modules"]
+    cache_path = 'foundry-cache'
+    optimizer_runs = 1000000
+    fs_permissions = [{ access = "read-write", path = "./"}]
+  `;
 }

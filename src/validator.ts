@@ -90,11 +90,11 @@ export class Validator {
     let alerts: string[] = [];
     const counter = getElementFrequency(natspecParams);
 
-    for (let paramName of members) {
-      if (!natspecParams.includes(paramName)) {
-        alerts.push(`@param ${paramName} is missing`);
-      } else if (counter[paramName] > 1) {
-        alerts.push(`@param ${paramName} is duplicated`);
+    for (let memberName of members) {
+      if (!natspecParams.includes(memberName)) {
+        alerts.push(`@param ${memberName} is missing`);
+      } else if (counter[memberName] > 1) {
+        alerts.push(`@param ${memberName} is duplicated`);
       }
     }
 

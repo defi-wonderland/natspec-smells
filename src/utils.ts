@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
+import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 
 export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<string[]> {
   return files.filter((file) => file.endsWith('.sol')).map((file) => path.resolve(file));
@@ -26,11 +26,6 @@ export async function getProjectCompiledSources(rootPath: string, includedPaths:
   );
 }
 
-export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {
-  const compiledFile = await compileSol(filePath, 'auto');
-  return new ASTReader().read(compiledFile.data, ASTKind.Any, compiledFile.files)[0];
-}
-
 export function isFileInDirectory(directory: string, filePath: string): boolean {
   // Convert both paths to absolute and normalize them
   const absoluteDirectoryPath = path.resolve(directory) + path.sep;
@@ -43,11 +38,11 @@ export function isFileInDirectory(directory: string, filePath: string): boolean 
 export async function getRemappings(rootPath: string): Promise<string[]> {
   // First try the remappings.txt file
   try {
-    return await getRemappingsFromFile(path.join(rootPath, 'remappings.txt'));
+    return await exports.getRemappingsFromFile(path.join(rootPath, 'remappings.txt'));
   } catch (e) {
     // If the remappings file does not exist, try foundry.toml
     try {
-      return await getRemappingsFromConfig(path.join(rootPath, 'foundry.toml'));
+      return await exports.getRemappingsFromConfig(path.join(rootPath, 'foundry.toml'));
     } catch {
       return [];
     }
@@ -61,21 +56,34 @@ export async function getRemappingsFromFile(remappingsPath: string): Promise<str
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length)
-    .map((line) => (line.slice(-1) === '/' ? line : line + '/'));
+    .map((line) => sanitizeRemapping(line));
 }
 
 export async function getRemappingsFromConfig(foundryConfigPath: string): Promise<string[]> {
   const foundryConfigContent = await fs.readFile(foundryConfigPath, 'utf8');
-  const regex = /\n+remappings[\s|\n]*\=[\s\n]*\[\n*\s*(?<remappings>[a-zA-Z-="'\/_,\n\s]+)/;
+  const regex = /remappings[\s|\n]*\=[\s\n]*\[(?<remappings>[^\]]+)]/;
   const matches = foundryConfigContent.match(regex);
   if (matches) {
     return matches
-      .groups!.remappings.split('\n')
+      .groups!.remappings.split(',')
       .map((line) => line.trim())
+      .map((line) => line.replace(/["']/g, ''))
       .filter((line) => line.length)
-      .map((line) => line.replace(',', ''));
+      .map((line) => sanitizeRemapping(line));
   } else {
     return [];
+  }
+}
+
+export function sanitizeRemapping(line: string): string {
+  // Make sure the key and the value both either have or don't have a trailing slash
+  const [key, value] = line.split('=');
+  const slashNeeded = key.endsWith('/');
+
+  if (slashNeeded) {
+    return value.endsWith('/') ? line : `${line}/`;
+  } else {
+    return value.endsWith('/') ? line.slice(0, -1) : line;
   }
 }
 

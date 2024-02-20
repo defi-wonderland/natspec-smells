@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 import { Validator } from './validator';
-import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 import { NodeToProcess } from './types';
 import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
+import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 
-interface IWarning {
+export interface IWarning {
   location: string;
   messages: string[];
 }
