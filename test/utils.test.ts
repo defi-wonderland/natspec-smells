@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import fstest from 'fs';
 import path from 'path';
 import * as utils from '../src/utils';
 import { mockFoundryConfig, mockFunctionDefinition } from './utils/mocks';
@@ -158,6 +159,111 @@ describe('Utils', () => {
         2: 3,
         a: 4,
       });
+    });
+  });
+
+  describe('processConfig', () => {
+    it('Should use a valid config', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          include: './contracts/**/*.sol',
+        })
+      );
+      const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
+
+      // The default settings should be applied
+      expect(config).toEqual({
+        root: './',
+        include: './contracts/**/*.sol',
+        exclude: '',
+        enforceInheritdoc: true,
+        constructorNatspec: false,
+      });
+    });
+
+    it('Should revert with an invalid config', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          include: './contracts/**/*.sol',
+          exclude: 123,
+        })
+      );
+      await expect(utils.processConfig(path.join(__dirname, './invalid.config.json'))).rejects.toThrow();
+    });
+
+    it('Should overwrite defaults if values are set', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          include: './contracts/**/*.sol',
+          exclude: './contracts/ignored.sol',
+          root: './contracts',
+          enforceInheritdoc: false,
+          constructorNatspec: true,
+        })
+      );
+      const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
+
+      expect(config).toEqual({
+        root: './contracts',
+        include: './contracts/**/*.sol',
+        exclude: './contracts/ignored.sol',
+        enforceInheritdoc: false,
+        constructorNatspec: true,
+        functions: undefined,
+      });
+    });
+
+    it('Should set custom parameters for functions', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          include: './contracts/**/*.sol',
+          functions: {
+            internal: {
+              tags: {
+                dev: true,
+                notice: true,
+                return: true,
+              },
+            },
+          },
+        })
+      );
+      const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
+
+      expect(config).toEqual({
+        root: './',
+        include: './contracts/**/*.sol',
+        exclude: '',
+        enforceInheritdoc: true,
+        constructorNatspec: false,
+        functions: {
+          internal: {
+            tags: {
+              dev: true,
+              notice: true,
+              return: true,
+            },
+          },
+        },
+      });
+    });
+
+    it('Should revert if a function block is incomplete', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          include: './contracts/**/*.sol',
+          functions: {
+            internal: {
+              tags: {
+                dev: true,
+                notice: true,
+              },
+            },
+          },
+        })
+      );
+
+      await expect(utils.processConfig(path.join(__dirname, './invalid.config.json'))).rejects.toThrow();
     });
   });
 });

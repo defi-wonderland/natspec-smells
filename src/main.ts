@@ -1,15 +1,20 @@
 #!/usr/bin/env node
+import path from 'path';
 import yargs from 'yargs';
+import fs from 'fs';
 import { hideBin } from 'yargs/helpers';
 import { glob } from 'fast-glob';
-import { getProjectCompiledSources } from './utils';
+import { getProjectCompiledSources, processConfig } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
 
 (async () => {
-  const config: Config = getArguments();
+  // Requires the config is in the root of the users directory
+  const configPath = path.join(process.cwd(), './natspec-smells.config.json');
+  const config: Config = await getConfig(configPath);
 
+  // TODO: Add configuration logic to the linter
   const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
   const includedPaths = await glob(config.include, { cwd: config.root, ignore: excludedPaths });
 
@@ -34,9 +39,18 @@ import { Validator } from './validator';
   });
 })().catch(console.error);
 
-function getArguments(): Config {
+/**
+ * Gets the config from the CLI or the config file
+ * @dev Prioritizes the config file over the CLI
+ * @param {string} configPath - The expected config path
+ * @returns {Config} - The config
+ */
+async function getConfig(configPath: string): Promise<Config> {
+  if (fs.existsSync(configPath)) {
+    return await processConfig(configPath);
+  }
+
   return yargs(hideBin(process.argv))
-    .strict()
     .options({
       include: {
         type: 'string',
@@ -64,7 +78,5 @@ function getArguments(): Config {
         default: false,
       },
     })
-    .config()
-    .default('config', 'natspec-smells.config')
     .parseSync();
 }

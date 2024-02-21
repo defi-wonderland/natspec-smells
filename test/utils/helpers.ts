@@ -1,4 +1,5 @@
 import { ASTKind, ASTReader, SourceUnit, compileSol } from 'solc-typed-ast';
+import path from 'path';
 import { NodeToProcess } from '../../src/types';
 
 export async function getFileCompiledSource(filePath: string): Promise<SourceUnit> {
