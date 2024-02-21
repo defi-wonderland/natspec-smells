@@ -9,6 +9,9 @@ import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
 
+/**
+ * Main function that processes the sources and prints the warnings
+ */
 (async () => {
   // Requires the config is in the root of the users directory
   const configPath = path.join(process.cwd(), './natspec-smells.config.json');
