@@ -3,10 +3,21 @@ import path from 'path';
 import { Natspec, NatspecDefinition, NodeToProcess } from './types';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
 
+/**
+ * Returns the absolute paths of the Solidity files
+ * @param {string[]} files - The list of files paths
+ * @returns {Promise<string[]>} - The list of absolute paths
+ */
 export async function getSolidityFilesAbsolutePaths(files: string[]): Promise<string[]> {
   return files.filter((file) => file.endsWith('.sol')).map((file) => path.resolve(file));
 }
 
+/**
+ * Returns the list of source units of the compiled Solidity files
+ * @param {string} rootPath - The root path of the project
+ * @param {string[]} includedPaths - The list of included paths
+ * @returns {SourceUnit[]} - The list of source units extracted from the compiled files
+ */
 export async function getProjectCompiledSources(rootPath: string, includedPaths: string[]): Promise<SourceUnit[]> {
   // Fetch Solidity files from the specified directory
   const solidityFiles: string[] = await getSolidityFilesAbsolutePaths(includedPaths);
@@ -26,6 +37,12 @@ export async function getProjectCompiledSources(rootPath: string, includedPaths:
   );
 }
 
+/**
+ * Checks if the file path is in the specified directory
+ * @param {string} directory - The directory path
+ * @param {string} filePath - The file path
+ * @returns {boolean} - True if the file is in the directory
+ */
 export function isFileInDirectory(directory: string, filePath: string): boolean {
   // Convert both paths to absolute and normalize them
   const absoluteDirectoryPath = path.resolve(directory) + path.sep;
@@ -35,6 +52,11 @@ export function isFileInDirectory(directory: string, filePath: string): boolean 
   return absoluteFilePath.startsWith(absoluteDirectoryPath);
 }
 
+/**
+ * Returns the remappings from the remappings.txt file or foundry.toml
+ * @param {string} rootPath - The root path of the project
+ * @returns {Promise<string[]>} - The list of remappings
+ */
 export async function getRemappings(rootPath: string): Promise<string[]> {
   // First try the remappings.txt file
   try {
@@ -49,6 +71,11 @@ export async function getRemappings(rootPath: string): Promise<string[]> {
   }
 }
 
+/**
+ * Returns the remappings from the remappings.txt file
+ * @param {string} remappingsPath - The path of the remappings file
+ * @returns {Promise<string[]>} - The list of remappings
+ */
 export async function getRemappingsFromFile(remappingsPath: string): Promise<string[]> {
   const remappingsContent = await fs.readFile(remappingsPath, 'utf8');
 
@@ -59,6 +86,11 @@ export async function getRemappingsFromFile(remappingsPath: string): Promise<str
     .map((line) => sanitizeRemapping(line));
 }
 
+/**
+ * Returns the remappings from the foundry.toml file
+ * @param {string} foundryConfigPath - The path of the foundry.toml file
+ * @returns {Promise<string[]>} - The list of remappings
+ */
 export async function getRemappingsFromConfig(foundryConfigPath: string): Promise<string[]> {
   const foundryConfigContent = await fs.readFile(foundryConfigPath, 'utf8');
   const regex = /remappings[\s|\n]*\=[\s\n]*\[(?<remappings>[^\]]+)]/;
@@ -75,8 +107,12 @@ export async function getRemappingsFromConfig(foundryConfigPath: string): Promis
   }
 }
 
+/**
+ * Makes sure both sides of a remapping either have or don't have a trailing slash
+ * @param {string} line - A line from the remappings array
+ * @returns {string} - The sanitized line
+ */
 export function sanitizeRemapping(line: string): string {
-  // Make sure the key and the value both either have or don't have a trailing slash
   const [key, value] = line.split('=');
   const slashNeeded = key.endsWith('/');
 
@@ -87,6 +123,11 @@ export function sanitizeRemapping(line: string): string {
   }
 }
 
+/**
+ * Parses the natspec of the node
+ * @param {NodeToProcess} node - The node to process
+ * @returns {Natspec} - The parsed natspec
+ */
 export function parseNodeNatspec(node: NodeToProcess): Natspec {
   if (!node.documentation) {
     return { tags: [], params: [], returns: [] };
@@ -133,16 +174,33 @@ export function parseNodeNatspec(node: NodeToProcess): Natspec {
   return result;
 }
 
+/**
+ * Returns the line number from the source code
+ * @param {string} fileContent - The content of the file
+ * @param {string} src - The node src location (e.g. "10:1:0")
+ * @returns {number} - The line number of the node
+ */
 export function getLineNumberFromSrc(fileContent: string, src: string): number {
   const [start] = src.split(':').map(Number);
   const lines = fileContent.substring(0, start).split('\n');
   return lines.length; // Line number
 }
 
+/**
+ * Checks if the node matches the function kind
+ * @param {NodeToProcess} node - The node to process
+ * @param {string} kind - The function kind
+ * @returns {boolean} - True if the node matches the function kind
+ */
 export function matchesFunctionKind(node: NodeToProcess, kind: string): boolean {
   return node instanceof FunctionDefinition && node.kind === kind;
 }
 
+/**
+ * Returns the frequency of the elements in the array
+ * @param {any[]} array - The array of elements
+ * @returns {Record<string, number>} - The frequency of the elements
+ */
 export function getElementFrequency(array: any[]) {
   return array.reduce((acc, curr) => {
     acc[curr] = (acc[curr] || 0) + 1;

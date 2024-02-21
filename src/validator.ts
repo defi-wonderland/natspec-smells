@@ -11,13 +11,25 @@ import {
   ContractDefinition,
 } from 'solc-typed-ast';
 
+/**
+ * Validator class that validates the natspec of the nodes
+ */
 export class Validator {
   config: Config;
 
+  /**
+   * @param {Config} config - The configuration object
+   */
   constructor(config: Config) {
     this.config = config;
   }
 
+  /**
+   * Validates the natspec of the node
+   * @param {NodeToProcess} node - The node to validate (Enum, Function etc.)
+   * @param {Natspec} natspec - Parsed natspec of the node
+   * @returns {string[]} - The list of alerts
+   */
   validate(node: NodeToProcess, natspec: Natspec): string[] {
     // Ignore fallback and receive
     if (matchesFunctionKind(node, 'receive') || matchesFunctionKind(node, 'fallback')) {
@@ -63,7 +75,13 @@ export class Validator {
     return alerts;
   }
 
-  // All defined parameters should have natspec
+  /**
+   * Validates the natspec for parameters.
+   * All defined parameters should have natspec.
+   * @param {ErrorDefinition | FunctionDefinition | ModifierDefinition} node - The node to validate
+   * @param {string[]} natspecParams - The list of parameters from the natspec
+   * @returns {string[]} - The list of alerts
+   */
   private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     let alerts: string[] = [];
@@ -79,7 +97,13 @@ export class Validator {
     return alerts;
   }
 
-  // All members of a struct should have natspec
+  /**
+   * Validates the natspec for members of a struct.
+   * All members of a struct should have natspec.
+   * @param {StructDefinition} node - The struct node
+   * @param {string[]} natspecParams - The list of parameters from the natspec
+   * @returns {string[]} - The list of alerts
+   */
   private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
     let members = node.vMembers.map((p) => p.name);
     let alerts: string[] = [];
@@ -96,7 +120,13 @@ export class Validator {
     return alerts;
   }
 
-  // All returned parameters should have natspec
+  /**
+   * Validates the natspec for return parameters.
+   * All returned parameters should have natspec
+   * @param {FunctionDefinition} node - The function node
+   * @param {(string | undefined)[]} natspecReturns - The list of `return` tags from the natspec
+   * @returns {string[]} - The list of alerts
+   */
   private validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {
     let alerts: string[] = [];
     let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
@@ -115,6 +145,11 @@ export class Validator {
     return alerts;
   }
 
+  /**
+   * Checks if the node requires inheritdoc
+   * @param {NodeToProcess} node - The node to process
+   * @returns {boolean} - True if the node requires inheritdoc
+   */
   private requiresInheritdoc(node: NodeToProcess): boolean {
     let _requiresInheritdoc: boolean = false;
 
