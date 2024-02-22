@@ -364,7 +364,7 @@ describe('Validator', () => {
 
   describe('with enforced constructor natspec', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ constructorNatspec: true }));
+      validator = new Validator(mockConfig({ functions: { constructor: true as unknown as Function & boolean } }));
     });
 
     it('should reveal missing constructor natspec', () => {
@@ -376,7 +376,7 @@ describe('Validator', () => {
 
   describe('with disabled constructor natspec', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ constructorNatspec: false }));
+      validator = new Validator(mockConfig({ functions: { constructor: false as unknown as Function & boolean } }));
     });
 
     it('should ignore missing constructor natspec', () => {
@@ -388,7 +388,7 @@ describe('Validator', () => {
 
   describe('with enforced inheritdoc', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ enforceInheritdoc: true }));
+      validator = new Validator(mockConfig({ inheritdoc: true }));
     });
 
     it('should return no warnings if inheritdoc is in place', () => {

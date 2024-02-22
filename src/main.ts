@@ -1,18 +1,24 @@
 #!/usr/bin/env node
+import path from 'path';
 import yargs from 'yargs';
+import fs from 'fs';
 import { hideBin } from 'yargs/helpers';
 import { glob } from 'fast-glob';
-import { getProjectCompiledSources } from './utils';
+import { getProjectCompiledSources, processConfig } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
+import { defaultFunctions } from './constants';
 
 /**
  * Main function that processes the sources and prints the warnings
  */
 (async () => {
-  const config: Config = getArguments();
+  // Requires the config is in the root of the users directory
+  const configPath = path.join(process.cwd(), './natspec-smells.config.json');
+  const config: Config = await getConfig(configPath);
 
+  // TODO: Add configuration logic to the linter
   const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
   const includedPaths = await glob(config.include, { cwd: config.root, ignore: excludedPaths });
 
@@ -38,12 +44,17 @@ import { Validator } from './validator';
 })().catch(console.error);
 
 /**
- * Parses the command line arguments and returns the configuration
- * @returns {Config} The config object
+ * Gets the config from the CLI or the config file
+ * @dev Prioritizes the config file over the CLI
+ * @param {string} configPath - The expected config path
+ * @returns {Config} - The config
  */
-function getArguments(): Config {
-  return yargs(hideBin(process.argv))
-    .strict()
+async function getConfig(configPath: string): Promise<Config> {
+  if (fs.existsSync(configPath)) {
+    return await processConfig(configPath);
+  }
+
+  const config: Partial<Config> = yargs(hideBin(process.argv))
     .options({
       include: {
         type: 'string',
@@ -60,18 +71,15 @@ function getArguments(): Config {
         description: 'Root directory of the project.',
         default: './',
       },
-      enforceInheritdoc: {
+      inheritdoc: {
         type: 'boolean',
         description: 'If set to true, all external and public functions must have @inheritdoc.',
         default: true,
       },
-      constructorNatspec: {
-        type: 'boolean',
-        description: 'True if constructor natspec is mandatory.',
-        default: false,
-      },
     })
-    .config()
-    .default('config', 'natspec-smells.config')
     .parseSync();
+
+  config.functions = defaultFunctions;
+
+  return config as Config;
 }

@@ -1,7 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Natspec, NatspecDefinition, NodeToProcess } from './types';
+import Ajv from 'ajv';
+import { Natspec, NatspecDefinition, NodeToProcess, Config, configSchema, Functions } from './types';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
+import { defaultFunctions } from './constants';
 
 /**
  * Returns the absolute paths of the Solidity files
@@ -206,4 +208,45 @@ export function getElementFrequency(array: any[]) {
     acc[curr] = (acc[curr] || 0) + 1;
     return acc;
   }, {});
+}
+
+/**
+ * Processes a config file based on the given file path
+ * @param {string} filePath - The path to the config file
+ * @returns {Config} - The config
+ */
+export async function processConfig(filePath: string): Promise<Config> {
+  const file = await fs.readFile(filePath, 'utf8');
+  const detectedConfig = JSON.parse(file);
+
+  if (!detectedConfig.functions) {
+    detectedConfig.functions = defaultFunctions;
+  } else {
+    for (const key of Object.keys(defaultFunctions)) {
+      if (!detectedConfig.functions[key]) {
+        detectedConfig.functions[key] = defaultFunctions[key as keyof Functions];
+      }
+    }
+  }
+
+  // TODO: Deprecation logic will be defined here
+  // Set defaults if needed
+  const config: Config = {
+    include: detectedConfig.include,
+    exclude: detectedConfig.exclude ?? '',
+    root: detectedConfig.root ?? './',
+    functions: detectedConfig.functions,
+    inheritdoc: detectedConfig.inheritdoc ?? true,
+  };
+
+  // Validate the received config matches our expected type
+  const ajv = new Ajv();
+  const validate = ajv.compile(configSchema);
+  const valid = validate(config);
+
+  if (!valid) {
+    throw new Error(`Invalid config: ${ajv.errorsText(validate.errors)}`);
+  }
+
+  return config;
 }

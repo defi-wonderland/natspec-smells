@@ -40,13 +40,13 @@ export class Validator {
     if (natspec.inheritdoc) return [];
 
     // Inheritdoc is enforced but not present, returning an error
-    if (this.config.enforceInheritdoc && this.requiresInheritdoc(node)) return [`@inheritdoc is missing`];
+    if (this.config.inheritdoc && this.requiresInheritdoc(node)) return [`@inheritdoc is missing`];
 
     const natspecParams = natspec.params.map((p) => p.name);
 
     // Validate natspec for the constructor only if configured
     if (matchesFunctionKind(node, 'constructor')) {
-      return this.config.constructorNatspec ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
+      return this.config.functions?.constructor ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
     }
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
