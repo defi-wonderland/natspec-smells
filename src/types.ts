@@ -10,73 +10,60 @@ import {
 import { Static, Type } from '@sinclair/typebox';
 
 // NOTE: For params like `return` if its set to true we will only force it if the function does return something
-export const functionConfigSchema = Type.Optional(
-  Type.Object({
-    internal: Type.Optional(
-      Type.Object({
-        tags: Type.Object({
-          dev: Type.Boolean(),
-          notice: Type.Boolean(),
-          return: Type.Boolean(),
-        }),
-        inheritdoc: Type.Optional(Type.Boolean()),
-      })
-    ),
-    external: Type.Optional(
-      Type.Object({
-        tags: Type.Object({
-          dev: Type.Boolean(),
-          notice: Type.Boolean(),
-          return: Type.Boolean(),
-        }),
-        inheritdoc: Type.Optional(Type.Boolean()),
-      })
-    ),
-    public: Type.Optional(
-      Type.Object({
-        tags: Type.Object({
-          dev: Type.Boolean(),
-          notice: Type.Boolean(),
-          return: Type.Boolean(),
-        }),
-        inheritdoc: Type.Optional(Type.Boolean()),
-      })
-    ),
-    private: Type.Optional(
-      Type.Object({
-        tags: Type.Object({
-          dev: Type.Boolean(),
-          notice: Type.Boolean(),
-          return: Type.Boolean(),
-        }),
-        inheritdoc: Type.Optional(Type.Boolean()),
-      })
-    ),
-  })
-);
+export const functionConfigSchema = Type.Object({
+  internal: Type.Optional(
+    Type.Object({
+      tags: Type.Object({
+        dev: Type.Boolean({ default: false }),
+        notice: Type.Boolean({ default: true }),
+        return: Type.Boolean({ default: true }),
+        param: Type.Boolean({ default: true }),
+      }),
+    })
+  ),
+  external: Type.Optional(
+    Type.Object({
+      tags: Type.Object({
+        dev: Type.Boolean({ default: false }),
+        notice: Type.Boolean({ default: true }),
+        return: Type.Boolean({ default: true }),
+        param: Type.Boolean({ default: true }),
+      }),
+    })
+  ),
+  public: Type.Optional(
+    Type.Object({
+      tags: Type.Object({
+        dev: Type.Boolean({ default: false }),
+        notice: Type.Boolean({ default: true }),
+        return: Type.Boolean({ default: true }),
+        param: Type.Boolean({ default: true }),
+      }),
+    })
+  ),
+  private: Type.Optional(
+    Type.Object({
+      tags: Type.Object({
+        dev: Type.Boolean({ default: false }),
+        notice: Type.Boolean({ default: true }),
+        return: Type.Boolean({ default: true }),
+        param: Type.Boolean({ default: true }),
+      }),
+    })
+  ),
+  constructor: Type.Boolean({ default: false }),
+});
 
 export const configSchema = Type.Object({
   include: Type.String(),
   exclude: Type.String({ default: '' }),
   root: Type.String({ default: './' }),
   functions: functionConfigSchema,
-  enforceInheritdoc: Type.Boolean({ default: true }),
-  constructorNatspec: Type.Boolean({ default: false }),
+  inheritdoc: Type.Boolean({ default: true }),
 });
 
 export type Config = Static<typeof configSchema>;
 export type Functions = Static<typeof functionConfigSchema>;
-
-export interface FunctionConfig {
-  tags: Tags;
-  inheritdoc?: boolean; // Optional: True if @inheritdoc is mandatory for contracts, and we check the interface that is inherited for the defined `tags`
-}
-
-export interface Tags {
-  dev: boolean;
-  notice: boolean;
-  return: boolean;
-}
 
 export interface NatspecDefinition {
   name?: string;

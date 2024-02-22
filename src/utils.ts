@@ -1,8 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Ajv from 'ajv';
-import { Natspec, NatspecDefinition, NodeToProcess, Config, configSchema } from './types';
+import { Natspec, NatspecDefinition, NodeToProcess, Config, configSchema, Functions } from './types';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
+import { defaultFunctions } from './constants';
 
 /**
  * Returns the absolute paths of the Solidity files
@@ -218,14 +219,24 @@ export async function processConfig(filePath: string): Promise<Config> {
   const file = await fs.readFile(filePath, 'utf8');
   const detectedConfig = JSON.parse(file);
 
+  if (!detectedConfig.functions) {
+    detectedConfig.functions = defaultFunctions;
+  } else {
+    for (const key of Object.keys(defaultFunctions)) {
+      if (!detectedConfig.functions[key]) {
+        detectedConfig.functions[key] = defaultFunctions[key as keyof Functions];
+      }
+    }
+  }
+
+  // TODO: Deprecation logic will be defined here
   // Set defaults if needed
   const config: Config = {
     include: detectedConfig.include,
     exclude: detectedConfig.exclude ?? '',
     root: detectedConfig.root ?? './',
     functions: detectedConfig.functions,
-    enforceInheritdoc: detectedConfig.enforceInheritdoc ?? true,
-    constructorNatspec: detectedConfig.constructorNatspec ?? false,
+    inheritdoc: detectedConfig.inheritdoc ?? true,
   };
 
   // Validate the received config matches our expected type

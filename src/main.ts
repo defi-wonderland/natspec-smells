@@ -8,6 +8,7 @@ import { getProjectCompiledSources, processConfig } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
+import { defaultFunctions } from './constants';
 
 /**
  * Main function that processes the sources and prints the warnings
@@ -53,7 +54,7 @@ async function getConfig(configPath: string): Promise<Config> {
     return await processConfig(configPath);
   }
 
-  return yargs(hideBin(process.argv))
+  const config: Partial<Config> = yargs(hideBin(process.argv))
     .options({
       include: {
         type: 'string',
@@ -70,16 +71,15 @@ async function getConfig(configPath: string): Promise<Config> {
         description: 'Root directory of the project.',
         default: './',
       },
-      enforceInheritdoc: {
+      inheritdoc: {
         type: 'boolean',
         description: 'If set to true, all external and public functions must have @inheritdoc.',
         default: true,
       },
-      constructorNatspec: {
-        type: 'boolean',
-        description: 'True if constructor natspec is mandatory.',
-        default: false,
-      },
     })
     .parseSync();
+
+  config.functions = defaultFunctions;
+
+  return config as Config;
 }

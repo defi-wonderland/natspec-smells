@@ -4,6 +4,7 @@ import path from 'path';
 import * as utils from '../src/utils';
 import { mockFoundryConfig, mockFunctionDefinition } from './utils/mocks';
 import { FunctionKind } from 'solc-typed-ast';
+import { defaultFunctions } from '../src/constants';
 
 describe('Utils', () => {
   describe('getSolidityFilesAbsolutePaths', () => {
@@ -189,7 +190,7 @@ describe('Utils', () => {
   });
 
   describe('processConfig', () => {
-    it('Should use a valid config', async () => {
+    it('should use a valid config', async () => {
       fs.readFile = jest.fn().mockResolvedValueOnce(
         JSON.stringify({
           include: './contracts/**/*.sol',
@@ -202,12 +203,12 @@ describe('Utils', () => {
         root: './',
         include: './contracts/**/*.sol',
         exclude: '',
-        enforceInheritdoc: true,
-        constructorNatspec: false,
+        inheritdoc: true,
+        functions: defaultFunctions,
       });
     });
 
-    it('Should revert with an invalid config', async () => {
+    it('should revert with an invalid config', async () => {
       fs.readFile = jest.fn().mockResolvedValueOnce(
         JSON.stringify({
           include: './contracts/**/*.sol',
@@ -217,14 +218,13 @@ describe('Utils', () => {
       await expect(utils.processConfig(path.join(__dirname, './invalid.config.json'))).rejects.toThrow();
     });
 
-    it('Should overwrite defaults if values are set', async () => {
+    it('should overwrite defaults if values are set', async () => {
       fs.readFile = jest.fn().mockResolvedValueOnce(
         JSON.stringify({
           include: './contracts/**/*.sol',
           exclude: './contracts/ignored.sol',
           root: './contracts',
-          enforceInheritdoc: false,
-          constructorNatspec: true,
+          inheritdoc: false,
         })
       );
       const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
@@ -233,13 +233,12 @@ describe('Utils', () => {
         root: './contracts',
         include: './contracts/**/*.sol',
         exclude: './contracts/ignored.sol',
-        enforceInheritdoc: false,
-        constructorNatspec: true,
-        functions: undefined,
+        inheritdoc: false,
+        functions: defaultFunctions,
       });
     });
 
-    it('Should set custom parameters for functions', async () => {
+    it('should set custom parameters for functions', async () => {
       fs.readFile = jest.fn().mockResolvedValueOnce(
         JSON.stringify({
           include: './contracts/**/*.sol',
@@ -249,8 +248,10 @@ describe('Utils', () => {
                 dev: true,
                 notice: true,
                 return: true,
+                param: true,
               },
             },
+            constructor: true,
           },
         })
       );
@@ -260,21 +261,46 @@ describe('Utils', () => {
         root: './',
         include: './contracts/**/*.sol',
         exclude: '',
-        enforceInheritdoc: true,
-        constructorNatspec: false,
+        inheritdoc: true,
         functions: {
           internal: {
             tags: {
               dev: true,
               notice: true,
               return: true,
+              param: true,
             },
           },
+          external: {
+            tags: {
+              dev: false,
+              notice: true,
+              return: true,
+              param: true,
+            },
+          },
+          public: {
+            tags: {
+              dev: false,
+              notice: true,
+              return: true,
+              param: true,
+            },
+          },
+          private: {
+            tags: {
+              dev: false,
+              notice: true,
+              return: true,
+              param: true,
+            },
+          },
+          constructor: true,
         },
       });
     });
 
-    it('Should revert if a function block is incomplete', async () => {
+    it('should revert if a function block is incomplete', async () => {
       fs.readFile = jest.fn().mockResolvedValueOnce(
         JSON.stringify({
           include: './contracts/**/*.sol',
