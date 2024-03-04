@@ -1,4 +1,4 @@
-import { Config, Natspec, NodeToProcess } from './types';
+import { Config, FunctionConfig, Functions, Natspec, NatspecDefinition, NodeToProcess } from './types';
 import { matchesFunctionKind, getElementFrequency } from './utils';
 import {
   EnumDefinition,
@@ -46,11 +46,29 @@ export class Validator {
 
     // Validate natspec for the constructor only if configured
     if (matchesFunctionKind(node, 'constructor')) {
-      return this.config.functions?.constructor ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
+      return this.config.constructorNatspec ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
     }
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
-    if (!natspec.tags.length) return [`Natspec is missing`];
+    if (!natspec.tags.length) {
+      // If node is a function, check the user defined config
+      if (node instanceof FunctionDefinition) {
+        let needsWarning = false;
+
+        Object.keys(this.config.functions).forEach((key) => {
+          Object.keys(this.config.functions[key as keyof Functions].tags).forEach((tag) => {
+            if (this.config.functions[key as keyof Functions][tag as keyof FunctionConfig]) {
+              needsWarning = true;
+            }
+          });
+        });
+
+        if (needsWarning) return [`Natspec is missing`];
+      } else {
+        // TODO: Change this logic when we have more config options for events, structs, enums etc.
+        return [`Natspec is missing`];
+      }
+    }
 
     // Validate the completeness of the documentation
     let alerts: string[] = [];
@@ -63,7 +81,12 @@ export class Validator {
       alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
     } else if (node instanceof FunctionDefinition) {
       const natspecReturns = natspec.returns.map((p) => p.name);
-      alerts = [...alerts, ...this.validateParameters(node, natspecParams), ...this.validateReturnParameters(node, natspecReturns)];
+      alerts = [
+        ...alerts,
+        ...this.validateParameters(node, natspecParams),
+        ...this.validateReturnParameters(node, natspecReturns),
+        ...this.validateTags(node, natspec.tags),
+      ];
     } else if (node instanceof ModifierDefinition) {
       alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
     } else if (node instanceof StructDefinition) {
@@ -86,6 +109,12 @@ export class Validator {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     let alerts: string[] = [];
     const counter = getElementFrequency(natspecParams);
+
+    if (node instanceof FunctionDefinition) {
+      if (!this.config.functions[node.visibility as keyof Functions]?.tags.param) {
+        return [];
+      }
+    }
 
     for (let paramName of definedParameters) {
       if (!natspecParams.includes(paramName)) {
@@ -128,6 +157,11 @@ export class Validator {
    * @returns {string[]} - The list of alerts
    */
   private validateReturnParameters(node: FunctionDefinition, natspecReturns: (string | undefined)[]): string[] {
+    // If return tags are not enforced, return no warnings
+    if (!this.config.functions[node.visibility as keyof Functions]?.tags.return) {
+      return [];
+    }
+
     let alerts: string[] = [];
     let functionReturns = node.vReturnParameters.vParameters.map((p) => p.name);
 
@@ -139,6 +173,49 @@ export class Validator {
       } else if (natspecReturns[paramIndex] !== paramName && paramName !== '') {
         let message = `@return ${paramName} is missing`;
         alerts.push(message);
+      }
+    }
+
+    return alerts;
+  }
+
+  private validateTags(node: FunctionDefinition, natspecTags: NatspecDefinition[]): string[] {
+    const isDevTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.dev;
+    const isNoticeTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.notice;
+
+    // If both are disabled no warnings should emit so we dont need to check anything
+    if (!isDevTagForced && !isNoticeTagForced) {
+      return [];
+    }
+
+    let alerts: string[] = [];
+
+    let devCounter = 0;
+    let noticeCounter = 0;
+
+    for (const tag of natspecTags) {
+      if (tag.name === 'dev') {
+        devCounter++;
+      } else if (tag.name === 'notice') {
+        noticeCounter++;
+      }
+    }
+
+    // Needs a dev tag
+    // More then one dev tag is ok
+    if (isDevTagForced && devCounter === 0) {
+      alerts.push(`@dev is missing`);
+    }
+
+    if (isNoticeTagForced) {
+      // Needs one notice tag
+      if (noticeCounter === 0) {
+        alerts.push(`@notice is missing`);
+      }
+
+      // Cant have more then one notice tag
+      if (noticeCounter > 1) {
+        alerts.push(`@notice is duplicated`);
       }
     }
 

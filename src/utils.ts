@@ -237,6 +237,7 @@ export async function processConfig(filePath: string): Promise<Config> {
     root: detectedConfig.root ?? './',
     functions: detectedConfig.functions,
     inheritdoc: detectedConfig.inheritdoc ?? true,
+    constructorNatspec: detectedConfig.constructorNatspec ?? false,
   };
 
   // Validate the received config matches our expected type

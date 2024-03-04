@@ -76,6 +76,11 @@ async function getConfig(configPath: string): Promise<Config> {
         description: 'If set to true, all external and public functions must have @inheritdoc.',
         default: true,
       },
+      constructorNatspec: {
+        type: 'boolean',
+        description: 'If set to true, all contracts must have a natspec for the constructor.',
+        default: false,
+      },
     })
     .parseSync();
 

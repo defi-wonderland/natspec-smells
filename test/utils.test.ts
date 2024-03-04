@@ -205,6 +205,7 @@ describe('Utils', () => {
         exclude: '',
         inheritdoc: true,
         functions: defaultFunctions,
+        constructorNatspec: false,
       });
     });
 
@@ -235,6 +236,7 @@ describe('Utils', () => {
         exclude: './contracts/ignored.sol',
         inheritdoc: false,
         functions: defaultFunctions,
+        constructorNatspec: false,
       });
     });
 
@@ -251,8 +253,8 @@ describe('Utils', () => {
                 param: true,
               },
             },
-            constructor: true,
           },
+          constructorNatspec: true,
         })
       );
       const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
@@ -295,8 +297,8 @@ describe('Utils', () => {
               param: true,
             },
           },
-          constructor: true,
         },
+        constructorNatspec: true,
       });
     });
 

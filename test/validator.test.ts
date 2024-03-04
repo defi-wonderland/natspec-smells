@@ -1,3 +1,4 @@
+import { defaultFunctions } from './utils/helpers';
 import { Validator } from '../src/validator';
 import { getFileCompiledSource, expectWarning, findNode } from './utils/helpers';
 import { mockConfig, mockNatspec } from './utils/mocks';
@@ -5,7 +6,7 @@ import { ContractDefinition } from 'solc-typed-ast';
 
 describe('Validator', () => {
   let contract: ContractDefinition;
-  let validator: Validator = new Validator(mockConfig({}));
+  let validator: Validator = new Validator(mockConfig({ functions: defaultFunctions }));
 
   beforeAll(async () => {
     const compileResult = await getFileCompiledSource('test/contracts/BasicSample.sol');
@@ -364,7 +365,7 @@ describe('Validator', () => {
 
   describe('with enforced constructor natspec', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ functions: { constructor: true as unknown as Function & boolean } }));
+      validator = new Validator(mockConfig({ constructorNatspec: true, functions: defaultFunctions }));
     });
 
     it('should reveal missing constructor natspec', () => {
@@ -376,7 +377,7 @@ describe('Validator', () => {
 
   describe('with disabled constructor natspec', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ functions: { constructor: false as unknown as Function & boolean } }));
+      validator = new Validator(mockConfig({ constructorNatspec: false }));
     });
 
     it('should ignore missing constructor natspec', () => {
@@ -417,6 +418,175 @@ describe('Validator', () => {
       const node = findNode(contract.vStateVariables, 'somePublicNumber');
       const result = validator.validate(node, mockNatspec({}));
       expect(result).toContainEqual(`@inheritdoc is missing`);
+    });
+  });
+
+  describe('function rules', () => {
+    it('should have no warnings if return is disabled', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.return = false;
+      const noReturnValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalNoReturn');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+        ],
+        params: [],
+        returns: [],
+      });
+
+      const result = noReturnValidator.validate(node, natspec);
+      expect(result).toEqual([]);
+    });
+
+    it('should have no warnings if param is disabled', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.param = false;
+      const noParamValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '_isMagic',
+            content: 'Some return data',
+          },
+        ],
+      });
+
+      const result = noParamValidator.validate(node, natspec);
+      expect(result).toEqual([]);
+    });
+
+    it('should have no warnings if notice is disabled', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.notice = false;
+      const noNoticeValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'dev',
+            content: 'A dev comment',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '_isMagic',
+            content: 'Some return data',
+          },
+        ],
+      });
+
+      const result = noNoticeValidator.validate(node, natspec);
+      expect(result).toEqual([]);
+    });
+
+    it('should have a warning if notice is forced', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.notice = true;
+      const noticeValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'dev',
+            content: 'A dev comment',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '_isMagic',
+            content: 'Some return data',
+          },
+        ],
+      });
+
+      const result = noticeValidator.validate(node, natspec);
+      expectWarning(result, `@notice is missing`, 1);
+    });
+
+    it('should have a warning if dev is forced', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.dev = true;
+      const devValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '_isMagic',
+            content: 'Some return data',
+          },
+        ],
+      });
+
+      const result = devValidator.validate(node, natspec);
+      expectWarning(result, `@dev is missing`, 1);
+    });
+
+    it('should have a warning if notice is duplicated', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.notice = true;
+      const noticeValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+          {
+            name: 'notice',
+            content: 'External function that returns a bool',
+          },
+        ],
+        params: [],
+        returns: [
+          {
+            name: '_isMagic',
+            content: 'Some return data',
+          },
+        ],
+      });
+
+      const result = noticeValidator.validate(node, natspec);
+      expectWarning(result, `@notice is duplicated`, 1);
+    });
+
+    it('should have no warnings if everything is disabled for a function', () => {
+      const mockFunctions = defaultFunctions;
+      mockFunctions.external.tags.dev = false;
+      mockFunctions.external.tags.notice = false;
+      mockFunctions.external.tags.param = false;
+      mockFunctions.external.tags.return = false;
+      const noNoticeValidator = new Validator(mockConfig({ functions: mockFunctions }));
+      const node = findNode(contract.vFunctions, 'externalSimple');
+      const natspec = mockNatspec({
+        tags: [],
+        params: [],
+        returns: [],
+      });
+
+      const result = noNoticeValidator.validate(node, natspec);
+      expect(result).toEqual([]);
     });
   });
 });
