@@ -46,7 +46,7 @@ export class Validator {
 
     // Validate natspec for the constructor only if configured
     if (matchesFunctionKind(node, 'constructor')) {
-      return this.config.constructorNatspec ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
+      return this.config.functions?.constructor ? this.validateParameters(node as FunctionDefinition, natspecParams) : [];
     }
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error

@@ -377,7 +377,7 @@ describe('Validator', () => {
 
   describe('with disabled constructor natspec', () => {
     beforeAll(async () => {
-      validator = new Validator(mockConfig({ constructorNatspec: false }));
+      validator = new Validator(mockConfig({ constructorNatspec: true }));
     });
 
     it('should ignore missing constructor natspec', () => {
