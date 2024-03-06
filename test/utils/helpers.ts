@@ -21,3 +21,18 @@ export const defaultFunctions: Functions = {
   public: { tags: { dev: false, notice: true, return: true, param: true } },
   private: { tags: { dev: false, notice: true, return: true, param: true } },
 };
+
+export const defaultTags = { tags: { dev: false, notice: true, param: true } };
+
+export const defaultConfig = {
+  include: '',
+  exclude: '',
+  root: './',
+  functions: defaultFunctions,
+  events: defaultTags,
+  errors: defaultTags,
+  modifiers: defaultTags,
+  structs: defaultTags,
+  inheritdoc: false,
+  constructorNatspec: false,
+};

@@ -1,5 +1,15 @@
-import { Config, FunctionConfig, Functions, Natspec, NatspecDefinition, NodeToProcess } from './types';
-import { matchesFunctionKind, getElementFrequency } from './utils';
+import {
+  Config,
+  FunctionConfig,
+  Functions,
+  HasVParameters,
+  Natspec,
+  NatspecDefinition,
+  NodeToProcess,
+  KeysForSupportedTags,
+  Tags,
+} from './types';
+import { matchesFunctionKind, getElementFrequency, isKeyForSupportedTags } from './utils';
 import {
   EnumDefinition,
   ErrorDefinition,
@@ -51,10 +61,9 @@ export class Validator {
 
     // Inheritdoc is not enforced nor present, and there is no other documentation, returning error
     if (!natspec.tags.length) {
+      let needsWarning = false;
       // If node is a function, check the user defined config
       if (node instanceof FunctionDefinition) {
-        let needsWarning = false;
-
         Object.keys(this.config.functions).forEach((key) => {
           Object.keys(this.config.functions[key as keyof Functions].tags).forEach((tag) => {
             if (this.config.functions[key as keyof Functions][tag as keyof FunctionConfig]) {
@@ -62,35 +71,75 @@ export class Validator {
             }
           });
         });
-
-        if (needsWarning) return [`Natspec is missing`];
       } else {
-        // TODO: Change this logic when we have more config options for events, structs, enums etc.
-        return [`Natspec is missing`];
+        // The other config rules use the same datatype so we can check them here
+        Object.keys(this.config).forEach((key) => {
+          if (isKeyForSupportedTags(key)) {
+            const tagsConfig = this.config[key]?.tags;
+            if (tagsConfig) {
+              Object.values(tagsConfig).forEach((value) => {
+                if (value) {
+                  needsWarning = true;
+                }
+              });
+            }
+          }
+        });
       }
+
+      if (needsWarning) return [`Natspec is missing`];
     }
 
     // Validate the completeness of the documentation
     let alerts: string[] = [];
+    let isDevTagForced: boolean;
+    let isNoticeTagForced: boolean;
 
     if (node instanceof EnumDefinition) {
       // TODO: Process enums
     } else if (node instanceof ErrorDefinition) {
-      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+      isDevTagForced = this.config.errors.tags.dev;
+      isNoticeTagForced = this.config.errors.tags.notice;
+
+      alerts = [
+        ...alerts,
+        ...this.validateParameters(node, natspecParams, 'errors'),
+        ...this.validateTags(isDevTagForced, isNoticeTagForced, natspec.tags),
+      ];
     } else if (node instanceof EventDefinition) {
-      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+      isDevTagForced = this.config.events.tags.dev;
+      isNoticeTagForced = this.config.events.tags.notice;
+
+      alerts = [
+        ...alerts,
+        ...this.validateParameters(node, natspecParams, 'events'),
+        ...this.validateTags(isDevTagForced, isNoticeTagForced, natspec.tags),
+      ];
     } else if (node instanceof FunctionDefinition) {
       const natspecReturns = natspec.returns.map((p) => p.name);
+      isDevTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.dev;
+      isNoticeTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.notice;
+
       alerts = [
         ...alerts,
         ...this.validateParameters(node, natspecParams),
         ...this.validateReturnParameters(node, natspecReturns),
-        ...this.validateTags(node, natspec.tags),
+        ...this.validateTags(isDevTagForced, isNoticeTagForced, natspec.tags),
       ];
     } else if (node instanceof ModifierDefinition) {
-      alerts = [...alerts, ...this.validateParameters(node, natspecParams)];
+      isDevTagForced = this.config.modifiers.tags.dev;
+      isNoticeTagForced = this.config.modifiers.tags.notice;
+
+      alerts = [
+        ...alerts,
+        ...this.validateParameters(node, natspecParams, 'modifiers'),
+        ...this.validateTags(isDevTagForced, isNoticeTagForced, natspec.tags),
+      ];
     } else if (node instanceof StructDefinition) {
-      alerts = [...alerts, ...this.validateMembers(node, natspecParams)];
+      isDevTagForced = this.config.structs.tags.dev;
+      isNoticeTagForced = this.config.structs.tags.notice;
+
+      alerts = [...alerts, ...this.validateMembers(node, natspecParams), ...this.validateTags(isDevTagForced, isNoticeTagForced, natspec.tags)];
     } else if (node instanceof VariableDeclaration) {
       // Only the presence of a notice is validated
     }
@@ -105,13 +154,21 @@ export class Validator {
    * @param {string[]} natspecParams - The list of parameters from the natspec
    * @returns {string[]} - The list of alerts
    */
-  private validateParameters(node: ErrorDefinition | FunctionDefinition | ModifierDefinition, natspecParams: (string | undefined)[]): string[] {
+  private validateParameters<T extends HasVParameters>(
+    node: T,
+    natspecParams: (string | undefined)[],
+    key: KeysForSupportedTags | undefined = undefined
+  ): string[] {
     let definedParameters = node.vParameters.vParameters.map((p) => p.name);
     let alerts: string[] = [];
     const counter = getElementFrequency(natspecParams);
 
     if (node instanceof FunctionDefinition) {
       if (!this.config.functions[node.visibility as keyof Functions]?.tags.param) {
+        return [];
+      }
+    } else if (key !== undefined) {
+      if (!this.config[key]?.tags.param) {
         return [];
       }
     }
@@ -134,6 +191,10 @@ export class Validator {
    * @returns {string[]} - The list of alerts
    */
   private validateMembers(node: StructDefinition, natspecParams: (string | undefined)[]): string[] {
+    if (!this.config.structs.tags.param) {
+      return [];
+    }
+
     let members = node.vMembers.map((p) => p.name);
     let alerts: string[] = [];
     const counter = getElementFrequency(natspecParams);
@@ -179,10 +240,7 @@ export class Validator {
     return alerts;
   }
 
-  private validateTags(node: FunctionDefinition, natspecTags: NatspecDefinition[]): string[] {
-    const isDevTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.dev;
-    const isNoticeTagForced = this.config.functions[node.visibility as keyof Functions]?.tags.notice;
-
+  private validateTags(isDevTagForced: boolean, isNoticeTagForced: boolean, natspecTags: NatspecDefinition[]): string[] {
     // If both are disabled no warnings should emit so we dont need to check anything
     if (!isDevTagForced && !isNoticeTagForced) {
       return [];

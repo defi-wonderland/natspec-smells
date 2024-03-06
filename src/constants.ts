@@ -6,3 +6,11 @@ export const defaultFunctions: Functions = {
   public: { tags: { dev: false, notice: true, return: true, param: true } },
   private: { tags: { dev: false, notice: true, return: true, param: true } },
 } as const;
+
+export const defaultTags = {
+  tags: {
+    dev: false,
+    notice: true,
+    param: true,
+  },
+} as const;

@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Ajv from 'ajv';
-import { Natspec, NatspecDefinition, NodeToProcess, Config, configSchema, Functions } from './types';
+import { Natspec, NatspecDefinition, NodeToProcess, Config, configSchema, Functions, KeysForSupportedTags } from './types';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
-import { defaultFunctions } from './constants';
+import { defaultFunctions, defaultTags } from './constants';
 
 /**
  * Returns the absolute paths of the Solidity files
@@ -236,6 +236,10 @@ export async function processConfig(filePath: string): Promise<Config> {
     exclude: detectedConfig.exclude ?? '',
     root: detectedConfig.root ?? './',
     functions: detectedConfig.functions,
+    events: detectedConfig.events ?? defaultTags,
+    errors: detectedConfig.errors ?? defaultTags,
+    modifiers: detectedConfig.modifiers ?? defaultTags,
+    structs: detectedConfig.structs ?? defaultTags,
     inheritdoc: detectedConfig.inheritdoc ?? true,
     constructorNatspec: detectedConfig.constructorNatspec ?? false,
   };
@@ -250,4 +254,14 @@ export async function processConfig(filePath: string): Promise<Config> {
   }
 
   return config;
+}
+
+/**
+ * Returns if the key being used is for a supported tag
+ * @dev A "supported tag" is a generalized term for events, errors, modifiers, and structs as they all share the same tag schema
+ * @param {string} key The key to check
+ * @returns {boolean} True if the key is for a supported tag
+ */
+export function isKeyForSupportedTags(key: string): key is KeysForSupportedTags {
+  return ['events', 'errors', 'modifiers', 'structs'].includes(key);
 }
