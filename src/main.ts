@@ -8,7 +8,7 @@ import { getProjectCompiledSources, processConfig } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
-import { defaultFunctions } from './constants';
+import { defaultFunctions, defaultTags } from './constants';
 
 /**
  * Main function that processes the sources and prints the warnings
@@ -76,10 +76,19 @@ async function getConfig(configPath: string): Promise<Config> {
         description: 'If set to true, all external and public functions must have @inheritdoc.',
         default: true,
       },
+      constructorNatspec: {
+        type: 'boolean',
+        description: 'If set to true, all contracts must have a natspec for the constructor.',
+        default: false,
+      },
     })
     .parseSync();
 
   config.functions = defaultFunctions;
+  config.modifiers = defaultTags;
+  config.errors = defaultTags;
+  config.events = defaultTags;
+  config.structs = defaultTags;
 
   return config as Config;
 }

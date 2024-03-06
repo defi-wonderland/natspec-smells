@@ -205,6 +205,35 @@ describe('Utils', () => {
         exclude: '',
         inheritdoc: true,
         functions: defaultFunctions,
+        modifiers: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        events: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        errors: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        structs: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        constructorNatspec: false,
       });
     });
 
@@ -235,6 +264,35 @@ describe('Utils', () => {
         exclude: './contracts/ignored.sol',
         inheritdoc: false,
         functions: defaultFunctions,
+        modifiers: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        events: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        errors: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        structs: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        constructorNatspec: false,
       });
     });
 
@@ -251,8 +309,8 @@ describe('Utils', () => {
                 param: true,
               },
             },
-            constructor: true,
           },
+          constructorNatspec: true,
         })
       );
       const config = await utils.processConfig(path.join(__dirname, './valid.config.json'));
@@ -295,8 +353,36 @@ describe('Utils', () => {
               param: true,
             },
           },
-          constructor: true,
         },
+        modifiers: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        events: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        errors: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        structs: {
+          tags: {
+            dev: false,
+            notice: true,
+            param: true,
+          },
+        },
+        constructorNatspec: true,
       });
     });
 

@@ -5,5 +5,12 @@ export const defaultFunctions: Functions = {
   external: { tags: { dev: false, notice: true, return: true, param: true } },
   public: { tags: { dev: false, notice: true, return: true, param: true } },
   private: { tags: { dev: false, notice: true, return: true, param: true } },
-  constructor: false as unknown as Function & boolean,
+} as const;
+
+export const defaultTags = {
+  tags: {
+    dev: false,
+    notice: true,
+    param: true,
+  },
 } as const;
