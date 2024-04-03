@@ -1,3 +1,4 @@
+import child_process from 'child_process';
 import fs from 'fs/promises';
 import fstest from 'fs';
 import path from 'path';
@@ -5,6 +6,12 @@ import * as utils from '../src/utils';
 import { mockFoundryConfig, mockFunctionDefinition } from './utils/mocks';
 import { FunctionKind } from 'solc-typed-ast';
 import { defaultFunctions } from '../src/constants';
+
+jest.mock('child_process', () => ({
+  exec: jest.fn().mockImplementation(() => {
+    throw new Error();
+  }),
+}));
 
 describe('Utils', () => {
   describe('getSolidityFilesAbsolutePaths', () => {
@@ -61,6 +68,20 @@ describe('Utils', () => {
       expect(output).toEqual(['config']);
     });
 
+    it('should return forge auto remappings if fails', async () => {
+      const spyGetRemappingsFromFile = jest.spyOn(utils, 'getRemappingsFromFile');
+      spyGetRemappingsFromFile.mockRejectedValueOnce(new Error());
+
+      const spyGetRemappingsFromConfig = jest.spyOn(utils, 'getRemappingsFromConfig');
+      spyGetRemappingsFromConfig.mockRejectedValueOnce(new Error());
+
+      const spy = jest.spyOn(utils, 'getRemappingsFromForge');
+      spy.mockResolvedValueOnce(['forge']);
+
+      const output = await utils.getRemappings('');
+      expect(output).toEqual(['forge']);
+    });
+
     it('should return empty array if all fails', async () => {
       const output = await utils.getRemappings('wrong/path');
       expect(output).toEqual([]);
@@ -79,11 +100,6 @@ describe('Utils', () => {
   describe('getRemappingsFromConfig', () => {
     it('should return correct remappings from config', async () => {
       const remappings = new Map<string[], string[]>();
-
-      remappings.set(
-        [], // Expected value
-        [''] // Remappings strings that when parsed should return the expected value
-      );
 
       remappings.set(
         ['ds-test/=lib/ds-test/src/'], // Expected value
@@ -138,6 +154,23 @@ describe('Utils', () => {
           expect(remappings).toEqual(expectedRemappings);
         }
       }
+    });
+
+    it('should revert with no remappings', async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(mockFoundryConfig(''));
+      await expect(utils.getRemappingsFromConfig('')).rejects.toThrow();
+    });
+  });
+
+  describe('getRemappingsFromForge', () => {
+    it('should return correct remappings from file', async () => {
+      const mockRemappingsList = ['test/contracts/=contracts/', 'contract/contracts/=contracts/'];
+      jest.spyOn(child_process, 'exec').mockImplementationOnce((_, __, callback) => {
+        callback?.(null, mockRemappingsList.join('\n'), '');
+        return {} as child_process.ChildProcess;
+      });
+      const remappings = await utils.getRemappingsFromForge();
+      expect(remappings).toEqual(mockRemappingsList);
     });
   });
 
