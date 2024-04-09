@@ -16,7 +16,7 @@ import { getConfig } from './config';
   const config: Config = getConfig(configPath);
 
   // TODO: Add configuration logic to the linter
-  const excludedPaths = config.exclude === '' ? [] : await glob(config.exclude, { cwd: config.root });
+  const excludedPaths = !config.exclude ? [] : await glob(config.exclude, { cwd: config.root });
   const includedPaths = await glob(config.include, { cwd: config.root, ignore: excludedPaths });
 
   const sourceUnits = await getProjectCompiledSources(config.root, includedPaths);

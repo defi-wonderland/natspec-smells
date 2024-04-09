@@ -2,7 +2,7 @@ import { Config } from './types';
 
 export const defaultConfig: Readonly<Config> = {
   include: './**/*.sol',
-  exclude: '',
+  exclude: undefined,
   root: './',
   functions: {
     internal: { tags: { dev: false, notice: true, return: true, param: true } },
