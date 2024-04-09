@@ -1,5 +1,4 @@
 import { object, string, boolean, date, InferType } from 'yup';
-import { isDynamicPattern } from 'fast-glob';
 
 export const tagSchema = object({
   tags: object({
