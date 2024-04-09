@@ -26,10 +26,7 @@ export const functionConfigSchema = object({
 });
 
 export const configSchema = object({
-  include: string()
-    .strict()
-    .required()
-    .test('is-glob', '"include" must be a valid glob pattern', (value) => isDynamicPattern(value)),
+  include: string().strict().required(),
   exclude: string().strict().default(''),
   root: string().strict().default('./'),
   functions: functionConfigSchema,
