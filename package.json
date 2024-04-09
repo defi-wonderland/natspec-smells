@@ -28,11 +28,11 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.32.14",
-    "ajv": "8.12.0",
     "fast-glob": "3.3.2",
+    "lodash": "^4.17.21",
     "solc-typed-ast": "18.1.2",
-    "yargs": "17.7.2"
+    "yargs": "17.7.2",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.6.5",

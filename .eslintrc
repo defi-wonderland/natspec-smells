@@ -1,7 +1,7 @@
 {
   "plugins": ["eslint-plugin-jsdoc"],
   "extends": ["plugin:eslint-plugin-jsdoc/recommended"],
-  "ignorePatterns": ["dist", ".eslintrc.cjs"],
+  "ignorePatterns": ["dist", ".eslintrc.cjs", "test"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 9,

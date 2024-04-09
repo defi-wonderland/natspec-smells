@@ -152,6 +152,7 @@ export class Validator {
    * All defined parameters should have natspec.
    * @param {ErrorDefinition | FunctionDefinition | ModifierDefinition} node - The node to validate
    * @param {string[]} natspecParams - The list of parameters from the natspec
+   * @param {KeysForSupportedTags} key - The key for the supported tags
    * @returns {string[]} - The list of alerts
    */
   private validateParameters<T extends HasVParameters>(
