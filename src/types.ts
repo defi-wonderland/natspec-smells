@@ -101,3 +101,7 @@ export type HasVParameters = {
     vParameters: Array<{ name: string }>;
   };
 };
+
+export interface IParser<TInput, TOutput> {
+  parse(node: TInput): TOutput;
+}

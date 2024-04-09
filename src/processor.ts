@@ -1,8 +1,9 @@
 import fs from 'fs/promises';
 import { Validator } from './validator';
 import { NodeToProcess } from './types';
-import { getLineNumberFromSrc, parseNodeNatspec } from './utils';
+import { getLineNumberFromSrc } from './utils';
 import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
+import { NodeNatspecParser } from './NodeNatspecParser';
 
 export interface IWarning {
   location: string;
@@ -10,7 +11,7 @@ export interface IWarning {
 }
 
 export class Processor {
-  constructor(private validator: Validator) {}
+  constructor(private validator: Validator, private nodeNatspecParser: NodeNatspecParser) {}
 
   /**
    * Goes through all functions, modifiers, state variables, structs, enums, errors and events
@@ -71,7 +72,7 @@ export class Processor {
    * @returns {string[]} - The list of warning messages
    */
   validateNatspec(node: NodeToProcess): string[] {
-    const nodeNatspec = parseNodeNatspec(node);
+    const nodeNatspec = this.nodeNatspecParser.parse(node);
     return this.validator.validate(node, nodeNatspec);
   }
 
