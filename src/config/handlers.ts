@@ -13,8 +13,8 @@ import { Config } from '../types';
  * @returns {Config} - The config
  */
 export function getConfig(configPath: string): Config {
-  const fileConfig = getFileConfig(configPath);
   const argConfig = getArgsConfig();
+  const fileConfig = getFileConfig(configPath);
   // Merge default config with file config and arg config
   const inputConfig = _.merge(_.merge(_.cloneDeep(defaultConfig), fileConfig), argConfig);
 

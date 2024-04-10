@@ -6,10 +6,12 @@ import * as utils from '../src/utils';
 import { Validator } from '../src/validator';
 import { mockFunctionDefinition, mockNodeToProcess, mockConfig, mockNatspec } from './utils/mocks';
 import { getFileCompiledSource } from './utils/helpers';
+import { NodeNatspecParser } from '../src/NodeNatspecParser';
 
 describe('Processor', () => {
   const validator = new Validator(mockConfig({}));
-  const processor = new Processor(validator);
+  const parser = new NodeNatspecParser();
+  const processor = new Processor(validator, parser);
 
   describe('selectEligibleNodes', () => {
     let contract: ContractDefinition;
@@ -96,7 +98,7 @@ describe('Processor', () => {
     const nodeNatspec = mockNatspec({});
 
     it('should parse the natspec of the node', () => {
-      const parseNodeNatspecSpy = jest.spyOn(utils, 'parseNodeNatspec').mockImplementation((_) => nodeNatspec);
+      const parseNodeNatspecSpy = jest.spyOn(parser, 'parse').mockImplementation((_) => nodeNatspec);
 
       processor.validateNatspec(node);
 

@@ -5,6 +5,7 @@ import { getProjectCompiledSources } from './utils';
 import { Processor } from './processor';
 import { Config } from './types';
 import { Validator } from './validator';
+import { NodeNatspecParser } from './NodeNatspecParser';
 import { getConfig } from './config';
 
 /**
@@ -23,7 +24,8 @@ import { getConfig } from './config';
   if (!sourceUnits.length) return console.error('No solidity files found in the specified directory');
 
   const validator = new Validator(config);
-  const processor = new Processor(validator);
+  const parser = new NodeNatspecParser();
+  const processor = new Processor(validator, parser);
   const warnings = await processor.processSources(sourceUnits);
 
   if (!warnings.length) {
