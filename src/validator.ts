@@ -1,4 +1,14 @@
 import {
+  EnumDefinition,
+  ErrorDefinition,
+  EventDefinition,
+  FunctionDefinition,
+  ModifierDefinition,
+  StructDefinition,
+  VariableDeclaration,
+  ContractDefinition,
+} from 'solc-typed-ast';
+import {
   Config,
   FunctionConfig,
   Functions,
@@ -10,16 +20,6 @@ import {
   Tags,
 } from './types';
 import { matchesFunctionKind, getElementFrequency, isKeyForSupportedTags } from './utils';
-import {
-  EnumDefinition,
-  ErrorDefinition,
-  EventDefinition,
-  FunctionDefinition,
-  ModifierDefinition,
-  StructDefinition,
-  VariableDeclaration,
-  ContractDefinition,
-} from 'solc-typed-ast';
 
 /**
  * Validator class that validates the natspec of the nodes
@@ -152,6 +152,7 @@ export class Validator {
    * All defined parameters should have natspec.
    * @param {ErrorDefinition | FunctionDefinition | ModifierDefinition} node - The node to validate
    * @param {string[]} natspecParams - The list of parameters from the natspec
+   * @param {KeysForSupportedTags} key - The key for the supported tags
    * @returns {string[]} - The list of alerts
    */
   private validateParameters<T extends HasVParameters>(

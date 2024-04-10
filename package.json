@@ -28,17 +28,18 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.32.14",
-    "ajv": "8.12.0",
     "fast-glob": "3.3.2",
+    "lodash": "4.17.21",
     "solc-typed-ast": "18.1.2",
-    "yargs": "17.7.2"
+    "yargs": "17.7.2",
+    "yup": "1.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.6.5",
     "@commitlint/config-conventional": "17.6.5",
     "@faker-js/faker": "8.3.1",
     "@types/jest": "29.5.11",
+    "@types/lodash": "4.17.0",
     "@types/node": "20.10.7",
     "@typescript-eslint/parser": "6.2.0",
     "eslint": "8.56.0",
