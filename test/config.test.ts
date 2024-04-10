@@ -10,6 +10,7 @@ describe('Config', () => {
     jest.resetAllMocks();
     process.argv = [];
   });
+
   describe('getConfig', () => {
     it('should use a valid config', async () => {
       const testFile = { include: './contracts/**/*.sol' };
@@ -51,6 +52,7 @@ describe('Config', () => {
         'include must be a `string` type, but the final value was: `123`.'
       );
     });
+
     it('should overwrite defaults if values are set', async () => {
       const testFile = {
         include: './contracts/**/*.sol',
@@ -108,12 +110,14 @@ describe('Config', () => {
       expect(config).toEqual(_.merge(_.merge(defaultConfig, testFile), { include: './solidity/**/*.sol' }));
     });
   });
+
   describe('getFileConfig', () => {
     it('should return an empty object if the config file does not exist', () => {
       const configPath = '/path/to/nonexistent/config.json';
       const result = getFileConfig(configPath);
       expect(result).toEqual({});
     });
+
     it('should throw if the config file is invalid', () => {
       fs.readFileSync = jest.fn().mockReturnValue(
         `{
@@ -123,6 +127,7 @@ describe('Config', () => {
       fs.existsSync = jest.fn().mockReturnValue(true);
       expect(() => getFileConfig(path.join(__dirname, './valid.config.json'))).toThrow('Invalid config file');
     });
+
     it('should return the parsed configuration object if the config file is valid', () => {
       const expectedConfig = {
         include: './contracts/**/*.sol',
