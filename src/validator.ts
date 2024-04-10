@@ -1,4 +1,14 @@
 import {
+  EnumDefinition,
+  ErrorDefinition,
+  EventDefinition,
+  FunctionDefinition,
+  ModifierDefinition,
+  StructDefinition,
+  VariableDeclaration,
+  ContractDefinition,
+} from 'solc-typed-ast';
+import {
   Config,
   FunctionConfig,
   Functions,
@@ -10,16 +20,6 @@ import {
   Tags,
 } from './types';
 import { matchesFunctionKind, getElementFrequency, isKeyForSupportedTags } from './utils';
-import {
-  EnumDefinition,
-  ErrorDefinition,
-  EventDefinition,
-  FunctionDefinition,
-  ModifierDefinition,
-  StructDefinition,
-  VariableDeclaration,
-  ContractDefinition,
-} from 'solc-typed-ast';
 
 /**
  * Validator class that validates the natspec of the nodes

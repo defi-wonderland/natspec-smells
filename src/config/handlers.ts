@@ -1,10 +1,10 @@
 import yargs from 'yargs';
-import { configSchema } from './schemas';
-import { Config } from '../types';
 import fs from 'fs';
 import { hideBin } from 'yargs/helpers';
 import _ from 'lodash';
 import { defaultConfig } from '../constants';
+import { configSchema } from './schemas';
+import { Config } from '../types';
 
 /**
  * Gets the config from the CLI or the config file

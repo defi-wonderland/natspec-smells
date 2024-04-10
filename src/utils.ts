@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Natspec, NatspecDefinition, NodeToProcess, KeysForSupportedTags } from './types';
 import { ASTKind, ASTReader, SourceUnit, compileSol, FunctionDefinition } from 'solc-typed-ast';
+import { Natspec, NatspecDefinition, NodeToProcess, KeysForSupportedTags } from './types';
 
 /**
  * Returns the absolute paths of the Solidity files

@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import fstest from 'fs';
 import path from 'path';
+import { FunctionKind } from 'solc-typed-ast';
 import * as utils from '../src/utils';
 import { mockFoundryConfig, mockFunctionDefinition } from './utils/mocks';
-import { FunctionKind } from 'solc-typed-ast';
 
 describe('Utils', () => {
   describe('getSolidityFilesAbsolutePaths', () => {

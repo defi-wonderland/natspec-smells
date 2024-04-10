@@ -1,9 +1,9 @@
 import * as path from 'path';
 import fs from 'fs';
 import fstest from 'fs';
+import _ from 'lodash';
 import { getConfig, getFileConfig, getArgsConfig } from '../src/config';
 import { defaultConfig } from '../src/constants';
-import _, { includes } from 'lodash';
 
 describe('Config', () => {
   beforeEach(() => {
