@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
+import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 import { Validator } from './validator';
 import { NodeToProcess } from './types';
 import { getLineNumberFromSrc } from './utils';
-import { SourceUnit, FunctionDefinition, ContractDefinition } from 'solc-typed-ast';
 import { NodeNatspecParser } from './NodeNatspecParser';
 
 export interface IWarning {

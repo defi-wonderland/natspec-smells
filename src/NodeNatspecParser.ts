@@ -1,6 +1,6 @@
-import { Natspec, NatspecDefinition, NodeToProcess, IParser } from './types';
+import { Natspec, NatspecDefinition, NodeToProcess } from './types';
 
-export class NodeNatspecParser implements IParser<NodeToProcess, Natspec> {
+export class NodeNatspecParser {
   /**
    * Parses the natspec of the node
    * @param {NodeToProcess} node - The node to process
