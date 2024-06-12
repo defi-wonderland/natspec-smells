@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "fast-glob": "3.3.2",
-    "solc-typed-ast": "18.1.2",
+    "solc-typed-ast": "18.1.6",
     "yargs": "17.7.2"
   },
   "devDependencies": {
