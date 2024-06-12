@@ -1725,10 +1725,15 @@ findup-sync@^5.0.0:
     micromatch "^4.0.4"
     resolve-dir "^1.0.1"
 
-follow-redirects@^1.12.1, follow-redirects@^1.15.4:
+follow-redirects@^1.12.1:
   version "1.15.4"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
   integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
+
+follow-redirects@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -3377,19 +3382,19 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-solc-typed-ast@18.1.2:
-  version "18.1.2"
-  resolved "https://registry.yarnpkg.com/solc-typed-ast/-/solc-typed-ast-18.1.2.tgz#bc958fe3aead765cf6c2e06ce3d53c61fd06e70c"
-  integrity sha512-57IKzvXHcyjqdjHEdX7NQuWkPALlH8V4eJ6UUehWrzgHDVzKVOCFplwgLDRnOZ8kDMO8+Ms8sQhfrivFK+v5FA==
+solc-typed-ast@18.1.6:
+  version "18.1.6"
+  resolved "https://registry.yarnpkg.com/solc-typed-ast/-/solc-typed-ast-18.1.6.tgz#997e986583f0fdddb3ddb1960c33d5c63b3f729a"
+  integrity sha512-nBk24fdju+P2xsy32tG6HLqkXI+Tn+W84Fqm5+XD1Xby2/8YLlsMgI3ADoRPhhO7DeWjq/kflm//dGNkEb3ILA==
   dependencies:
-    axios "^1.6.7"
+    axios "^1.6.8"
     commander "^12.0.0"
     decimal.js "^10.4.3"
     findup-sync "^5.0.0"
     fs-extra "^11.2.0"
     jsel "^1.1.6"
     semver "^7.6.0"
-    solc "0.8.24"
+    solc "0.8.25"
     src-location "^1.1.0"
     web3-eth-abi "^4.2.0"
 
