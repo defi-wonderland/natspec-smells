@@ -22,16 +22,17 @@ import { Validator } from './validator';
 
   if (!warnings.length) {
     console.warn('No issues found');
-    return;
-  }
-
-  warnings.forEach(({ location, messages }) => {
-    console.warn(location);
-    messages.forEach((message) => {
-      console.warn(`  ${message}`);
+    return process.exit(0);
+  } else {
+    warnings.forEach(({ location, messages }) => {
+      console.warn(location);
+      messages.forEach((message) => {
+        console.warn(`  ${message}`);
+      });
+      console.warn();
     });
-    console.warn();
-  });
+    return process.exit(1);
+  }
 })().catch(console.error);
 
 function getArguments(): Config {
