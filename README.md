@@ -55,7 +55,18 @@ npx @defi-wonderland/natspec-smells --include "src/**/*.sol"
 
 ## Verify your natspec in CI
 
-_Soon to come._
+With the setup defined above, it's possible to invoke the executable from within a github workflow, as long as node.js is available in that environment:
+
+```
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+
+      - name: Check natspec
+        run: yarn natspec-smells
+```
 
 ## Options
 
