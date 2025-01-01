@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.19;
+pragma solidity =0.8.28;
 
 library StringUtils {
     function nothing(string memory input) public pure returns (string memory) {

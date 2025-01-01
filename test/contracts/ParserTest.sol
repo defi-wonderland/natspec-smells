@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.19;
+pragma solidity =0.8.28;
 
 // forgefmt: disable-start
 // This file is used for testing the parser
