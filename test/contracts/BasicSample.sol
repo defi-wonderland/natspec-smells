@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.28;
+pragma solidity =0.8.19;
 
 abstract contract AbstractBasic {
     function overriddenFunction() internal pure virtual returns (uint256 _returned);
