@@ -1,3 +1,8 @@
+## Soft-deprecation notice
+
+Natspec Smells has had a fruitful life, and its legacy lives on [lintspec](https://github.com/beeb/lintspec), a rust re-implementation which we recommend using in the future.
+This project will receive parser updates and security/bug fixes for the foreseeable future, so existing projects can continue to use it, but no further features will be implemented.
+
 [![Version](https://img.shields.io/npm/v/@defi-wonderland/natspec-smells?label=Version)](https://www.npmjs.com/package/@defi-wonderland/natspec-smells)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/defi-wonderland/natspec-smells/blob/main/LICENSE)
 
