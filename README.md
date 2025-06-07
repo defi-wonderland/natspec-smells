@@ -1,5 +1,13 @@
 ## Soft-deprecation notice
 
+> ⚠️ **DEPRECATED – DO NOT USE**
+>
+> This repository is no longer maintained and is **deprecated**.
+>
+> It may contain **outdated, insecure, or vulnerable code** and should **not** be used in production or as a dependency in any project.
+>
+> The repository is retained solely for historical reference. No support, updates, or security patches will be provided.
+
 Natspec Smells has had a fruitful life, and its legacy lives on [lintspec](https://github.com/beeb/lintspec), a rust re-implementation which we recommend using in the future.
 This project will receive parser updates and security/bug fixes for the foreseeable future, so existing projects can continue to use it, but no further features will be implemented.
 
